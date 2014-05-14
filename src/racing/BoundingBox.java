@@ -2,10 +2,28 @@ package racing;
 
 import racing.physics.Vector3D;
 
+/**
+ * The bounding rectangular prism of a 3D element.
+ * 
+ * @author Michael Colavita and Alok Puranik
+ */
 public class BoundingBox {
+	/**
+	 * The position of the front-bottom-left corner of the box
+	 * TODO: Make sure this is accurate
+	 */
 	private Vector3D location;
+	/**
+	 * The width of the box
+	 */
 	private double width;
+	/**
+	 * The height of the box
+	 */
 	private double height;
+	/**
+	 * The depth of the box
+	 */
 	private double depth;
 
 	public BoundingBox(Vector3D location, double width, double height,
@@ -67,8 +85,20 @@ public class BoundingBox {
 		}
 	}
 
+	/**
+	 * Determine whether this BoundingBox intersects <code>other</code>.
+	 * 
+	 * @param other
+	 *            The other Bounding box with which to check for intersections
+	 * @return Whether <code>this</code> intersects <code>other</code>
+	 */
 	public boolean intersects(BoundingBox other) {
-		//TODO: this
-		return false;
+		// check every direction for whether they are too far apart
+		return (location.x + width >= other.location.x
+				&& location.x <= other.location.x + other.width
+				&& location.y + height >= other.location.y
+				&& location.y <= other.location.y + other.height
+				&& location.z + depth >= other.location.z && location.z <= other.location.z
+				+ other.depth);
 	}
 }

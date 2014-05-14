@@ -31,7 +31,7 @@ public class Octree<T> {
 	 */
 	private ArrayList<Pair<BoundingBox, T>> contents;
 	/**
-	 * Midpoint of the octree.
+	 * Splitting point of the octree.
 	 */
 	private Vector3D splitPoint;
 
