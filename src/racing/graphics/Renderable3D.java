@@ -1,6 +1,6 @@
 package racing.graphics;
 
-import com.sun.medialib.mlib.Image;
+import java.awt.Image;
 
 import racing.physics.Vector2D;
 import racing.physics.Vector3D;
