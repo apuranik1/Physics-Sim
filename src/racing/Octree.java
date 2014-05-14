@@ -68,6 +68,8 @@ public class Octree<T> {
 	 *         intersects
 	 */
 	public ArrayList<T> intersects(BoundingBox bb) {
+		// This could be a bit faster if it used an Iterator
+		// which was advanced past the boxes already checked
 		ArrayList<T> intersections = new ArrayList<T>();
 		if (leaf) {
 			for (Pair<BoundingBox, T> entry : contents)
