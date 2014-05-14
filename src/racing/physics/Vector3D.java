@@ -1,6 +1,8 @@
 package racing.physics;
 
 public class Vector3D {
+	// TODO: Consider making this class immutable
+	
 	public double x;
 	public double y;
 	public double z;
@@ -13,5 +15,13 @@ public class Vector3D {
 
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";
+	}
+	
+	public Vector3D add(Vector3D other) {
+		return new Vector3D(x + other.x, y + other.y, z + other.z);
+	}
+	
+	public Vector3D multiply(double scalar) {
+		return new Vector3D(x * scalar, y * scalar, z * scalar);
 	}
 }

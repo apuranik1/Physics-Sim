@@ -146,6 +146,63 @@ public class Octree<T> {
 		// TODO
 		return false;
 	}
+	
+	private ArrayList<Octree<T>> containingChildren(BoundingBox bb) {
+		assert !leaf;
+		ArrayList<Octree<T>> intersect = new ArrayList<>();
+		Vector3D pos = bb.getLocation();
+		Vector3D corner = new Vector3D(pos.x + bb.getWidth(),
+									   pos.y + bb.getHeight(),
+									   pos.z + bb.getDepth());
+		//TODO: Verify this is setup correctly
+		Vector3D[] points = new Vector3D[] {
+				corner,
+				new Vector3D(pos.x, corner.y, corner.z),
+				new Vector3D(pos.x, corner.y, pos.z),
+				new Vector3D(corner.x, corner.y, pos.z),
+				new Vector3D(corner.x, pos.y, corner.z),
+				new Vector3D(pos.x, pos.y, corner.z),
+				pos,
+				new Vector3D(corner.x, pos.y, pos.z)
+		};
+		
+		// I felt stupid writing NUM_OCTANTS = 8
+		for (int i = 0; i < 8; i++) {
+			if (containingChild(points[i]) == octants[i])
+				intersect.add(octants[i]);
+		}
+		return intersect;
+	}
+	
+	private Octree containingChild(Vector3D vec) {
+		assert !leaf;
+		// Didn't dare use bit flags
+		if (vec.x > splitPoint.x) {
+			if (vec.y > splitPoint.y) {
+				if (vec.z > splitPoint.z)
+					return octants[0];
+				else
+					return octants[3];
+			} else {
+				if (vec.z > splitPoint.z)
+					return octants[4];
+				else
+					return octants[7];
+			}
+		} else {
+			if (vec.y > splitPoint.y) {
+				if (vec.z > splitPoint.z)
+					return octants[1];
+				else
+					return octants[2];
+			} else {
+				if (vec.z > splitPoint.z)
+					return octants[5];
+				else
+					return octants[6];
+			}
+		}
+	}
 
 	/**
 	 * Checks the current state of the octree and branches if necessary.
@@ -159,7 +216,7 @@ public class Octree<T> {
 	 * Converts the octree from a leaf into a node.
 	 */
 	private void branch() {
-		assert !leaf;
+		assert !leaf; // What is this doing here?
 		leaf = false;
 		makeSubOctants();
 	}
