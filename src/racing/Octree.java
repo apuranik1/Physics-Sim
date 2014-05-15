@@ -5,7 +5,8 @@ import java.util.ArrayList;
 import racing.physics.Vector3D;
 
 /**
- * This class
+ * This class creates an octree for storing 3D object information in a spatial
+ * format to improve intersection testing.
  * 
  * @author Michael Colavita and Alok Puranik
  * 
@@ -75,9 +76,8 @@ public class Octree<T> {
 				if (entry.first().intersects(bb))
 					intersections.add(entry.second());
 		} else
-			for (Octree<T> octant : octants)
-				if (octant.couldContain(bb))
-					intersections.addAll(octant.intersects(bb));
+			for (Octree<T> oct : octantsContaining(bb))
+				intersections.addAll(oct.intersects(bb));
 		return intersections;
 	}
 
@@ -94,9 +94,8 @@ public class Octree<T> {
 			contents.add(new Pair<BoundingBox, T>(bb, object));
 			considerBranch();
 		} else
-			for (Octree<T> octant : octants)
-				if (octant.couldContain(bb))
-					octant.insert(bb, object);
+			for (Octree<T> octant : octantsContaining(bb))
+				octant.insert(bb, object);
 	}
 
 	/**
@@ -108,7 +107,6 @@ public class Octree<T> {
 	 */
 	public boolean remove(BoundingBox bb) {
 		boolean found = false;
-		ArrayList<T> intersections = new ArrayList<T>();
 		if (leaf) {
 			for (int i = contents.size() - 1; i >= 0; i--)
 				if (contents.get(i).equals(bb)) {
@@ -116,9 +114,8 @@ public class Octree<T> {
 					found = true;
 				}
 		} else
-			for (Octree<T> octant : octants)
-				if (octant.couldContain(bb))
-					found |= intersections.remove(bb);
+			for (Octree<T> octant : octantsContaining(bb))
+				found |= octant.remove(bb);
 		return found;
 	}
 
@@ -135,44 +132,43 @@ public class Octree<T> {
 	}
 
 	/**
-	 * Check if this octree could contain any part of a given BoundingBox.
+	 * Returns all octants containing any part of a given BoundingBox
 	 * 
 	 * @param bb
 	 *            the BoundingBox to be tested
-	 * @return if this octree could contain the BoundingBox
+	 * @return an ArrayList of all octants that contain any part of that
+	 *         BoundingBox
 	 */
-	private boolean couldContain(BoundingBox bb) {
-		// TODO
-		return false;
-	}
-	
-	private ArrayList<Octree<T>> containingChildren(BoundingBox bb) {
+	private ArrayList<Octree<T>> octantsContaining(BoundingBox bb) {
 		assert !leaf;
 		ArrayList<Octree<T>> intersect = new ArrayList<>();
 		Vector3D pos = bb.getLocation();
-		Vector3D corner = new Vector3D(pos.x + bb.getWidth(),
-									   pos.y + bb.getHeight(),
-									   pos.z + bb.getDepth());
-		//TODO: Verify this is setup correctly
-		Vector3D[] points = new Vector3D[] {
-				corner,
+		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
+				+ bb.getHeight(), pos.z + bb.getDepth());
+		// TODO: Verify this is setup correctly
+		Vector3D[] points = new Vector3D[] { corner,
 				new Vector3D(pos.x, corner.y, corner.z),
 				new Vector3D(pos.x, corner.y, pos.z),
 				new Vector3D(corner.x, corner.y, pos.z),
 				new Vector3D(corner.x, pos.y, corner.z),
-				new Vector3D(pos.x, pos.y, corner.z),
-				pos,
-				new Vector3D(corner.x, pos.y, pos.z)
-		};
-		
+				new Vector3D(pos.x, pos.y, corner.z), pos,
+				new Vector3D(corner.x, pos.y, pos.z) };
+
 		// I felt stupid writing NUM_OCTANTS = 8
 		for (int i = 0; i < 8; i++)
-			if (containingChild(points[i]) == octants[i])
+			if (octantContaining(points[i]) == octants[i])
 				intersect.add(octants[i]);
 		return intersect;
 	}
-	
-	private Octree<T> containingChild(Vector3D vec) {
+
+	/**
+	 * Returns the octant that contains a given point
+	 * 
+	 * @param vec
+	 *            the point to be tested
+	 * @return the octant that contains that point
+	 */
+	private Octree<T> octantContaining(Vector3D vec) {
 		assert !leaf;
 		// Didn't dare use bit flags
 		if (vec.x > splitPoint.x) {
@@ -214,10 +210,10 @@ public class Octree<T> {
 	 * Converts the octree from a leaf into a node.
 	 */
 	private void branch() {
-		assert !leaf; // What is this doing here? ... Assertions for safety
+		assert leaf;
 		leaf = false;
 		makeSubOctants();
-		//TODO
+		// TODO
 	}
 
 	/**
