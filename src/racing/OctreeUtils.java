@@ -1,5 +1,7 @@
 package racing;
 
+import java.util.Arrays;
+
 import racing.physics.Vector3D;
 
 class OctreeUtils {
@@ -16,11 +18,30 @@ class OctreeUtils {
 	}
 
 	public static double median(double[] values) {
+		if (values.length == 0)
+			return 0;
+		knuthShuffle(values);
 		return median(values, 0, values.length);
 	}
 
 	private static double median(double[] values, int begin, int end) {
-		
+		int lt = begin;
+		int gt = end - 1;
+		int i = begin + 1;
+		double v = values[begin];
+		while (i <= gt)
+			if (values[i] < v)
+				swap(values, lt++, i++);
+			else if (values[i] > v)
+				swap(values, i, gt--);
+			else
+				i++;
+		if (lt <= values.length / 2 && values.length / 2 <= gt)
+			return values[values.length / 2];
+		else if (values.length / 2 < lt)
+			return median(values, begin, lt);
+		else
+			return median(values, gt + 1, end);
 	}
 
 	private static void swap(double[] values, int first, int second) {
