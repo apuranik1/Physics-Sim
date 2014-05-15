@@ -141,7 +141,7 @@ public class Octree<T> {
 	 */
 	private ArrayList<Octree<T>> octantsContaining(BoundingBox bb) {
 		assert !leaf;
-		ArrayList<Octree<T>> intersect = new ArrayList<>();
+		ArrayList<Octree<T>> intersect = new ArrayList<Octree<T>>();
 		Vector3D pos = bb.getLocation();
 		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
 				+ bb.getHeight(), pos.z + bb.getDepth());
@@ -213,7 +213,10 @@ public class Octree<T> {
 		assert leaf;
 		leaf = false;
 		makeSubOctants();
-		// TODO
+		for (Pair<BoundingBox, T> pair : contents)
+			for (Octree<T> octant : octantsContaining(pair.first()))
+				octant.insert(pair.first(), pair.second());
+		contents.clear();
 	}
 
 	/**
