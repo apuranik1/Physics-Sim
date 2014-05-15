@@ -2,7 +2,6 @@ package racing;
 
 import java.util.ArrayList;
 
-import racing.graphics.Object3D;
 import racing.physics.Vector3D;
 
 /**
@@ -167,14 +166,13 @@ public class Octree<T> {
 		};
 		
 		// I felt stupid writing NUM_OCTANTS = 8
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 8; i++)
 			if (containingChild(points[i]) == octants[i])
 				intersect.add(octants[i]);
-		}
 		return intersect;
 	}
 	
-	private Octree containingChild(Vector3D vec) {
+	private Octree<T> containingChild(Vector3D vec) {
 		assert !leaf;
 		// Didn't dare use bit flags
 		if (vec.x > splitPoint.x) {
@@ -216,9 +214,10 @@ public class Octree<T> {
 	 * Converts the octree from a leaf into a node.
 	 */
 	private void branch() {
-		assert !leaf; // What is this doing here?
+		assert !leaf; // What is this doing here? ... Assertions for safety
 		leaf = false;
 		makeSubOctants();
+		//TODO
 	}
 
 	/**
