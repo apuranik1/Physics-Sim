@@ -39,23 +39,7 @@ public class Octree<T> {
 	 * Constructor to create a new, empty octree centered around the origin
 	 */
 	public Octree() {
-		this(true, new Vector3D(0, 0, 0));
-	}
-
-	/**
-	 * Constructor to create an empty octree either as a leaf or a node given a
-	 * specified split point.
-	 * 
-	 * @param leaf
-	 *            should the octree be a leaf (no sub-octants)?
-	 * @param splitPoint
-	 *            the point to be used to divide the octree
-	 */
-	private Octree(boolean leaf, Vector3D splitPoint) {
-		this.leaf = leaf;
-		this.splitPoint = splitPoint;
-		if (!leaf)
-			makeSubOctants();
+		contents = new ArrayList<Pair<BoundingBox, T>>();
 	}
 
 	/**
@@ -125,10 +109,12 @@ public class Octree<T> {
 	@SuppressWarnings("unchecked")
 	private void makeSubOctants() {
 		octants = new Octree[8];
-		for (int i = 0; i < 8; i++) {
-			Vector3D subPoint = null; // TODO
-			octants[i] = new Octree<T>(true, subPoint);
-		}
+		Vector3D[] values = new Vector3D[contents.size()];
+		for (int i = 0; i < contents.size(); i++)
+			values[i] = contents.get(i).first().midpoint();
+		splitPoint = OctreeUtils.median(values);
+		for (int i = 0; i < 8; i++)
+			octants[i] = new Octree<T>();
 	}
 
 	/**
@@ -170,7 +156,6 @@ public class Octree<T> {
 	 */
 	private Octree<T> octantContaining(Vector3D vec) {
 		assert !leaf;
-		// Didn't dare use bit flags
 		if (vec.x > splitPoint.x) {
 			if (vec.y > splitPoint.y) {
 				if (vec.z > splitPoint.z)

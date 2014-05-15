@@ -9,8 +9,8 @@ import racing.physics.Vector3D;
  */
 public class BoundingBox {
 	/**
-	 * The position of the front-bottom-left corner of the box
-	 * TODO: Make sure this is accurate
+	 * The position of the front-bottom-left corner of the box TODO: Make sure
+	 * this is accurate
 	 */
 	private Vector3D location;
 	/**
@@ -68,6 +68,11 @@ public class BoundingBox {
 
 	public void setLocation(Vector3D location) {
 		this.location = location;
+	}
+
+	public Vector3D midpoint() {
+		return new Vector3D(location.x + width / 2, location.y + height / 2,
+				location.z + depth / 2);
 	}
 
 	public void positify() {
