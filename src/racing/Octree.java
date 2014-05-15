@@ -111,7 +111,7 @@ public class Octree<T> {
 		octants = new Octree[8];
 		Vector3D[] values = new Vector3D[contents.size()];
 		for (int i = 0; i < contents.size(); i++)
-			values[i] = contents.get(i).first().midpoint();
+			values[i] = contents.get(i).first().getLocation();
 		splitPoint = OctreeUtils.median(values);
 		for (int i = 0; i < 8; i++)
 			octants[i] = new Octree<T>();
