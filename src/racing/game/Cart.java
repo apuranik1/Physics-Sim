@@ -1,5 +1,5 @@
 package racing.game;
-import racing.graphics.Image;
+import java.awt.Image;
 import racing.graphics.Object3D;
 import racing.physics.*;
 public class Cart extends Object3D{
@@ -42,16 +42,6 @@ public class Cart extends Object3D{
 	//TODO
 	public void spinout(){
 		
-	}
-	@Override
-	public Vector3D setPosition() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	@Override
-	public Vector3D setRotation() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	@Override
 	public Vector3D[] getVertices() {
