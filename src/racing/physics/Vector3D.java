@@ -24,4 +24,8 @@ public class Vector3D {
 	public Vector3D multiply(double scalar) {
 		return new Vector3D(x * scalar, y * scalar, z * scalar);
 	}
+	
+	public double magnitude() {
+		return Math.sqrt(x*x + y*y + z*z);
+	}
 }
