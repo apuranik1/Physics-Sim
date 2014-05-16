@@ -39,6 +39,7 @@ public class Octree<T> {
 	 * Constructor to create a new, empty octree centered around the origin
 	 */
 	public Octree() {
+		leaf = true;
 		contents = new ArrayList<Pair<BoundingBox, T>>();
 	}
 
@@ -52,8 +53,6 @@ public class Octree<T> {
 	 *         intersects
 	 */
 	public ArrayList<T> intersects(BoundingBox bb) {
-		// This could be a bit faster if it used an Iterator
-		// which was advanced past the boxes already checked
 		ArrayList<T> intersections = new ArrayList<T>();
 		if (leaf) {
 			for (Pair<BoundingBox, T> entry : contents)
@@ -202,6 +201,26 @@ public class Octree<T> {
 			for (Octree<T> octant : octantsContaining(pair.first()))
 				octant.insert(pair.first(), pair.second());
 		contents.clear();
+	}
+	
+	public static void main(String[] args) {
+		long start = System.nanoTime();
+		Octree<String> octree = new Octree<>();
+		for (int i = 0; i < 2000000; i++) {
+			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()),
+					1, 1, 1),
+					i + "");
+		}
+		System.out.println(System.nanoTime() - start);
+		start = System.nanoTime();
+		for (int i = 0; i < 100000; i++) {
+			ArrayList<String> intersects = octree.intersects(new BoundingBox(
+					new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()),
+					100, 100, 100));
+			//if (intersects.size() != 0)
+			//	System.out.println(intersects);
+		}
+		System.out.println(System.nanoTime() - start);
 	}
 
 	/**

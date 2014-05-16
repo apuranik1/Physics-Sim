@@ -7,9 +7,9 @@ import racing.physics.Vector3D;
 
 public interface Renderable3D {
 	public Vector3D getPosition();
-	public Vector3D setPosition();
+	public void setPosition(Vector3D position);
 	public Vector3D getRotation();
-	public Vector3D setRotation();
+	public void setRotation(Vector3D rotation);
 	public Vector3D[] getVertices();
 	public Vector2D[] getTextureMappingCoordinates();
 	public Image getTexture();
