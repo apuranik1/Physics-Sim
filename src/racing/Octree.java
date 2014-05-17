@@ -17,7 +17,7 @@ public class Octree<T> {
 	/**
 	 * The maximum number of objects per leaf node.
 	 */
-	private static final int MAX_PER_LEAF = 8;
+	private static final int MAX_PER_LEAF = 16;
 	/**
 	 * Is the octree a leaf octree?
 	 */
@@ -141,7 +141,7 @@ public class Octree<T> {
 
 		// I felt stupid writing NUM_OCTANTS = 8
 		for (int i = 0; i < 8; i++)
-			if (octantContaining(points[i]) == octants[i])
+			if (octantContaining(points[i]) == i)
 				intersect.add(octants[i]);
 		return intersect;
 	}
@@ -153,31 +153,31 @@ public class Octree<T> {
 	 *            the point to be tested
 	 * @return the octant that contains that point
 	 */
-	private Octree<T> octantContaining(Vector3D vec) {
+	private int octantContaining(Vector3D vec) {
 		assert !leaf;
 		if (vec.x > splitPoint.x) {
 			if (vec.y > splitPoint.y) {
 				if (vec.z > splitPoint.z)
-					return octants[0];
+					return 0;
 				else
-					return octants[3];
+					return 3;
 			} else {
 				if (vec.z > splitPoint.z)
-					return octants[4];
+					return 4;
 				else
-					return octants[7];
+					return 7;
 			}
 		} else {
 			if (vec.y > splitPoint.y) {
 				if (vec.z > splitPoint.z)
-					return octants[1];
+					return 1;
 				else
-					return octants[2];
+					return 2;
 			} else {
 				if (vec.z > splitPoint.z)
-					return octants[5];
+					return 5;
 				else
-					return octants[6];
+					return 6;
 			}
 		}
 	}
