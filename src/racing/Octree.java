@@ -130,8 +130,8 @@ public class Octree<T> {
 		Vector3D pos = bb.getLocation();
 		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
 				+ bb.getHeight(), pos.z + bb.getDepth());
-		// TODO: Verify this is setup correctly
-		Vector3D[] points = new Vector3D[] { corner,
+
+		/*Vector3D[] points = new Vector3D[] { corner,
 				new Vector3D(pos.x, corner.y, corner.z),
 				new Vector3D(pos.x, corner.y, pos.z),
 				new Vector3D(corner.x, corner.y, pos.z),
@@ -143,6 +143,50 @@ public class Octree<T> {
 		for (int i = 0; i < 8; i++)
 			if (octantContaining(points[i]) == i)
 				intersect.add(octants[i]);
+		*/
+
+		/*
+		if (octantContaining(corner) == 0)
+			intersect.add(octants[0]);
+		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 1)
+			intersect.add(octants[1]);
+		if (octantContaining(new Vector3D(pos.x, corner.y, pos.z)) == 2)
+			intersect.add(octants[2]);
+		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 3)
+			intersect.add(octants[3]);
+		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 4)
+			intersect.add(octants[4]);
+		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 5)
+			intersect.add(octants[5]);
+		if (octantContaining(pos) == 6)
+			intersect.add(octants[6]);
+		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 7)
+			intersect.add(octants[7]);
+		*/
+
+		int tmp = octantContaining(corner);
+		int tmp2 = octantContaining(pos);
+		if (tmp == tmp2) {
+			intersect.add(octants[tmp]);
+			return intersect;
+		}
+		if (tmp == 0)
+			intersect.add(octants[0]);
+		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 1)
+			intersect.add(octants[1]);
+		if (octantContaining(new Vector3D(pos.x, corner.y, pos.z)) == 2)
+			intersect.add(octants[2]);
+		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 3)
+			intersect.add(octants[3]);
+		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 4)
+			intersect.add(octants[4]);
+		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 5)
+			intersect.add(octants[5]);
+		if (tmp2 == 6)
+			intersect.add(octants[6]);
+		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 7)
+			intersect.add(octants[7]);
+
 		return intersect;
 	}
 
@@ -202,25 +246,28 @@ public class Octree<T> {
 				octant.insert(pair.first(), pair.second());
 		contents.clear();
 	}
-	
+
 	public static void main(String[] args) {
+		// try {
+		// Thread.sleep(8000);
+		// } catch (Exception e) {
+		// }
 		long start = System.nanoTime();
 		Octree<String> octree = new Octree<>();
-		for (int i = 0; i < 2000000; i++) {
-			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()),
-					1, 1, 1),
-					i + "");
+		for (int i = 0; i < 1000000; i++) {
+			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(),
+					1000 * Math.random(), 1000 * Math.random()), 1, 1, 1), i
+					+ "");
 		}
 		System.out.println(System.nanoTime() - start);
-		start = System.nanoTime();
-		for (int i = 0; i < 100000; i++) {
-			ArrayList<String> intersects = octree.intersects(new BoundingBox(
-					new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()),
-					100, 100, 100));
-			//if (intersects.size() != 0)
-			//	System.out.println(intersects);
-		}
-		System.out.println(System.nanoTime() - start);
+		/*
+		 * start = System.nanoTime(); for (int i = 0; i < 100000; i++) {
+		 * ArrayList<String> intersects = octree.intersects(new BoundingBox( new
+		 * Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 *
+		 * Math.random()), 1, 1, 1)); //if (intersects.size() != 0) //
+		 * System.out.println(intersects); }
+		 * System.out.println(System.nanoTime() - start);
+		 */
 	}
 
 	/**
