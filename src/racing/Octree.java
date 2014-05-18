@@ -199,7 +199,7 @@ public class Octree<T> {
 	 */
 	private int octantContaining(Vector3D vec) {
 		assert !leaf;
-		if (vec.x > splitPoint.x) {
+		/*if (vec.x > splitPoint.x) {
 			if (vec.y > splitPoint.y) {
 				if (vec.z > splitPoint.z)
 					return 0;
@@ -223,6 +223,17 @@ public class Octree<T> {
 				else
 					return 6;
 			}
+		}*/
+		
+		switch((vec.x > splitPoint.x ? 4 : 0) | (vec.y > splitPoint.y ? 2 : 0) | (vec.z > splitPoint.z ? 1 : 0)) {
+			case 0:	return 0;
+			case 1:	return 3;
+			case 2: return 4;
+			case 3: return 7;
+			case 4: return 1;
+			case 5: return 2;
+			case 6: return 5;
+			default: return 6;
 		}
 	}
 
@@ -248,10 +259,6 @@ public class Octree<T> {
 	}
 
 	public static void main(String[] args) {
-		// try {
-		// Thread.sleep(8000);
-		// } catch (Exception e) {
-		// }
 		long start = System.nanoTime();
 		Octree<String> octree = new Octree<>();
 		for (int i = 0; i < 1000000; i++) {
@@ -260,14 +267,20 @@ public class Octree<T> {
 					+ "");
 		}
 		System.out.println(System.nanoTime() - start);
-		/*
-		 * start = System.nanoTime(); for (int i = 0; i < 100000; i++) {
-		 * ArrayList<String> intersects = octree.intersects(new BoundingBox( new
-		 * Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 *
-		 * Math.random()), 1, 1, 1)); //if (intersects.size() != 0) //
-		 * System.out.println(intersects); }
-		 * System.out.println(System.nanoTime() - start);
-		 */
+		
+//		try {
+//			Thread.sleep(5000);
+//		} catch (Exception e) {}
+
+		start = System.nanoTime();
+		for (int i = 0; i < 100000; i++) {
+			ArrayList<String> intersects = octree.intersects(new BoundingBox(
+					new Vector3D(1000 * Math.random(), 1000 * Math.random(),
+							1000 * Math.random()), 1, 1, 1));
+			//System.out.println(intersects);
+		}
+		System.out.println(System.nanoTime() - start);
+		
 	}
 
 	/**
