@@ -75,19 +75,21 @@ public class BoundingBox {
 				location.z + depth / 2);
 	}
 
-	public void positify() {
+	private void positify() {
+		double new_x = location.x, new_y = location.y, new_z = location.z;
 		if (width < 0) {
 			width *= -1;
-			location.x -= width;
+			new_x -= width;
 		}
 		if (height < 0) {
 			height *= -1;
-			location.y -= height;
+			new_y -= height;
 		}
 		if (depth < 0) {
 			depth *= -1;
-			location.z -= depth;
+			new_z -= depth;
 		}
+		location = new Vector3D(new_x, new_y, new_z);
 	}
 
 	/**

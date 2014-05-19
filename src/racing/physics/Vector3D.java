@@ -1,11 +1,10 @@
 package racing.physics;
 
 public class Vector3D {
-	// TODO: Consider making this class immutable
 	
-	public double x;
-	public double y;
-	public double z;
+	public final double x;
+	public final double y;
+	public final double z;
 
 	public Vector3D(double x, double y, double z) {
 		this.x = x;
