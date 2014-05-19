@@ -25,7 +25,12 @@ public class NetClient {
 		}
 	}
 	public void run() throws IOException{
-		
+		output.print(cart);//send cart data
+		try {
+			NetData data=(NetData)input.readObject();//receive server data
+		} catch (ClassNotFoundException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 	public static void main(String[] args){
 		
