@@ -36,11 +36,10 @@ public class NetServer {
 	}
 	/**
 	 * Connect clients
-	 * @param clients Number of clients to connect
 	 */
 	public void connect(){
 		try {
-			this.clients.add(new NetServerThread(server.accept()));
+			clients.add(new NetServerThread(server.accept()));
 			System.out.println("Connected");
 			
 		} catch (IOException e) {
@@ -55,6 +54,6 @@ public class NetServer {
 			thread.start();
 	}
 	public static void main(String[] args){
-		new NetServer(1337).start();
+		
 	}
 }
