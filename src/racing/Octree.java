@@ -193,7 +193,7 @@ public class Octree<T> {
 
 	public static void main(String[] args) {
 		long start = System.nanoTime();
-		Octree<String> octree = new Octree<>();
+		Octree<String> octree = new Octree<String>();
 		for (int i = 0; i < 1000000; i++) {
 			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()), 1, 1, 1), i + "");
 		}
