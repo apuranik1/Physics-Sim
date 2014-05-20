@@ -1,56 +1,53 @@
 package racing.graphics;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_DEPTH_TEST;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.awt.GLCanvas;
-import javax.swing.JFrame;
 
-import com.jogamp.opengl.util.Animator;
+import com.jogamp.newt.event.KeyEvent;
+import com.jogamp.newt.event.KeyListener;
+import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
 
 public class RenderEngine implements GLEventListener {
-	private JFrame window;
+	private GLWindow window;
 
 	public RenderEngine(String title) {
-		window = new JFrame(title);
-		configureWindow();
 		configureOpenGL();
+		configureWindow();
 	}
 
 	private void configureWindow() {
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
-				.getDefaultScreenDevice();
-		//window.setUndecorated(true);
-		window.setVisible(true);
 		window.addKeyListener(new GameKeyListener());
-		window.setSize(500,500);
-		//gd.setFullScreenWindow(window);
+		window.setFullscreen(true);
+		window.setVisible(true);
 	}
 
 	private void configureOpenGL() {
 		GLProfile.initSingleton();
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glp);
-		GLCanvas glc = new GLCanvas(capabilities);
-		glc.addGLEventListener(this);
-		window.add(glc);
-		FPSAnimator anim = new FPSAnimator(glc, 60);
+		capabilities.setSampleBuffers(true);
+		capabilities.setNumSamples(8);
+		window = GLWindow.create(capabilities);
+		window.addGLEventListener(this);
+		FPSAnimator anim = new FPSAnimator(window, 60);
 		anim.start();
 	}
 
 	private void updateSpace() {
-
+		theta += 3;
 	}
 
 	private void exitEngine() {
@@ -73,24 +70,19 @@ public class RenderEngine implements GLEventListener {
 
 		}
 
-		@Override
-		public void keyTyped(KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
 	}
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
-		
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glEnable(GL_DEPTH_TEST);
+		gl.glShadeModel(GL_SMOOTH);
 	}
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -104,20 +96,20 @@ public class RenderEngine implements GLEventListener {
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
 		// TODO Auto-generated method stub
-		
+
 	}
-	
+
+	double theta = 0;
+
 	private void render(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2(); gl.glClear(GL.GL_COLOR_BUFFER_BIT);
-		float c = 1, s= 1;
-        // draw a triangle filling the window
-        gl.glBegin(GL.GL_TRIANGLES);
-        gl.glColor3f(1, 0, 0);
-        gl.glVertex2d(-c, -c);
-        gl.glColor3f(0, 1, 0);
-        gl.glVertex2d(0, c);
-        gl.glColor3f(0, 0, 1);
-        gl.glVertex2d(s, -s);
-        gl.glEnd();
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		gl.glPushMatrix();
+		gl.glRotated(theta, 1, 0, 0);
+		new GLUT().glutSolidTeapot(.5);
+		gl.glPopMatrix();
+		gl.glEnable(GL_LIGHTING);
+		gl.glEnable(GL_LIGHT0);
+		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 0 }, 0);
 	}
 }
