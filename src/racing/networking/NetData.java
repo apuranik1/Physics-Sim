@@ -13,11 +13,12 @@ public class NetData {
 		carts.add(cart);
 	}
 	/**
-	 * 
+	 * Set items, or validate if already set
 	 * @param items base items to add
 	 */
 	public void setItems(ArrayList<Item> items){
-		this.items=items;
+		if(items.isEmpty())this.items=items;
+		else validateItems(items);
 	}
 	/**
 	 * Remove items that have been remove by another client from server data

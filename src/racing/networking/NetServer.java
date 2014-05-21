@@ -2,6 +2,8 @@ package racing.networking;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.net.*;
+import racing.game.Cart;
+import racing.game.Item;
 public class NetServer {
 	/**
 	 * Server Threads clients are connected to
@@ -11,6 +13,10 @@ public class NetServer {
 	 * Server socket
 	 */
 	private ServerSocket server;
+	/**
+	 * Data to send back to clients
+	 */
+	private NetData data;
 	/**
 	 * @param port Port to listen on
 	 */
@@ -35,25 +41,50 @@ public class NetServer {
 		return null;
 	}
 	/**
-	 * Connect clients
+	 * Connect client new client
 	 */
 	public void connect(){
 		try {
-			clients.add(new NetServerThread(server.accept()));
+			Socket s=null;
+			s=server.accept();
+			clients.add(new NetServerThread(s));
 			System.out.println("Connected");
-			
 		} catch (IOException e) {
 			System.out.println("Connection error: "+e.getMessage());
 		}
 	}
 	/**
-	 * Start all threads
+	 * Receive data from all threads
 	 */
-	public void start(){
+	private void receiveData(){
+		for(NetServerThread thread:clients){
+			try {
+				data.addCart((Cart)thread.input.readObject());//receive cart data
+				data.setItems((ArrayList<Item>)thread.input.readObject());//receive items data
+			} catch (ClassNotFoundException e) {
+				System.out.println("Class: "+e.getMessage());
+			} catch (IOException e) {
+				System.out.println("Read : "+e.getMessage());
+			}
+			
+		}
+	}
+	/**
+	 * Send data to all threads
+	 */
+	private void sendData(){
 		for(NetServerThread thread:clients)
-			thread.start();
+			thread.output.print(data);//print data to client
+	}
+	/**
+	 * Receive network data from all threads, and push back out to all threads
+	 */
+	public void update(){
+		receiveData();
+		sendData();
 	}
 	public static void main(String[] args){
-		
+		NetServer server=new NetServer(5555);
+		server.connect();
 	}
 }
