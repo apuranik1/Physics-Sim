@@ -1,13 +1,10 @@
 package racing.graphics;
 
-import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
-import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
-import static javax.media.opengl.GL.GL_DEPTH_TEST;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
+import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.*;
 
+import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
@@ -29,25 +26,27 @@ public class RenderEngine implements GLEventListener {
 	}
 
 	private void configureWindow() {
-		window.addKeyListener(new GameKeyListener());
-		window.setFullscreen(true);
-		window.setVisible(true);
+		//window.setFullscreen(true);
 	}
 
 	private void configureOpenGL() {
 		GLProfile.initSingleton();
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glp);
-		capabilities.setSampleBuffers(true);
-		capabilities.setNumSamples(8);
+		//capabilities.setSampleBuffers(true);
+		//capabilities.setNumSamples(8);
 		window = GLWindow.create(capabilities);
+		window.setVisible(true);
 		window.addGLEventListener(this);
+		window.addKeyListener(new GameKeyListener());
 		FPSAnimator anim = new FPSAnimator(window, 60);
 		anim.start();
 	}
-
+	double s,c;
 	private void updateSpace() {
-		theta += 3;
+        theta += 0.01;
+        s = Math.sin(theta);
+        c = Math.cos(theta);
 	}
 
 	private void exitEngine() {
@@ -87,7 +86,6 @@ public class RenderEngine implements GLEventListener {
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		System.out.println("Render");
 		updateSpace();
 		render(drawable);
 	}
@@ -102,14 +100,78 @@ public class RenderEngine implements GLEventListener {
 	double theta = 0;
 
 	private void render(GLAutoDrawable drawable) {
+        GL2 gl = drawable.getGL().getGL2();
+
+		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // draw a triangle filling the window
+        gl.glBegin(GL.GL_TRIANGLES);
+		gl.glPushMatrix();
+		gl.glLoadIdentity();
+
+		// White side - BACK
+		gl.glBegin(GL_POLYGON);
+		gl.glColor3f(   1.0f,  1.0f, 1.0f );
+		gl.glVertex3f(  0.5f, -0.5f, 0.5f );
+		gl.glVertex3f(  0.5f,  0.5f, 0.5f );
+		gl.glVertex3f( -0.5f,  0.5f, 0.5f );
+		gl.glVertex3f( -0.5f, -0.5f, 0.5f );
+		gl.glEnd();
+		 
+		// Purple side - RIGHT
+		gl.glBegin(GL_POLYGON);
+		gl.glColor3f(  1.0f,  0.0f,  1.0f );
+		gl.glVertex3f( 0.5f, -0.5f, -0.5f );
+		gl.glVertex3f( 0.5f,  0.5f, -0.5f );
+		gl.glVertex3f( 0.5f,  0.5f,  0.5f );
+		gl.glVertex3f( 0.5f, -0.5f,  0.5f );
+		gl.glEnd();
+		 
+		// Green side - LEFT
+		gl.glBegin(GL_POLYGON);
+		gl.glColor3f(   0.0f,  1.0f,  0.0f );
+		gl.glVertex3f( -0.5f, -0.5f,  0.5f );
+		gl.glVertex3f( -0.5f,  0.5f,  0.5f );
+		gl.glVertex3f( -0.5f,  0.5f, -0.5f );
+		gl.glVertex3f( -0.5f, -0.5f, -0.5f );
+		gl.glEnd();
+		 
+		// Blue side - TOP
+		gl.glBegin(GL_POLYGON);
+		gl.glColor3f(   0.0f,  0.0f,  1.0f );
+		gl.glVertex3f(  0.5f,  0.5f,  0.5f );
+		gl.glVertex3f(  0.5f,  0.5f, -0.5f );
+		gl.glVertex3f( -0.5f,  0.5f, -0.5f );
+		gl.glVertex3f( -0.5f,  0.5f,  0.5f );
+		gl.glEnd();
+		 
+		// Red side - BOTTOM
+		gl.glBegin(GL_POLYGON);
+		gl.glColor3f(   1.0f,  0.0f,  0.0f );
+		gl.glVertex3f(  0.5f, -0.5f, -0.5f );
+		gl.glVertex3f(  0.5f, -0.5f,  0.5f );
+		gl.glVertex3f( -0.5f, -0.5f,  0.5f );
+		gl.glVertex3f( -0.5f, -0.5f, -0.5f );
+		gl.glEnd();
+		
+		
+		gl.glPopMatrix();
+		gl.glEnable(GL_LIGHTING);
+		gl.glEnable(GL_LIGHT0);
+		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 0 }, 0);
+        gl.glEnd();
+        /*
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		gl.glPushMatrix();
+		gl.glLoadIdentity();
 		gl.glRotated(theta, 1, 0, 0);
 		new GLUT().glutSolidTeapot(.5);
 		gl.glPopMatrix();
 		gl.glEnable(GL_LIGHTING);
 		gl.glEnable(GL_LIGHT0);
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 0 }, 0);
+		gl.glEnd();*/
+		//drawable.swapBuffers();
 	}
 }
