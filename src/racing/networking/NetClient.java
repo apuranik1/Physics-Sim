@@ -1,7 +1,6 @@
 package racing.networking;
 import java.io.*;
 import java.net.*;
-
 import racing.game.Cart;
 import racing.game.Track;
 public class NetClient {
@@ -9,7 +8,7 @@ public class NetClient {
 	private Cart cart;
 	private Track track;
 	private ObjectInputStream input;
-	private PrintWriter output;
+	private ObjectOutputStream output;
 	/**
 	 * @param address Address of server to connect to
 	 * @param port	Port of server to connect to
@@ -19,8 +18,9 @@ public class NetClient {
 	public NetClient(InetAddress address, int port, Cart cart, Track track){
 		try {
 			socket=new Socket(address,port);
+			output=new ObjectOutputStream(socket.getOutputStream());
+			output.flush();
 			input=new ObjectInputStream(socket.getInputStream());
-			output=new PrintWriter(socket.getOutputStream());
 			this.cart=cart;
 			this.track=track;
 			
@@ -29,8 +29,8 @@ public class NetClient {
 		}
 	}
 	public void update() throws IOException{
-		output.print(cart);//send cart data
-		output.print(track.getItems());//send item data
+		output.writeObject(cart);//send cart data
+		output.writeObject(track.getItems());//send item data
 		try {
 			NetData data=(NetData)input.readObject();//receive server data
 		} catch (ClassNotFoundException e) {

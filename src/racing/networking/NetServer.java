@@ -45,9 +45,7 @@ public class NetServer {
 	 */
 	public void connect(){
 		try {
-			Socket s=null;
-			s=server.accept();
-			clients.add(new NetServerThread(s));
+			clients.add(new NetServerThread(server.accept()));
 			System.out.println("Connected");
 		} catch (IOException e) {
 			System.out.println("Connection error: "+e.getMessage());
@@ -59,8 +57,8 @@ public class NetServer {
 	private void receiveData(){
 		for(NetServerThread thread:clients){
 			try {
-				data.addCart((Cart)thread.input.readObject());//receive cart data
-				data.setItems((ArrayList<Item>)thread.input.readObject());//receive items data
+				data.addCart((Cart)thread.getInputStream().readObject());//receive cart data
+				data.setItems((ArrayList<Item>)thread.getInputStream().readObject());//receive items data
 			} catch (ClassNotFoundException e) {
 				System.out.println("Class: "+e.getMessage());
 			} catch (IOException e) {
@@ -74,7 +72,11 @@ public class NetServer {
 	 */
 	private void sendData(){
 		for(NetServerThread thread:clients)
-			thread.output.print(data);//print data to client
+			try {
+				thread.getOutputStream().writeObject(data);//print data to client
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 	/**
 	 * Receive network data from all threads, and push back out to all threads
