@@ -4,10 +4,12 @@ import static javax.media.opengl.GL.*;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.*;
 
+import javax.media.nativewindow.WindowClosingProtocol.WindowClosingMode;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
+import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 
@@ -28,24 +30,25 @@ public class RenderEngine implements GLEventListener {
 	private void configureWindow() {
 		//window.setFullscreen(true);
 	}
-
 	private void configureOpenGL() {
 		GLProfile.initSingleton();
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glp);
 		capabilities.setDoubleBuffered(true);
-		//capabilities.setSampleBuffers(true);
-		//capabilities.setNumSamples(8);
+		capabilities.setSampleBuffers(true);
+		capabilities.setNumSamples(8);
 		window = GLWindow.create(capabilities);
-		window.setVisible(true);
 		window.addGLEventListener(this);
+		window.setFullscreen(true);
+		window.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
 		window.addKeyListener(new GameKeyListener());
+		window.setVisible(true);
 		FPSAnimator anim = new FPSAnimator(window, 60);
 		anim.start();
 	}
 	double s,c;
 	private void updateSpace() {
-        theta += 0.01;
+        theta += 5;
         s = Math.sin(theta);
         c = Math.cos(theta);
 	}
@@ -99,10 +102,9 @@ public class RenderEngine implements GLEventListener {
 	}
 
 	double theta = 0;
-
 	private void render(GLAutoDrawable drawable) {
-		drawable.swapBuffers();
-		GL2 gl = drawable.getGL().getGL2();
+		//drawable.swapBuffers();
+		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
@@ -112,7 +114,6 @@ public class RenderEngine implements GLEventListener {
 		gl.glEnable(GL_LIGHTING);
 		gl.glEnable(GL_LIGHT0);
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 0 }, 0);
-		gl.glEnd();
 		drawable.swapBuffers();
 	}
 }
