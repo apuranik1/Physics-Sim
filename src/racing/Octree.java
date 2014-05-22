@@ -80,27 +80,27 @@ public class Octree<T> implements Iterable<T> {
 			private void searchForContents() {
 				// precondition: current is a leaf node
 				//TODO: check for correctness/debug
-				if (current.contents.size() > objIndex || retrace.size() == 0)
-					return;
-				
-				objIndex = 0;
-				int octant;
-				do {
-					current = retrace.removeFirst();
-					octant = octantIndices.removeFirst();
-				} while (retrace.size() > 0 && octant == 8);
-				
-				if (retrace.size() == 0)
-					return;
-				
-				octant++;
+				while (current.contents.size() == objIndex
+						&& retrace.size() != 0) {
+					objIndex = 0;
+					int octant;
+					do {
+						current = retrace.removeFirst();
+						octant = octantIndices.removeFirst();
+					} while (retrace.size() > 0 && octant == 8);
 
-				do {
-					retrace.addFirst(current);
-					octantIndices.addFirst(octant);
-					current = current.octants[octant];
-					octant = 0;
-				} while (!current.leaf);
+					if (retrace.size() == 0)
+						return;
+
+					octant++;
+
+					do {
+						retrace.addFirst(current);
+						octantIndices.addFirst(octant);
+						current = current.octants[octant];
+						octant = 0;
+					} while (!current.leaf);
+				}
 			}
 		};
 	}
