@@ -51,33 +51,57 @@ public class Octree<T> implements Iterable<T> {
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
 
+			private Octree<T> current = Octree.this;
+			private int objIndex = 0;
 			private Deque<Octree<T>> retrace = new ArrayDeque<Octree<T>>();
+			private Deque<Integer> octantIndices = new ArrayDeque<Integer>();
 			{
-				Octree<T> current = Octree.this;
-				while(!current.leaf) {
-					
-				}
+				searchForContents();
 			}
-			
-			private int index = 0;
 
 			public boolean hasNext() {
-				return (retrace.peekLast().contents.size() == index && retrace.isEmpty());
+				return !(current.contents.size() == objIndex && retrace
+						.isEmpty());
 			}
 
 			public T next() {
-				T value;
-				Octree<T> current = retrace.peekLast();
-				if (current.contents.size() > index)
-					return current.contents.get(index++).second;
-				
+				if (!hasNext())
+					throw new IllegalStateException(
+							"No more elements in Octree");
+				T value = current.contents.get(objIndex++).second;
+				searchForContents();
+				return value;
 			}
 
 			public void remove() {
-				// TODO Auto-generated method stub
-
+				// TODO: implement this?
 			}
 
+			private void searchForContents() {
+				// precondition: current is a leaf node
+				//TODO: check for correctness/debug
+				if (current.contents.size() > objIndex || retrace.size() == 0)
+					return;
+				
+				objIndex = 0;
+				int octant;
+				do {
+					current = retrace.removeFirst();
+					octant = octantIndices.removeFirst();
+				} while (retrace.size() > 0 && octant == 8);
+				
+				if (retrace.size() == 0)
+					return;
+				
+				octant++;
+
+				do {
+					retrace.addFirst(current);
+					octantIndices.addFirst(octant);
+					current = current.octants[octant];
+					octant = 0;
+				} while (!current.leaf);
+			}
 		};
 	}
 
