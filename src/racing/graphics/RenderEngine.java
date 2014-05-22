@@ -12,6 +12,7 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import javax.media.opengl.glu.GLU;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
@@ -48,7 +49,7 @@ public class RenderEngine implements GLEventListener {
 	}
 	double s,c;
 	private void updateSpace() {
-        theta += 5;
+        theta += 1;
         s = Math.sin(theta);
         c = Math.cos(theta);
 	}
@@ -80,6 +81,7 @@ public class RenderEngine implements GLEventListener {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
 		gl.glShadeModel(GL_SMOOTH);
+		gl.glMatrixMode(GL_PROJECTION);
 	}
 
 	@Override
@@ -109,11 +111,19 @@ public class RenderEngine implements GLEventListener {
 		gl.glPushMatrix();
 		gl.glLoadIdentity();
 		gl.glRotated(theta, 1, 0, 0);
-		new GLUT().glutSolidTeapot(.5);
+		new GLUT().glutSolidTeapot(.3);
 		gl.glPopMatrix();
+		for(int i=0;i<4;i++) {
+			gl.glPushMatrix();
+			gl.glLoadIdentity();
+			gl.glTranslated(Math.pow(-1,i) * .5, Math.pow(-1, i/2) * .5, 1);
+			gl.glRotated(-theta, 1, 0, 0);
+			new GLUT().glutSolidTeapot(.25);
+			gl.glPopMatrix();
+		}
 		gl.glEnable(GL_LIGHTING);
 		gl.glEnable(GL_LIGHT0);
-		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 0 }, 0);
+		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 1.5f }, 0);
 		drawable.swapBuffers();
 	}
 }
