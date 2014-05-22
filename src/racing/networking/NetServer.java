@@ -45,7 +45,7 @@ public class NetServer {
 	 */
 	public void connect(){
 		try {
-			clients.add(new NetServerThread(server.accept()));
+			clients.add(new NetServerThread(server.accept()));//accept client
 			System.out.println("Connected");
 		} catch (IOException e) {
 			System.out.println("Connection error: "+e.getMessage());

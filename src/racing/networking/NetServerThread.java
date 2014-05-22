@@ -10,8 +10,10 @@ public class NetServerThread{
 	 */
 	public NetServerThread(Socket socket){
 		try{
+			//create output stream
 			output=new ObjectOutputStream(socket.getOutputStream());
 			output.flush();
+			//create input stream
 			input=new ObjectInputStream(socket.getInputStream());
 		}
 		catch(IOException e){

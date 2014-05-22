@@ -18,8 +18,10 @@ public class NetClient {
 	public NetClient(InetAddress address, int port, Cart cart, Track track){
 		try {
 			socket=new Socket(address,port);
+			//create output stream
 			output=new ObjectOutputStream(socket.getOutputStream());
 			output.flush();
+			//create input stream
 			input=new ObjectInputStream(socket.getInputStream());
 			this.cart=cart;
 			this.track=track;
@@ -28,19 +30,25 @@ public class NetClient {
 			System.out.println("IO error: "+e.getMessage());
 		}
 	}
-	public void update() throws IOException{
-		output.writeObject(cart);//send cart data
-		output.writeObject(track.getItems());//send item data
+	/**
+	 * Send client data, and receive server data
+	 * @return Updated network data from server
+	 */
+	public NetData update(){
 		try {
-			NetData data=(NetData)input.readObject();//receive server data
+			output.writeObject(cart);//send cart data
+			output.writeObject(track.getItems());//send item data
+			return (NetData)input.readObject();//return server data
 		} catch (ClassNotFoundException e) {
 			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
 		}
+		return null;
 	}
 	public static void main(String[] args){
-		NetClient client=null;
 		try {
-			client=new NetClient(InetAddress.getLocalHost(),5555,new Cart(),new Track());
+			new NetClient(InetAddress.getLocalHost(),5555,new Cart(),new Track());
 		} catch (UnknownHostException e) {
 			System.out.println("IP error: "+e.getMessage());
 		}
