@@ -13,4 +13,5 @@ public interface Renderable3D {
 	public Vector3D[] getVertices();
 	public Vector2D[] getTextureMappingCoordinates();
 	public Image getTexture();
+	
 }
