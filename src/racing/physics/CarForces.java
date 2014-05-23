@@ -4,11 +4,13 @@ public class CarForces {
 
 	private double mu;
 	private double drag;
+	private double gravity;
 
-	public CarForces(double mu, double coefDrag) {
+	public CarForces(double mu, double coefDrag, double gravity) {
 		super();
 		this.mu = mu;
 		this.drag = coefDrag;
+		this.gravity = gravity;
 	}
 
 	public double getFriction() {
@@ -25,6 +27,14 @@ public class CarForces {
 
 	public void setDrag(double drag) {
 		this.drag = drag;
+	}
+
+	public double getGravity() {
+		return gravity;
+	}
+
+	public void setGravity(double gravity) {
+		this.gravity = gravity;
 	}
 
 	/**
