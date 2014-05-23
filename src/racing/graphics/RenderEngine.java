@@ -4,6 +4,8 @@ import static javax.media.opengl.GL.*;
 import static javax.media.opengl.GL2.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.*;
 
+import java.awt.Toolkit;
+
 import javax.media.nativewindow.WindowClosingProtocol.WindowClosingMode;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -22,6 +24,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;
+	private double aspectRatio;
 
 	public RenderEngine(String title) {
 		configureOpenGL();
@@ -30,6 +33,9 @@ public class RenderEngine implements GLEventListener {
 
 	private void configureWindow() {
 		// window.setFullscreen(true);
+		aspectRatio = ((double) Toolkit.getDefaultToolkit().getScreenSize()
+				.getWidth())
+				/ Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	}
 
 	private void configureOpenGL() {
@@ -55,7 +61,7 @@ public class RenderEngine implements GLEventListener {
 		theta += 5;
 		s = Math.sin(theta);
 		c = Math.cos(theta);
-		dist = 5 + 5 * Math.sin(Math.toRadians(theta));
+		dist = 3 + 1 * Math.sin(Math.toRadians(theta));
 	}
 
 	private void exitEngine() {
@@ -85,25 +91,27 @@ public class RenderEngine implements GLEventListener {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
 		gl.glShadeModel(GL_SMOOTH);
-		gl.glMatrixMode(GL_PROJECTION);
-		cameraSetup(drawable);
-		//gl.glEnable(GL_CULL_FACE);
+		//gl.glMatrixMode(GL_PROJECTION);
+		// gl.glEnable(GL_CULL_FACE);
 		gl.glDepthFunc(GL_LESS);
-		//gl.glEnable(GL_NORMALIZE);
-		//gl.glCullFace(GL_FRONT);
+		// gl.glEnable(GL_NORMALIZE);
+		// gl.glCullFace(GL_FRONT);
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, -1.5f, 0 }, 0);
 		gl.glEnable(GL_LIGHTING);
 		gl.glEnable(GL_LIGHT0);
-		//gl.glMatrixMode(GL_PROJECTION);
+		// gl.glMatrixMode(GL_PROJECTION);
 	}
+
 	double dist = 5;
-	public void cameraSetup(GLAutoDrawable drawable) {
-		GL2 gl = drawable.getGL().getGL2();
+
+	public void cameraSetup(GL2 gl) {
+		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluPerspective(60, 1, 1, 1000);
-		GLU.createGLU(gl).gluLookAt(0, 0, dist, 0, 0, 0, 0, 1, 0);
+		GLU.createGLU(gl).gluPerspective(45, aspectRatio, 1, 1000);
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
+		//gl.glTranslated(Math.random() * 10, 0, 0);
+		GLU.createGLU(gl).gluLookAt(0, 0, -dist, 0, 0, 0, 0, 1, 0);
 	}
 
 	@Override
@@ -121,31 +129,28 @@ public class RenderEngine implements GLEventListener {
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
-		// TODO Auto-generated method stub
-		
+		drawable.getGL().getGL2().glViewport(0, 0, width, height);
 	}
 
 	double theta = 0;
 
 	private void render(GLAutoDrawable drawable) {
 		drawable.swapBuffers();
-		cameraSetup(drawable);
 		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		cameraSetup(gl);
 		gl.glPushMatrix();
-		gl.glLoadIdentity();
-		gl.glRotated(theta, 1, 0, 0);
-		new GLUT().glutSolidTeapot(.3);
+			gl.glRotated(theta, 1, 0, 0);
+			new GLUT().glutSolidTeapot(.3);
 		gl.glPopMatrix();
+		
 		for (int i = 0; i < 4; i++) {
 			gl.glPushMatrix();
-			gl.glLoadIdentity();
-			gl.glTranslated(Math.pow(-1, i) * .5, Math.pow(-1, i / 2) * .5, 1);
-			gl.glRotated(-theta, 1, 0, 0);
-			new GLUT().glutSolidTeapot(.25);
+				gl.glTranslated(Math.pow(-1, i) * .5, Math.pow(-1, i / 2) * .5, 1);
+				gl.glRotated(-theta, 1, 0, 0);
+				new GLUT().glutSolidTeapot(.25);
 			gl.glPopMatrix();
 		}
-		gl.glLoadIdentity();
 		drawable.swapBuffers();
 	}
 }
