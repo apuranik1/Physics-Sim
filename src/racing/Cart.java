@@ -11,8 +11,7 @@ public class Cart extends Object3D {
 
 	private Image texture;
 	private Vector3D[] vertices;
-	private Motion motion;
-	
+	private CartSpec spec;
 	
 	public Vector3D[] getVertices() {
 		return vertices.clone();
@@ -32,5 +31,10 @@ public class Cart extends Object3D {
 	public static Cart getCartFromFile() {
 		// TODO: implement this
 		return null;
+	}
+
+	public void update(long nanos) {
+		
+		motion.update(nanos);
 	}
 }
