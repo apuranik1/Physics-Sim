@@ -4,6 +4,7 @@ import racing.graphics.Object3D;
 import racing.physics.Vector2D;
 import racing.physics.Vector3D;
 public class Item extends Object3D{
+<<<<<<< HEAD
 	private Status effects;
 	/**
 	 * 
@@ -11,6 +12,25 @@ public class Item extends Object3D{
 	 */
 	public Status getEffects(){
 		return effects;
+=======
+
+	@Override
+	public Vector3D[] getVertices() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Vector2D[] getTextureMappingCoordinates() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Image getTexture() {
+		// TODO Auto-generated method stub
+		return null;
+>>>>>>> basis for gm
 	}
 	@Override
 	public Vector3D[] getVertices() {
