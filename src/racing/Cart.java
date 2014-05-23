@@ -4,6 +4,7 @@ import java.awt.Image;
 
 import racing.graphics.Object3D;
 import racing.physics.Motion;
+import racing.physics.PhysicsSpec;
 import racing.physics.Vector2D;
 import racing.physics.Vector3D;
 
@@ -12,6 +13,16 @@ public class Cart extends Object3D {
 	private Image texture;
 	private Vector3D[] vertices;
 	private CartSpec spec;
+
+	private Cart(Vector3D rotation, Motion motion, PhysicsSpec spec) {
+		super(rotation, motion, spec);
+		// TODO Auto-generated constructor stub
+	}
+
+	public void update(long nanos) {
+		
+		motion.update(nanos);
+	}
 	
 	public Vector3D[] getVertices() {
 		return vertices.clone();
@@ -31,10 +42,5 @@ public class Cart extends Object3D {
 	public static Cart getCartFromFile() {
 		// TODO: implement this
 		return null;
-	}
-
-	public void update(long nanos) {
-		
-		motion.update(nanos);
 	}
 }

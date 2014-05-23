@@ -1,12 +1,21 @@
 package racing.graphics;
 
 import racing.physics.Motion;
+import racing.physics.PhysicsSpec;
 import racing.physics.Vector3D;
 
 public abstract class Object3D implements Renderable3D {
 	protected Vector3D rotation;
 	protected Motion motion;
+	protected PhysicsSpec spec;
 	private long frame = -1;
+	
+	public Object3D(Vector3D rotation, PhysicsSpec spec) {
+		this.rotation = rotation;
+		this.spec = spec;
+		Vector3D empty = new Vector3D(0,0,0);
+		motion = new Motion(empty, empty, empty);
+	}
 
 	public Vector3D getPosition() {
 		return motion.getPosition();
