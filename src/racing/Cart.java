@@ -14,8 +14,8 @@ public class Cart extends Object3D {
 	private Vector3D[] vertices;
 	private CartSpec spec;
 
-	private Cart(Vector3D rotation, Motion motion, PhysicsSpec spec) {
-		super(rotation, motion, spec);
+	private Cart(Vector3D[] vertices, Vector3D rotation, PhysicsSpec spec) {
+		super(rotation, spec);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -25,7 +25,8 @@ public class Cart extends Object3D {
 	}
 	
 	public Vector3D[] getVertices() {
-		return vertices.clone();
+		// TODO: implement this somehow
+		return null;
 	}
 
 	public Vector2D[] getTextureMappingCoordinates() {

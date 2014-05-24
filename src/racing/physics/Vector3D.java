@@ -1,7 +1,7 @@
 package racing.physics;
 
 public class Vector3D {
-	
+
 	public final double x;
 	public final double y;
 	public final double z;
@@ -15,16 +15,34 @@ public class Vector3D {
 	public String toString() {
 		return "(" + x + ", " + y + ", " + z + ")";
 	}
-	
+
 	public Vector3D add(Vector3D other) {
 		return new Vector3D(x + other.x, y + other.y, z + other.z);
 	}
-	
+
 	public Vector3D multiply(double scalar) {
 		return new Vector3D(x * scalar, y * scalar, z * scalar);
 	}
+
+	public double dot(Vector3D other) {
+		return x * other.x + y * other.y + z * other.z;
+	}
+
+	public Vector3D cross(Vector3D other) {
+		return new Vector3D(y * other.z - z * other.y,
+							z * other.x - x	* other.z,
+							x * other.y - y * other.x);
+	}
 	
+	public double project(Vector3D axis) {
+		return this.dot(axis) / axis.magnitude();
+	}
+	
+	public Vector3D vecProject(Vector3D axis) {
+		return axis.multiply(this.dot(axis) / axis.dot(axis));
+	}
+
 	public double magnitude() {
-		return Math.sqrt(x*x + y*y + z*z);
+		return Math.sqrt(x * x + y * y + z * z);
 	}
 }

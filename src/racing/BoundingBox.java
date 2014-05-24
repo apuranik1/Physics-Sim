@@ -1,5 +1,6 @@
 package racing;
 
+import racing.physics.Matrix3D;
 import racing.physics.Vector3D;
 
 /**
@@ -9,10 +10,14 @@ import racing.physics.Vector3D;
  */
 public class BoundingBox {
 	/**
-	 * The position of the front-bottom-left corner of the box TODO: Make sure
-	 * this is accurate
+	 * The position of the front-bottom-left corner of the box.
+	 * Also the fixed point of rotation.
 	 */
 	private Vector3D location;
+	/**
+	 * Orientation matrix of the box, with respect to <code>location</code>.
+	 */
+	private Matrix3D rotation;
 	/**
 	 * The width of the box
 	 */
@@ -74,8 +79,31 @@ public class BoundingBox {
 		return new Vector3D(location.x + width / 2, location.y + height / 2,
 				location.z + depth / 2);
 	}
+	
+	public Vector3D[] vertexList() {
+		Vector3D[] list = new Vector3D[8];
+		list[0] = new Vector3D(0,     0,      0);
+		list[1] = new Vector3D(width, 0,      0);
+		list[2] = new Vector3D(0,     height, 0);
+		list[3] = new Vector3D(width, height, 0);
+		list[4] = new Vector3D(0,     0,      depth);
+		list[5] = new Vector3D(width, 0,      depth);
+		list[6] = new Vector3D(0,     height, depth);
+		list[7] = new Vector3D(width, height, depth);
+		for (int i = 0; i < 8; i++)
+			list[i] = rotation.multiply(list[i]).add(location);
+		return list;
+	}
+	
+	public Vector3D[] axisList() {
+		return new Vector3D[] {
+				rotation.multiply(new Vector3D(width, 0, 0)),
+				rotation.multiply(new Vector3D(0, height, 0)),
+				rotation.multiply(new Vector3D(0, 0, depth))
+		};
+	}
 
-	public void positify() {
+	private void positify() {
 		double new_x = location.x, new_y = location.y, new_z = location.z;
 		if (width < 0) {
 			width *= -1;
@@ -93,13 +121,14 @@ public class BoundingBox {
 	}
 
 	/**
-	 * Determine whether this BoundingBox intersects <code>other</code>.
+	 * Determine whether this BoundingBox intersects <code>other</code>,
+	 * assuming both boxes have no orientation.
 	 * 
 	 * @param other
 	 *            The other Bounding box with which to check for intersections
 	 * @return Whether <code>this</code> intersects <code>other</code>
 	 */
-	public boolean intersects(BoundingBox other) {
+	boolean simpleIntersects(BoundingBox other) {
 		// check every direction for whether they are too far apart
 		return (location.x + width >= other.location.x
 				&& location.x <= other.location.x + other.width
@@ -107,5 +136,40 @@ public class BoundingBox {
 				&& location.y <= other.location.y + other.height
 				&& location.z + depth >= other.location.z && location.z <= other.location.z
 				+ other.depth);
+	}
+	
+	public boolean intersects(BoundingBox other) {
+		final int NUM_AXES = 15;
+		Vector3D[] axes = new Vector3D[NUM_AXES];
+		Vector3D[] aList = axisList();
+		Vector3D[] otherList = other.axisList();
+		// add in the axes
+		System.arraycopy(aList, 0, axes, 0, 3);
+		System.arraycopy(otherList, 0, axes, 3, 3);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				axes[3 * i + j + 6] = aList[i].cross(otherList[j]);
+			}
+		}
+		
+		for (Vector3D axis : axes) {
+			double[] range1 = project(axis);
+			double[] range2 = other.project(axis);
+			if (range1[0] > range2[1] || range2[0] > range1[1])
+				return false;
+		}
+		return true;
+	}
+	
+	public double[] project(Vector3D axis) {
+		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
+		for (Vector3D vertex : vertexList()) {
+			double pos = vertex.project(axis);
+			if (pos < min)
+				min = pos;
+			else if (pos > max)
+				max = pos;
+		}
+		return new double[] {min, max};
 	}
 }
