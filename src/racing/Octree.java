@@ -118,7 +118,7 @@ public class Octree<T> implements Iterable<T> {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
 		if (leaf) {
 			for (Pair<BoundingBox, T> entry : contents)
-				if (entry.first().intersects(bb))
+				if (entry.first().simpleIntersects(bb))
 					intersections.add(entry.second());
 		} else
 			for (Octree<T> oct : octantsContaining(bb))
@@ -227,6 +227,7 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private int octantContaining(Vector3D vec) {
 		// assert !leaf;
+		// we're not going to talk about this method
 		return mappings[(vec.x > splitPoint.x ? 4 : 0)
 				| (vec.y > splitPoint.y ? 2 : 0)
 				| (vec.z > splitPoint.z ? 1 : 0)];
