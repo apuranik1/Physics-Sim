@@ -29,6 +29,7 @@ public class Vector3D {
 	}
 
 	public Vector3D cross(Vector3D other) {
+		// may need to be changed if we are using a left-handed coordinate system
 		return new Vector3D(y * other.z - z * other.y,
 							z * other.x - x	* other.z,
 							x * other.y - y * other.x);
