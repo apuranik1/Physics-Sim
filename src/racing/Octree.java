@@ -1,6 +1,9 @@
 package racing;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Deque;
+import java.util.ArrayDeque;
 
 import racing.physics.Vector3D;
 
@@ -13,7 +16,7 @@ import racing.physics.Vector3D;
  * @param <T>
  *            the type to be stored in the octree
  */
-public class Octree<T> {
+public class Octree<T> implements Iterable<T> {
 	/**
 	 * The maximum number of objects per leaf node.
 	 */
@@ -34,7 +37,7 @@ public class Octree<T> {
 	 * Splitting point of the octree.
 	 */
 	private Vector3D splitPoint;
-	private static final int mappings[] = new int[]{0,3,4,7,1,2,5,6};
+	private static final int mappings[] = new int[] { 0, 3, 4, 7, 1, 2, 5, 6 };
 	private static final int INTERSECTION_CALIBRATION = 0;
 
 	/**
@@ -43,6 +46,63 @@ public class Octree<T> {
 	public Octree() {
 		leaf = true;
 		contents = new ArrayList<Pair<BoundingBox, T>>();
+	}
+
+	public Iterator<T> iterator() {
+		return new Iterator<T>() {
+
+			private Octree<T> current = Octree.this;
+			private int objIndex = 0;
+			private Deque<Octree<T>> retrace = new ArrayDeque<Octree<T>>();
+			private Deque<Integer> octantIndices = new ArrayDeque<Integer>();
+			{
+				searchForContents();
+			}
+
+			public boolean hasNext() {
+				return !(current.contents.size() == objIndex && retrace
+						.isEmpty());
+			}
+
+			public T next() {
+				if (!hasNext())
+					throw new IllegalStateException(
+							"No more elements in Octree");
+				T value = current.contents.get(objIndex++).second;
+				searchForContents();
+				return value;
+			}
+
+			public void remove() {
+				// TODO: implement this?
+			}
+
+			private void searchForContents() {
+				// precondition: current is a leaf node
+				//TODO: check for correctness/debug
+				while (current.contents.size() == objIndex
+						&& retrace.size() != 0) {
+					objIndex = 0;
+					int octant;
+					do {
+						current = retrace.removeFirst();
+						octant = octantIndices.removeFirst();
+					} while (retrace.size() > 0 && octant == 8);
+
+					if (retrace.size() == 0)
+						return;
+
+					octant++;
+
+					do {
+						retrace.addFirst(current);
+						octantIndices.addFirst(octant);
+						current = current.octants[octant];
+						octant = 0;
+					} while (!current.leaf);
+				}
+			}
+		};
 	}
 
 	/**
@@ -58,7 +118,7 @@ public class Octree<T> {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
 		if (leaf) {
 			for (Pair<BoundingBox, T> entry : contents)
-				if (entry.first().intersects(bb))
+				if (entry.first().simpleIntersects(bb))
 					intersections.add(entry.second());
 		} else
 			for (Octree<T> oct : octantsContaining(bb))
@@ -157,6 +217,7 @@ public class Octree<T> {
 
 		return intersect;
 	}
+
 	/**
 	 * Returns the octant that contains a given point
 	 * 
@@ -165,8 +226,11 @@ public class Octree<T> {
 	 * @return the octant that contains that point
 	 */
 	private int octantContaining(Vector3D vec) {
-		//assert !leaf;
-		return mappings[(vec.x > splitPoint.x ? 4 : 0) | (vec.y > splitPoint.y ? 2 : 0) | (vec.z > splitPoint.z ? 1 : 0)];
+		// assert !leaf;
+		// we're not going to talk about this method
+		return mappings[(vec.x > splitPoint.x ? 4 : 0)
+				| (vec.y > splitPoint.y ? 2 : 0)
+				| (vec.z > splitPoint.z ? 1 : 0)];
 	}
 
 	/**
@@ -190,21 +254,26 @@ public class Octree<T> {
 		contents.clear();
 	}
 
-
 	public static void main(String[] args) {
 		long start = System.nanoTime();
 		Octree<String> octree = new Octree<String>();
 		for (int i = 0; i < 1000000; i++) {
-			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()), 1, 1, 1), i + "");
+			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(),
+					1000 * Math.random(), 1000 * Math.random()), 1, 1, 1), i
+					+ "");
 		}
-		System.out.println((double)(System.nanoTime() - start)/1000000000+" for setup.");
+		System.out.println((double) (System.nanoTime() - start) / 1000000000
+				+ " for setup.");
 
 		start = System.nanoTime();
 		int N = 10000000;
 		for (int i = 0; i < N; i++) {
-			ArrayList<String> intersects = octree.intersects(new BoundingBox(new Vector3D(1000 * Math.random(), 1000 * Math.random(), 1000 * Math.random()), 1, 1, 1));
+			ArrayList<String> intersects = octree.intersects(new BoundingBox(
+					new Vector3D(1000 * Math.random(), 1000 * Math.random(),
+							1000 * Math.random()), 1, 1, 1));
 		}
-		System.out.println((double) N / (System.nanoTime() - start) * 1000000000 + " searches/sec");
+		System.out.println((double) N / (System.nanoTime() - start)
+				* 1000000000 + " searches/sec");
 
 	}
 
