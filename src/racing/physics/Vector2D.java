@@ -1,6 +1,6 @@
 package racing.physics;
 
 public class Vector2D {
-	public int x;
-	public int y;
+	public double x;
+	public double y;
 }
