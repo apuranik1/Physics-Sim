@@ -13,7 +13,7 @@ public class Animator {
 	}
 
 	public void registerEvent(AnimationEvent event) {
-		animationQueue.add(event);
+		animationQueue.offer(event);
 	}
 
 	public void registerEvents(AnimationEvent[] events) {
@@ -28,8 +28,13 @@ public class Animator {
 	public ArrayList<AnimationEvent> retrieve(double time) {
 		ArrayList<AnimationEvent> events = new ArrayList<AnimationEvent>();
 		while (!animationQueue.isEmpty()
-				&& animationQueue.peek().executionTime() <= time)
-			events.add(animationQueue.poll());
+				&& animationQueue.peek().executionTime() <= time) {
+			AnimationEvent event = animationQueue.poll();
+			events.add(event);
+			if(event.prepareNext()) {
+				animationQueue.offer(event);
+			}
+		}
 		return events;
 	}
 

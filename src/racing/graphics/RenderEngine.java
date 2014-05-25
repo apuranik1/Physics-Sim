@@ -124,8 +124,6 @@ public class RenderEngine implements GLEventListener {
 		for (Object3D object : engine) {
 			if (object.getFrameUpdate() == frame)
 				continue;
-			if (object.getPosition().z > engine.getCameraPos().z)
-				continue;
 			gl.glPushMatrix();
 			Vector3D rot = object.getRotation();
 			gl.glRotated(rot.x, 1, 0, 0);

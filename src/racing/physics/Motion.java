@@ -10,8 +10,10 @@ public class Motion implements Cloneable {
 	private Vector3D position;
 	private Vector3D velocity;
 	private Vector3D accel;
-	public static Motion origin = new Motion(Vector3D.origin, Vector3D.origin,
+	public static Motion still = new Motion(Vector3D.origin, Vector3D.origin,
 			Vector3D.origin);
+	public static Motion gravity = new Motion(Vector3D.origin, Vector3D.origin,
+			Vector3D.gravity);
 
 	public Motion(Vector3D position, Vector3D velocity, Vector3D accel) {
 		super();

@@ -168,7 +168,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		output.toArray(verts);
 		Vector3D[] norms = new Vector3D[noutput.size()];
 		noutput.toArray(norms);
-		return new Object3D(verts, norms, null, null, Motion.origin);
+		return new Object3D(verts, norms, null, null, Motion.gravity);
 	}
 
 	public void setPosition(Vector3D vec) {
@@ -196,12 +196,5 @@ public class Object3D implements Renderable3D, Cloneable {
 			GameEngine.getGameEngine().completeUpdate(this);
 		} else
 			this.rotation = rotation;
-	}
-	
-	public Object3D withGravity() {
-		Object3D newO = clone();
-		Vector3D accel = getAcceleration();
-		newO.setAcceleration(new Vector3D(accel.x, -9.8, accel.z));
-		return newO;
 	}
 }

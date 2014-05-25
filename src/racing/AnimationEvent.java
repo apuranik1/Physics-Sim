@@ -1,13 +1,13 @@
 package racing;
 
 public abstract class AnimationEvent implements Comparable<AnimationEvent> {
-	private double execTime;
+	protected double execTime;
 
 	public AnimationEvent(double offsetTime) {
 		this(System.nanoTime() / 1000000000d, offsetTime);
 	}
-	
-	public AnimationEvent(double baseTime, double offsetTime) {
+
+	private AnimationEvent(double baseTime, double offsetTime) {
 		this.execTime = baseTime + offsetTime;
 	}
 
@@ -24,4 +24,8 @@ public abstract class AnimationEvent implements Comparable<AnimationEvent> {
 	}
 
 	public abstract void animate();
+
+	public boolean prepareNext() {
+		return false;
+	}
 }
