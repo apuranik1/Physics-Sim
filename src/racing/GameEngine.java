@@ -47,7 +47,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		processors = new Stack<EventProcessor>();
 		registerProcessor(new ExitEngine());
 	}
-	
+
 	public void registerProcessor(EventProcessor p) {
 		processors.push(p);
 	}
@@ -78,7 +78,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		cameraRotation = rotation;
 		targetedCamera = false;
 	}
-	
+
 	public void cameraMove(Vector3D delta) {
 		cameraPos = cameraPos.add(delta);
 	}
@@ -102,7 +102,14 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
+		animationRefresh();
 		physicsRefresh(frame, dt);
+	}
+
+	private void animationRefresh() {
+		for (AnimationEvent event : Animator.getAnimator().retrieve(
+				System.nanoTime() / 1000000000d))
+			event.animate();
 	}
 
 	private void physicsRefresh(long frame, long dt) {
