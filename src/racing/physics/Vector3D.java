@@ -48,4 +48,11 @@ public class Vector3D {
 	public double magnitude() {
 		return Math.sqrt(x * x + y * y + z * z);
 	}
+
+	public boolean equals(Object other) {
+		if (other == null || !(other instanceof Vector3D))
+			return false;
+		Vector3D v = (Vector3D) other;
+		return v.x == x && v.y == y && v.z == z;
+	}
 }

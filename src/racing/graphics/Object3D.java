@@ -26,11 +26,10 @@ public class Object3D implements Renderable3D, Cloneable {
 	private Vector3D[] normals;
 	private Color[] colors;
 	private Vector2D[] textureCoords;
-	private PhysicsSpec spec;
 	private long frame = -1;
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
-			Vector2D[] textureCoords, Color[] colors) {
+			Vector2D[] textureCoords, Color[] colors, Motion motion) {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.colors = colors;
@@ -41,20 +40,12 @@ public class Object3D implements Renderable3D, Cloneable {
 		for (int i = 0; i < vertices.length; i++)
 			this.colors[i] = c;
 		this.normals = normals;
-		motion = new Motion(new Vector3D(0, 0, 0), new Vector3D(0, 0, 0),
-				new Vector3D(0, 0, 0));
+		this.motion = motion;
 		rotation = new Vector3D(0, 0, 0);
 	}
 
-	public Object3D(Vector3D rotation, PhysicsSpec spec) {
-		this.rotation = rotation;
-		this.spec = spec;
-		Vector3D empty = new Vector3D(0, 0, 0);
-		motion = new Motion(empty, empty, empty);
-	}
-
 	public Object3D clone() {
-		return new Object3D(vertices, normals, textureCoords, colors);
+		return new Object3D(vertices, normals, textureCoords, colors, motion.clone());
 	}
 
 	public Vector3D getPosition() {
@@ -98,9 +89,9 @@ public class Object3D implements Renderable3D, Cloneable {
 	}
 
 	public void update(long nanos) {
-		GameEngine.getGameEngine().removeObject(this);
+		GameEngine.getGameEngine().prepareUpdate(this);
 		motion.update(nanos);
-		GameEngine.getGameEngine().addObject(this);
+		GameEngine.getGameEngine().completeUpdate(this);
 	}
 
 	public static Object3D load(String file) throws IOException {
@@ -177,7 +168,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		output.toArray(verts);
 		Vector3D[] norms = new Vector3D[noutput.size()];
 		noutput.toArray(norms);
-		return new Object3D(verts, norms, null, null);
+		return new Object3D(verts, norms, null, null, Motion.origin);
 	}
 
 	public void setPosition(Vector3D vec) {
@@ -205,5 +196,12 @@ public class Object3D implements Renderable3D, Cloneable {
 			GameEngine.getGameEngine().completeUpdate(this);
 		} else
 			this.rotation = rotation;
+	}
+	
+	public Object3D withGravity() {
+		Object3D newO = clone();
+		Vector3D accel = getAcceleration();
+		newO.setAcceleration(new Vector3D(accel.x, -9.8, accel.z));
+		return newO;
 	}
 }

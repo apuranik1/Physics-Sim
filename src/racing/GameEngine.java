@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -32,7 +33,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private boolean targetedCamera;
 	private double width;
 	private double height;
-	private ArrayList<EventProcessor> processors;
+	private Stack<EventProcessor> processors;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -43,8 +44,12 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		width = screen.getWidth();
 		height = screen.getHeight();
-		processors = new ArrayList<EventProcessor>();
-		processors.add(new ExitEngine());
+		processors = new Stack<EventProcessor>();
+		registerProcessor(new ExitEngine());
+	}
+	
+	public void registerProcessor(EventProcessor p) {
+		processors.push(p);
 	}
 
 	public void beginGame() {
@@ -52,7 +57,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void removeObject(Object3D object) {
-		octree.remove(new BoundingBox(object.getPosition(), 1, 1, 1));
+		if (!octree.remove(new BoundingBox(object.getPosition(), 1, 1, 1),
+				object))
+			throw new IllegalArgumentException(
+					"Cannot remove non-existant object from the octree.");
 	}
 
 	public void addObject(Object3D object) {
@@ -69,6 +77,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		cameraPos = position;
 		cameraRotation = rotation;
 		targetedCamera = false;
+	}
+	
+	public void cameraMove(Vector3D delta) {
+		cameraPos = cameraPos.add(delta);
 	}
 
 	public void setupCamera(GL2 gl) {
@@ -100,9 +112,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		for (Object3D object : proc) {
 			if (object.getFrameUpdate() == frame)
 				continue;
-			prepareUpdate(object);
 			object.update(dt);
-			completeUpdate(object);
 			object.setFrame(frame);
 		}
 		for (Object3D object : this)

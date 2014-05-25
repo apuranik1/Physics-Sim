@@ -10,8 +10,8 @@ import racing.physics.Vector3D;
  */
 public class BoundingBox {
 	/**
-	 * The position of the front-bottom-left corner of the box.
-	 * Also the fixed point of rotation.
+	 * The position of the front-bottom-left corner of the box. Also the fixed
+	 * point of rotation.
 	 */
 	private Vector3D location;
 	/**
@@ -33,6 +33,7 @@ public class BoundingBox {
 
 	/**
 	 * Construct an axis-aligned bounding box.
+	 * 
 	 * @param location
 	 * @param width
 	 * @param height
@@ -44,16 +45,13 @@ public class BoundingBox {
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
-		rotation = new Matrix3D(new double[][] {
-				{1, 0, 0},
-				{0, 1, 0},
-				{0, 0, 1}
-		});
+		rotation = new Matrix3D(new double[][] { { 1, 0, 0 }, { 0, 1, 0 },
+				{ 0, 0, 1 } });
 		positify();
 	}
-	
+
 	public BoundingBox(Vector3D location, double width, double height,
-					   double rotate_x, double rotate_y, double rotate_z) {
+			double rotate_x, double rotate_y, double rotate_z) {
 		this.location = location;
 		this.width = width;
 		this.height = height;
@@ -100,28 +98,26 @@ public class BoundingBox {
 		return new Vector3D(location.x + width / 2, location.y + height / 2,
 				location.z + depth / 2);
 	}
-	
+
 	public Vector3D[] vertexList() {
 		Vector3D[] list = new Vector3D[8];
-		list[0] = new Vector3D(0,     0,      0);
-		list[1] = new Vector3D(width, 0,      0);
-		list[2] = new Vector3D(0,     height, 0);
+		list[0] = new Vector3D(0, 0, 0);
+		list[1] = new Vector3D(width, 0, 0);
+		list[2] = new Vector3D(0, height, 0);
 		list[3] = new Vector3D(width, height, 0);
-		list[4] = new Vector3D(0,     0,      depth);
-		list[5] = new Vector3D(width, 0,      depth);
-		list[6] = new Vector3D(0,     height, depth);
+		list[4] = new Vector3D(0, 0, depth);
+		list[5] = new Vector3D(width, 0, depth);
+		list[6] = new Vector3D(0, height, depth);
 		list[7] = new Vector3D(width, height, depth);
 		for (int i = 0; i < 8; i++)
 			list[i] = rotation.multiply(list[i]).add(location);
 		return list;
 	}
-	
+
 	public Vector3D[] axisList() {
-		return new Vector3D[] {
-				rotation.multiply(new Vector3D(width, 0, 0)),
+		return new Vector3D[] { rotation.multiply(new Vector3D(width, 0, 0)),
 				rotation.multiply(new Vector3D(0, height, 0)),
-				rotation.multiply(new Vector3D(0, 0, depth))
-		};
+				rotation.multiply(new Vector3D(0, 0, depth)) };
 	}
 
 	private void positify() {
@@ -158,7 +154,7 @@ public class BoundingBox {
 				&& location.z + depth >= other.location.z && location.z <= other.location.z
 				+ other.depth);
 	}
-	
+
 	public boolean intersects(BoundingBox other) {
 		final int NUM_AXES = 15;
 		Vector3D[] axes = new Vector3D[NUM_AXES];
@@ -172,7 +168,7 @@ public class BoundingBox {
 				axes[3 * i + j + 6] = aList[i].cross(otherList[j]);
 			}
 		}
-		
+
 		for (Vector3D axis : axes) {
 			double[] range1 = project(axis);
 			double[] range2 = other.project(axis);
@@ -181,7 +177,7 @@ public class BoundingBox {
 		}
 		return true;
 	}
-	
+
 	public double[] project(Vector3D axis) {
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (Vector3D vertex : vertexList()) {
@@ -191,11 +187,12 @@ public class BoundingBox {
 			else if (pos > max)
 				max = pos;
 		}
-		return new double[] {min, max};
+		return new double[] { min, max };
 	}
-	
+
 	/**
 	 * Determine an axis-aligned bounding box for this oriented box.
+	 * 
 	 * @return
 	 */
 	public BoundingBox simpleBound() {
@@ -208,15 +205,15 @@ public class BoundingBox {
 			else if (vertex.x > max_x)
 				max_x = vertex.x;
 			if (vertex.y < min_y)
-                min_y = vertex.y;
-            else if (vertex.y > max_y)
-                max_y = vertex.y;
-            if (vertex.z < min_z)
-                min_z = vertex.z;
-            else if (vertex.z > max_z)
-                max_z = vertex.z;
+				min_y = vertex.y;
+			else if (vertex.y > max_y)
+				max_y = vertex.y;
+			if (vertex.z < min_z)
+				min_z = vertex.z;
+			else if (vertex.z > max_z)
+				max_z = vertex.z;
 		}
-        return new BoundingBox(new Vector3D(min_x, min_y, min_z),
-                               max_x - min_x, max_y - min_y, max_z - min_z);
+		return new BoundingBox(new Vector3D(min_x, min_y, min_z),
+				max_x - min_x, max_y - min_y, max_z - min_z);
 	}
 }

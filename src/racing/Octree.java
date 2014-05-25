@@ -85,10 +85,7 @@ public class Octree<T> implements Iterable<T> {
 			}
 
 			public void remove() {
-				current.remove(prev);
-				if (objIndex != 0)
-					objIndex--;
-				searchForContents();
+				
 			}
 
 			private void searchForContents() {
@@ -164,17 +161,18 @@ public class Octree<T> implements Iterable<T> {
 	 *            the BoundingBox to remove
 	 * @return if any objects were found to remove
 	 */
-	public boolean remove(BoundingBox bb) {
+	public boolean remove(BoundingBox bb, T match) {
 		boolean found = false;
 		if (leaf) {
-			for (int i = contents.size() - 1; i >= 0; i--)
-				if (contents.get(i).first().simpleIntersects(bb)) {
+			for (int i = contents.size() - 1; i >= 0; i--) {
+				if (contents.get(i).first().simpleIntersects(bb) && contents.get(i).second() == match) {
 					contents.remove(i);
 					found = true;
 				}
+			}
 		} else
 			for (Octree<T> octant : octantsContaining(bb))
-				found |= octant.remove(bb);
+				found |= octant.remove(bb, match);
 		return found;
 	}
 
@@ -258,6 +256,17 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private void branch() {
 		assert leaf;
+		Vector3D position = contents.get(0).first().getLocation();
+		boolean okay = false;
+		for(Pair<BoundingBox, T> pair : contents)
+			if(!pair.first().getLocation().equals(position)) {
+				okay = true;
+				break;
+			}
+		if(!okay) {
+			System.out.println("Branching failed: complete overlap.");
+			return;
+		}
 		leaf = false;
 		makeSubOctants();
 		for (Pair<BoundingBox, T> pair : contents)

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import racing.graphics.Object3D;
+import racing.physics.Vector3D;
 
 public class ResourceManager {
 	private static ResourceManager manager;
@@ -29,7 +30,12 @@ public class ResourceManager {
 	}
 
 	public long insertInstance(String name) {
+		return insertInstance(name, Vector3D.origin);
+	}
+
+	public long insertInstance(String name, Vector3D location) {
 		Object3D instance = objects.get(name).clone();
+		instance.setPosition(location);
 		instance_ids.put(ids, instance);
 		instance_set.add(instance);
 		GameEngine.getGameEngine().addObject(instance);
