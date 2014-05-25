@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import racing.physics.CarForces;
 import racing.physics.Vector2D;
 import racing.physics.Motion;
 import racing.physics.PhysicsSpec;
@@ -20,28 +21,21 @@ public class Object3D implements Renderable3D {
 	protected Motion motion;
 	private Vector3D rotation;
 	private Vector3D[] vertices;
+	private Vector3D[] normals;
 	private Color[] colors;
 	private Vector2D[] textureCoords;
 	protected PhysicsSpec spec;
 	private long frame = -1;
 
-	public Object3D(Vector3D[] vertices, Vector2D[] textureCoords,
+	public Object3D(Vector3D[] vertices, Vector3D[] normals, Vector2D[] textureCoords,
 			Color[] colors) {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.colors = colors;
-	}
-
-	public Object3D(Vector3D[] vertices, Vector2D[] textureCoords) {
-		this(vertices, textureCoords, null);
-	}
-
-	public Object3D(Vector3D[] vertices, Color[] colors) {
-		this(vertices, null, colors);
-	}
-
-	public Object3D(Vector3D[] vertices) {
-		this(vertices, null, null);
+		this.normals = normals;
+		motion = new Motion(new Vector3D(0, 0, 0), new Vector3D(0, 0, 0),
+				new Vector3D(0, 0, 0));
+		rotation = new Vector3D(0, 0, 0);
 	}
 
 	public Object3D(Vector3D rotation, PhysicsSpec spec) {
@@ -75,6 +69,8 @@ public class Object3D implements Renderable3D {
 						colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
 			if (textureCoords != null)
 				gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
+			if(normals != null)
+				gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
 			gl.glVertex3d(vertices[i].x, vertices[i].y, vertices[i].z);
 		}
 		gl.glEnd();
@@ -108,7 +104,9 @@ public class Object3D implements Renderable3D {
 
 	private static Object3D parse(String data) {
 		ArrayList<Vector3D> vertices = new ArrayList<Vector3D>();
+		ArrayList<Vector3D> normals = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> output = new ArrayList<Vector3D>();
+		ArrayList<Vector3D> noutput = new ArrayList<Vector3D>();
 		String[] lines = data.split("\n");
 		for (String line : lines) {
 			if (line.startsWith("#")) {
@@ -121,7 +119,14 @@ public class Object3D implements Renderable3D {
 
 			} else if (line.startsWith("o")) {
 
-			} else if (line.startsWith("v")) {
+			} else if(line.startsWith("vn")) {
+				String[] dats = line.split("\\s+");
+				Vector3D point = new Vector3D(Double.parseDouble(dats[1]),
+						Double.parseDouble(dats[2]),
+						Double.parseDouble(dats[3]));
+				normals.add(point);
+			}
+			else if (line.startsWith("v")) {
 				String[] dats = line.split("\\s+");
 				Vector3D point = new Vector3D(Double.parseDouble(dats[1]),
 						Double.parseDouble(dats[2]),
@@ -129,15 +134,35 @@ public class Object3D implements Renderable3D {
 				vertices.add(point);
 			} else if (line.startsWith("f")) {
 				String[] dats = line.split("\\s+");
-				output.add(vertices.get(Integer.parseInt(dats[1]) - 1));
-				output.add(vertices.get(Integer.parseInt(dats[2]) - 1));
-				output.add(vertices.get(Integer.parseInt(dats[3]) - 1));
+				if (dats.length == 4) {
+					output.add(vertices.get(Integer.parseInt(dats[1].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[2].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[3].split("/")[0]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[1].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[2].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[3].split("/")[2]) - 1));
+				} else if (dats.length == 5) {
+					output.add(vertices.get(Integer.parseInt(dats[1].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[2].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[3].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[3].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[4].split("/")[0]) - 1));
+					output.add(vertices.get(Integer.parseInt(dats[1].split("/")[0]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[1].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[2].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[3].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[3].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[4].split("/")[2]) - 1));
+					noutput.add(normals.get(Integer.parseInt(dats[1].split("/")[2]) - 1));
+				}
 			} else
 				throw new IllegalArgumentException(
 						"Invalid format for .obj file on: " + line);
 		}
 		Vector3D[] verts = new Vector3D[output.size()];
 		output.toArray(verts);
-		return new Object3D(verts);
+		Vector3D[] norms = new Vector3D[noutput.size()];
+		noutput.toArray(norms);
+		return new Object3D(verts, norms, null, null);
 	}
 }

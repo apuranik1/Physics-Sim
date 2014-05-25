@@ -13,7 +13,7 @@ public class GameEngine implements Iterable<Object3D> {
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
-		cameraPos = new Vector3D(0, 0, -5);
+		cameraPos = new Vector3D(0, 0, 100);
 	}
 
 	public void addObject(Object3D object) {

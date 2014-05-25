@@ -34,12 +34,6 @@ public class Cart extends Object3D {
 		return null;
 	}
 
-	@Override
-	public Image getTexture() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public static Cart getCartFromFile() {
 		// TODO: implement this
 		return null;

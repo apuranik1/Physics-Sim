@@ -92,14 +92,18 @@ public class RenderEngine implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
+		gl.glEnable(GL_COLOR_MATERIAL);
 		gl.glShadeModel(GL_SMOOTH);
-		//gl.glMatrixMode(GL_PROJECTION);
+		// gl.glMatrixMode(GL_PROJECTION);
 		// gl.glEnable(GL_CULL_FACE);
 		gl.glDepthFunc(GL_LESS);
-		// gl.glEnable(GL_NORMALIZE);
+		//gl.glEnable(GL_NORMALIZE);
 		// gl.glCullFace(GL_FRONT);
-		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, -1.5f, 0 }, 0);
 		gl.glEnable(GL_LIGHTING);
+		//gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[] { 1, 0, 0, 1 }, 0);
+		//gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[] { 1, 0, 0, 1 }, 0);
+		//gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[] { 1, 1, 1, 1 }, 0);
+		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 2, 0 }, 0);
 		gl.glEnable(GL_LIGHT0);
 		// gl.glMatrixMode(GL_PROJECTION);
 	}
@@ -112,8 +116,9 @@ public class RenderEngine implements GLEventListener {
 		GLU.createGLU(gl).gluPerspective(45, aspectRatio, 1, 1000);
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
-		//gl.glTranslated(Math.random() * 10, 0, 0);
-		GLU.createGLU(gl).gluLookAt(engine.getCameraPos().x, engine.getCameraPos().y, engine.getCameraPos().z, 0, 0, 0, 0, 1, 0);
+		GLU.createGLU(gl).gluLookAt(engine.getCameraPos().x,
+				engine.getCameraPos().y, engine.getCameraPos().z, 0, 0, 0, 0,
+				1, 0);
 	}
 
 	@Override
@@ -122,8 +127,16 @@ public class RenderEngine implements GLEventListener {
 
 	}
 
+	private long last = 0;
+	private long dt = 0;
 	@Override
 	public void display(GLAutoDrawable drawable) {
+		if(last == 0) {
+			last = System.nanoTime();
+		}
+		long nlast = System.nanoTime();
+		dt = nlast - last;
+		last = nlast;
 		updateSpace();
 		render(drawable);
 	}
@@ -137,12 +150,15 @@ public class RenderEngine implements GLEventListener {
 	double theta = 0;
 
 	private void render(GLAutoDrawable drawable) {
-		drawable.swapBuffers();
+		//drawable.swapBuffers();
 		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GameEngine engine = GameEngine.getGameEngine();
 		cameraSetup(engine, gl);
-		for(Object3D object : engine) {
+		gl.glColor3f(1f, .5f, 0f);
+		// gl.glMaterialf(face, pname, param)
+		for (Object3D object : engine) {
+			object.update(dt);
 			gl.glPushMatrix();
 			Vector3D rot = object.getRotation();
 			gl.glRotated(rot.x, 1, 0, 0);
@@ -153,6 +169,6 @@ public class RenderEngine implements GLEventListener {
 			object.render(gl);
 			gl.glPopMatrix();
 		}
-		drawable.swapBuffers();
+		//drawable.swapBuffers();
 	}
 }

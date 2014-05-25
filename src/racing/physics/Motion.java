@@ -46,11 +46,13 @@ public class Motion {
 	 * Update the parameters of this Motion using basic kinematics.
 	 * @param nanos
 	 */
-	public void update(long nanos) {
-		Vector3D dPos = velocity.multiply(nanos);
-		Vector3D dV = accel.multiply(nanos);
+	public void update(long dt) {
+		double seconds = dt / 1000000000d;
+		Vector3D dPos = velocity.multiply(seconds);
+		Vector3D dV = accel.multiply(seconds);
 		position = position.add(dPos)
-				           .add(dV.multiply(0.5 * nanos));
+				           .add(dV.multiply(0.5 * seconds));
 		velocity = velocity.add(dV);
+		System.out.println(accel.x);
 	}
 }
