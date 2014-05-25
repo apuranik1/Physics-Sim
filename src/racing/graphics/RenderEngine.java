@@ -28,15 +28,8 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;
-	private Object3D obj = null;
 
 	public RenderEngine(String title) {
-		try {
-			obj = Object3D.load("/Users/michael/Desktop/monkey.obj");
-		} catch (Exception ex) {
-			// TODO Auto-generated catch block
-			ex.printStackTrace();
-		}
 		configure();
 	}
 
@@ -52,9 +45,9 @@ public class RenderEngine implements GLEventListener {
 		window.setFullscreen(true);
 		window.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
 		window.addKeyListener(GameEngine.getGameEngine());
-		window.setVisible(true);
 		FPSAnimator anim = new FPSAnimator(window, 600);
 		anim.start();
+		window.setVisible(true);
 	}
 
 	double s, c;
