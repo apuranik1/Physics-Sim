@@ -31,13 +31,34 @@ public class BoundingBox {
 	 */
 	private double depth;
 
+	/**
+	 * Construct an axis-aligned bounding box.
+	 * @param location
+	 * @param width
+	 * @param height
+	 * @param depth
+	 */
 	public BoundingBox(Vector3D location, double width, double height,
 			double depth) {
 		this.location = location;
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
+		rotation = new Matrix3D(new double[][] {
+				{1, 0, 0},
+				{0, 1, 0},
+				{0, 0, 1}
+		});
 		positify();
+	}
+	
+	public BoundingBox(Vector3D location, double width, double height,
+					   double rotate_x, double rotate_y, double rotate_z) {
+		this.location = location;
+		this.width = width;
+		this.height = height;
+		this.depth = depth;
+		rotation = Matrix3D.rotationMat(rotate_x, rotate_y, rotate_z);
 	}
 
 	public double getWidth() {
@@ -171,5 +192,31 @@ public class BoundingBox {
 				max = pos;
 		}
 		return new double[] {min, max};
+	}
+	
+	/**
+	 * Determine an axis-aligned bounding box for this oriented box.
+	 * @return
+	 */
+	public BoundingBox simpleBound() {
+		double min_x, max_x, min_y, max_y, min_z, max_z;
+		min_x = min_y = min_z = Double.POSITIVE_INFINITY;
+		max_x = max_y = max_z = Double.NEGATIVE_INFINITY;
+		for (Vector3D vertex : vertexList()) {
+			if (vertex.x < min_x)
+				min_x = vertex.x;
+			else if (vertex.x > max_x)
+				max_x = vertex.x;
+			if (vertex.y < min_y)
+                min_y = vertex.y;
+            else if (vertex.y > max_y)
+                max_y = vertex.y;
+            if (vertex.z < min_z)
+                min_z = vertex.z;
+            else if (vertex.z > max_z)
+                max_z = vertex.z;
+		}
+        return new BoundingBox(new Vector3D(min_x, min_y, min_z),
+                               max_x - min_x, max_y - min_y, max_z - min_z);
 	}
 }
