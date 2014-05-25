@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Deque;
 import java.util.ArrayDeque;
 
+import racing.physics.Quaternion;
 import racing.physics.Vector3D;
 
 /**
@@ -182,9 +183,29 @@ public class Octree<T> implements Iterable<T> {
 			Vector3D upVec, double fovy, double fovx) {
 		Vector3D direction = lookAt.subtract(apex);
 		Vector3D horizAxis = direction.cross(upVec);
-		// rotate up and down planes some amount about horizAxis
-		// rotate left and right planes some amount about upVec
-		// TODO: implement using quaternions
+		double vertAngle = fovy / 2;
+		double horizAngle = fovx / 2;
+		// TODO: confirm it is vertAngle, not -vertAngle
+		Quaternion upRotate = new Quaternion(horizAxis, vertAngle);
+		// save some clock cycles on recomputing the sines and cosines
+		Quaternion downRotate = new Quaternion(upRotate.w, -upRotate.x, -upRotate.y, -upRotate.z);
+		
+		// compute normals to top and bottom bounding planes
+		Vector3D topPlane = upRotate.toMatrix().multiply(upVec);
+		Vector3D botPlane = downRotate.toMatrix().multiply(upVec.multiply(-1));
+		
+		Quaternion rightRotate = new Quaternion(upVec, horizAngle);
+		Quaternion leftRotate = new Quaternion(rightRotate.w, -rightRotate.x, -rightRotate.y, -rightRotate.z);
+		
+		// compute normals to right and left bounding planes
+		Vector3D rightPlane = rightRotate.toMatrix().multiply(horizAxis);
+		Vector3D leftPlane = leftRotate.toMatrix().multiply(horizAxis);
+		
+		// Ax + By + Cz = D
+		double topD = topPlane.x * apex.x + topPlane.y * apex.y + topPlane.z * apex.z;
+		double botD = botPlane.x * apex.x + botPlane.y * apex.y + botPlane.z * apex.z;
+		double rightD = rightPlane.x * apex.x + rightPlane.y * apex.y + rightPlane.z * apex.z;
+		double leftD = leftPlane.x * apex.x + leftPlane.y * apex.y + leftPlane.z * apex.z;
 		
 		return null;
 	}
@@ -281,9 +302,26 @@ public class Octree<T> implements Iterable<T> {
 		System.out.println(tot / 17d);
 		contents.clear();
 	}
+	
+	private ArrayList<T> getRegionContents(Vector3D[] normals, double[] constants) {
+		
+		if (leaf) {
+			ArrayList<T> inRegion = new ArrayList<T>();
+			objectLoop:
+			for (Pair<BoundingBox, T> object : contents) {
+				for (int i = 0; i < normals.length; i++) {
+					if(object.first.intersectsPlane(normals[i], constants[i]) == 1)
+						continue objectLoop;
+				}
+				inRegion.add(object.second);
+			}
+			return inRegion;
+		}
+		else return null;
+	}
 
 	public static void main(String[] args) {
-		long start = System.nanoTime();
+		/*long start = System.nanoTime();
 		Octree<String> octree = new Octree<String>();
 		for (int i = 0; i < 1000000; i++) {
 			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(),
@@ -302,7 +340,8 @@ public class Octree<T> implements Iterable<T> {
 		}
 		System.out.println((double) N / (System.nanoTime() - start)
 				* 1000000000 + " searches/sec");
-
+		*/
+		System.out.println(new BoundingBox(new Vector3D(0,0,0), 1, 1, 1).intersectsPlane(new Vector3D(-1,-1,-1), -3.01));
 	}
 
 	/**

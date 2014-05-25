@@ -70,30 +70,27 @@ public class Matrix3D {
 	public static Matrix3D rotationMatX(double theta) {
 		double cos = Math.cos(theta);
 		double sin = Math.sin(theta);
-		return new Matrix3D(new double[][] {
-				{1, 0,   0   },
-				{0, cos, -sin},
-				{0, sin, cos }
-		});
+		return new Matrix3D(1, 0, 0,
+							0, cos, -sin,
+							0, sin, cos 
+		);
 	}
 	
 	public static Matrix3D rotationMatY(double theta) {
 		double cos = Math.cos(theta);
 		double sin = Math.sin(theta);
-		return new Matrix3D(new double[][] {
-				{cos,  0, sin},
-				{0,    1, 0  },
-				{-sin, 0, cos}
-		});
+		return new Matrix3D(cos, 0, sin,
+							0, 1, 0,
+							-sin, 0, cos
+		);
 	}
 	
 	public static Matrix3D rotationMatZ(double theta) {
 		double cos = Math.cos(theta);
 		double sin = Math.sin(theta);
-		return new Matrix3D(new double[][] {
-				{cos, -sin, 0},
-				{sin, cos,  0},
-				{0,   0,    1}
-		});
+		return new Matrix3D(cos, -sin, 0,
+							sin, cos, 0,
+							0, 0, 1
+		);
 	}
 }

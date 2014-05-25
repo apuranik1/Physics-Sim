@@ -1,6 +1,7 @@
 package racing;
 
 import racing.physics.Matrix3D;
+import racing.physics.Quaternion;
 import racing.physics.Vector3D;
 
 /**
@@ -15,7 +16,8 @@ public class BoundingBox {
 	 */
 	private Vector3D location;
 	/**
-	 * Orientation matrix of the box, with respect to <code>location</code>.
+	 * Orientation matrix of the box, with respect to <code>location</code>,
+	 * or null if box is not rotated.
 	 */
 	private Matrix3D rotation;
 	/**
@@ -30,6 +32,15 @@ public class BoundingBox {
 	 * The depth of the box
 	 */
 	private double depth;
+	
+	/**
+	 * Cache of vertex list
+	 */
+	private Vector3D[] vertexList;
+	/**
+	 * Flag for whether or not the vertex list cache is still valid
+	 */
+	private boolean vertexCacheValid;
 
 	/**
 	 * Construct an axis-aligned bounding box.
@@ -40,25 +51,19 @@ public class BoundingBox {
 	 */
 	public BoundingBox(Vector3D location, double width, double height,
 			double depth) {
-		this.location = location;
-		this.width = width;
-		this.height = height;
-		this.depth = depth;
-		rotation = new Matrix3D(new double[][] {
-				{1, 0, 0},
-				{0, 1, 0},
-				{0, 0, 1}
-		});
-		positify();
+		this(location, width, height, depth, new Quaternion(1.0, 0.0, 0.0, 0.0));
 	}
 	
 	public BoundingBox(Vector3D location, double width, double height,
-					   double rotate_x, double rotate_y, double rotate_z) {
+			double depth, Quaternion rotation) {
 		this.location = location;
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
-		rotation = Matrix3D.rotationMat(rotate_x, rotate_y, rotate_z);
+		this.rotation = rotation.toMatrix();
+		positify();
+		vertexList = new Vector3D[8];
+		vertexCacheValid = false;
 	}
 
 	public double getWidth() {
@@ -68,6 +73,7 @@ public class BoundingBox {
 	public void setWidth(double width) {
 		this.width = width;
 		positify();
+		vertexCacheValid = false;
 	}
 
 	public double getHeight() {
@@ -77,6 +83,7 @@ public class BoundingBox {
 	public void setHeight(double height) {
 		this.height = height;
 		positify();
+		vertexCacheValid = false;
 	}
 
 	public double getDepth() {
@@ -86,6 +93,7 @@ public class BoundingBox {
 	public void setDepth(double depth) {
 		this.depth = depth;
 		positify();
+		vertexCacheValid = false;
 	}
 
 	public Vector3D getLocation() {
@@ -94,6 +102,7 @@ public class BoundingBox {
 
 	public void setLocation(Vector3D location) {
 		this.location = location;
+		vertexCacheValid = false;
 	}
 
 	public Vector3D midpoint() {
@@ -102,18 +111,20 @@ public class BoundingBox {
 	}
 	
 	public Vector3D[] vertexList() {
-		Vector3D[] list = new Vector3D[8];
-		list[0] = new Vector3D(0,     0,      0);
-		list[1] = new Vector3D(width, 0,      0);
-		list[2] = new Vector3D(0,     height, 0);
-		list[3] = new Vector3D(width, height, 0);
-		list[4] = new Vector3D(0,     0,      depth);
-		list[5] = new Vector3D(width, 0,      depth);
-		list[6] = new Vector3D(0,     height, depth);
-		list[7] = new Vector3D(width, height, depth);
-		for (int i = 0; i < 8; i++)
-			list[i] = rotation.multiply(list[i]).add(location);
-		return list;
+		if (!vertexCacheValid) {
+			vertexList[0] = new Vector3D(0, 0, 0);
+			vertexList[1] = new Vector3D(width, 0, 0);
+			vertexList[2] = new Vector3D(0, height, 0);
+			vertexList[3] = new Vector3D(width, height, 0);
+			vertexList[4] = new Vector3D(0, 0, depth);
+			vertexList[5] = new Vector3D(width, 0, depth);
+			vertexList[6] = new Vector3D(0, height, depth);
+			vertexList[7] = new Vector3D(width, height, depth);
+			for (int i = 0; i < 8; i++)
+				vertexList[i] = rotation.multiply(vertexList[i]).add(location);
+			vertexCacheValid = true;
+		}
+		return vertexList.clone();
 	}
 	
 	public Vector3D[] axisList() {
@@ -180,6 +191,30 @@ public class BoundingBox {
 				return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Check for intersection with the plane. Returns 1 if the box lies entirely
+	 * "above" the plane (e.g. ax + by + cz > d is always positive, so the
+	 * normal vector points from the plane toward the box), 0 if it intersects
+	 * the plane, and -1 if the box lies entirely "below" the plane (defined
+	 * analogously to "above")
+	 * 
+	 * @param normal
+	 *            The normal vector to the plane
+	 * @param d
+	 *            The constant term, in the form ax + by + cz = d
+	 * @return A number indicating where the box lies in relation to the plane
+	 */
+	public int intersectsPlane(Vector3D normal, double d) {
+		double[] range = project(normal);
+		double planeDist = d / normal.magnitude();
+		System.out.println(planeDist + ", (" + range[0] + ", " + range[1] + ")");
+		if (planeDist < range[0])
+			return 1;
+		if (planeDist > range[1])
+			return -1;
+		return 0;
 	}
 	
 	public double[] project(Vector3D axis) {

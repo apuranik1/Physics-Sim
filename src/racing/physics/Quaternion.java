@@ -28,6 +28,12 @@ public class Quaternion {
 		z = axis.z * sin;
 	}
 	
+	public Quaternion multiply(Quaternion other) {
+		return new Quaternion(w * other.w - x * other.x - y * other.y - z * other.z,
+							  w * other.x + x * other.w + y * other.z - z * other.y,
+							  w * other.y - x * other.z + y * other.w + z * other.x,
+							  w * other.z + x * other.y - y * other.x + z * other.w);
+	}
 	
 	
 	/**
