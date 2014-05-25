@@ -177,6 +177,17 @@ public class Octree<T> implements Iterable<T> {
 				found |= octant.remove(bb);
 		return found;
 	}
+	
+	public ArrayList<T> getFrustumContents(Vector3D apex, Vector3D lookAt,
+			Vector3D upVec, double fovy, double fovx) {
+		Vector3D direction = lookAt.subtract(apex);
+		Vector3D horizAxis = direction.cross(upVec);
+		// rotate up and down planes some amount about horizAxis
+		// rotate left and right planes some amount about upVec
+		// TODO: implement using quaternions
+		
+		return null;
+	}
 
 	/**
 	 * Creates the sub-octants for the octree.
