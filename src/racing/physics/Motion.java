@@ -53,6 +53,5 @@ public class Motion {
 		position = position.add(dPos)
 				           .add(dV.multiply(0.5 * seconds));
 		velocity = velocity.add(dV);
-		System.out.println(accel.x);
 	}
 }

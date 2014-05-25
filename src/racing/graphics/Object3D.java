@@ -85,7 +85,9 @@ public class Object3D implements Renderable3D {
 	}
 
 	public void update(long nanos) {
+		GameEngine.getGameEngine().removeObject(this);
 		motion.update(nanos);
+		GameEngine.getGameEngine().addObject(this);
 	}
 
 	public static Object3D load(String file) throws IOException {

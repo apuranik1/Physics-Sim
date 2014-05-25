@@ -16,8 +16,12 @@ public class GameEngine implements Iterable<Object3D> {
 		cameraPos = new Vector3D(0, 0, 100);
 	}
 
+	public void removeObject(Object3D object) {
+		octree.remove(new BoundingBox(object.getPosition(), .001, .001, .001));
+	}
+
 	public void addObject(Object3D object) {
-		octree.insert(new BoundingBox(new Vector3D(0, 0, 0), 1, 1, 1), object);
+		octree.insert(new BoundingBox(object.getPosition(), .001, .001, .001), object);
 		// octree.insert(/*object.getBoundingBox()*/, object);
 	}
 

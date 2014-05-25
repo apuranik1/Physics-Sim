@@ -51,16 +51,26 @@ public class Octree<T> implements Iterable<T> {
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
 
-			private Octree<T> current = Octree.this;
-			private int objIndex = 0;
-			private Deque<Octree<T>> retrace = new ArrayDeque<Octree<T>>();
-			private Deque<Integer> octantIndices = new ArrayDeque<Integer>();
+			private Octree<T> current;
+			private int objIndex;
+			private Deque<Octree<T>> retrace;
+			private Deque<Integer> octantIndices;
+			BoundingBox prev;
 			{
+				current = Octree.this;
+				objIndex = 0;
+				retrace = new ArrayDeque<Octree<T>>();
+				octantIndices = new ArrayDeque<Integer>();
+				while (!current.leaf) {
+					retrace.addFirst(current);
+					octantIndices.addFirst(0);
+					current = current.octants[0];
+				}
 				searchForContents();
 			}
 
 			public boolean hasNext() {
-				return !(current.contents.size() == objIndex && retrace
+				return !(current.contents.size() <= objIndex && retrace
 						.isEmpty());
 			}
 
@@ -68,31 +78,35 @@ public class Octree<T> implements Iterable<T> {
 				if (!hasNext())
 					throw new IllegalStateException(
 							"No more elements in Octree");
-				T value = current.contents.get(objIndex++).second;
+				Pair<BoundingBox, T> value = current.contents.get(objIndex++);
+				prev = value.first();
 				searchForContents();
-				return value;
+				return value.second();
 			}
 
 			public void remove() {
-				// TODO: implement this?
+				current.remove(prev);
+				if (objIndex != 0)
+					objIndex--;
+				searchForContents();
 			}
 
 			private void searchForContents() {
 				// precondition: current is a leaf node
-				//TODO: check for correctness/debug
-				while (current.contents.size() == objIndex
+				// TODO: check for correctness/debug
+				while (current.contents.size() <= objIndex
 						&& retrace.size() != 0) {
 					objIndex = 0;
 					int octant;
 					do {
 						current = retrace.removeFirst();
 						octant = octantIndices.removeFirst();
-					} while (retrace.size() > 0 && octant == 8);
-
-					if (retrace.size() == 0)
-						return;
+					} while (retrace.size() > 0 && octant >= 7);
 
 					octant++;
+
+					if (octant >= 8)
+						return;
 
 					do {
 						retrace.addFirst(current);
@@ -154,7 +168,7 @@ public class Octree<T> implements Iterable<T> {
 		boolean found = false;
 		if (leaf) {
 			for (int i = contents.size() - 1; i >= 0; i--)
-				if (contents.get(i).equals(bb)) {
+				if (contents.get(i).first().simpleIntersects(bb)) {
 					contents.remove(i);
 					found = true;
 				}
@@ -192,29 +206,28 @@ public class Octree<T> implements Iterable<T> {
 		Vector3D pos = bb.getLocation();
 		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
 				+ bb.getHeight(), pos.z + bb.getDepth());
-		int tmp = octantContaining(corner);
-		int tmp2 = octantContaining(pos);
+		int tmp = octantContaining(pos);
+		int tmp2 = octantContaining(corner);
 		if (tmp == tmp2) {
 			intersect.add(octants[tmp]);
 			return intersect;
 		}
 		if (tmp == 0)
 			intersect.add(octants[0]);
-		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 1)
-			intersect.add(octants[1]);
+		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 3)
+			intersect.add(octants[3]);
 		if (octantContaining(new Vector3D(pos.x, corner.y, pos.z)) == 2)
 			intersect.add(octants[2]);
-		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 3)
-			intersect.add(octants[3]);
-		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 4)
-			intersect.add(octants[4]);
-		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 5)
-			intersect.add(octants[5]);
-		if (tmp2 == 6)
+		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 6)
 			intersect.add(octants[6]);
-		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 7)
+		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 5)
+			intersect.add(octants[5]);
+		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 1)
+			intersect.add(octants[1]);
+		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 4)
+			intersect.add(octants[4]);
+		if (tmp2 == 7)
 			intersect.add(octants[7]);
-
 		return intersect;
 	}
 
@@ -228,9 +241,8 @@ public class Octree<T> implements Iterable<T> {
 	private int octantContaining(Vector3D vec) {
 		// assert !leaf;
 		// we're not going to talk about this method
-		return mappings[(vec.x > splitPoint.x ? 4 : 0)
-				| (vec.y > splitPoint.y ? 2 : 0)
-				| (vec.z > splitPoint.z ? 1 : 0)];
+		return (vec.x >= splitPoint.x ? 4 : 0) + (vec.y >= splitPoint.y ? 2 : 0)
+				+ (vec.z >= splitPoint.z ? 1 : 0);
 	}
 
 	/**
@@ -251,6 +263,11 @@ public class Octree<T> implements Iterable<T> {
 		for (Pair<BoundingBox, T> pair : contents)
 			for (Octree<T> octant : octantsContaining(pair.first()))
 				octant.insert(pair.first(), pair.second());
+		System.out.print("Branched quality: ");
+		int tot = 0;
+		for (int i = 0; i < 8; i++)
+			tot += octants[i].contents.size();
+		System.out.println(tot / 17d);
 		contents.clear();
 	}
 
