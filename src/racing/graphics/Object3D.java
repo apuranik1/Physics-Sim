@@ -1,6 +1,11 @@
 package racing.graphics;
 
 import java.awt.Color;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
@@ -85,5 +90,54 @@ public class Object3D implements Renderable3D {
 
 	public void update(long nanos) {
 		motion.update(nanos);
+	}
+
+	public static Object3D load(String file) throws IOException {
+		return load(new FileInputStream(file));
+	}
+
+	public static Object3D load(InputStream is) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] buffer = new byte[4096];
+		int len = 0;
+		while ((len = is.read(buffer)) != -1) {
+			baos.write(buffer, 0, len);
+		}
+		return parse(baos.toString());
+	}
+
+	private static Object3D parse(String data) {
+		ArrayList<Vector3D> vertices = new ArrayList<Vector3D>();
+		ArrayList<Vector3D> output = new ArrayList<Vector3D>();
+		String[] lines = data.split("\n");
+		for (String line : lines) {
+			if (line.startsWith("#")) {
+
+			} else if (line.startsWith("mtllib")) {
+
+			} else if (line.startsWith("usemtl")) {
+
+			} else if (line.startsWith("s")) {
+
+			} else if (line.startsWith("o")) {
+
+			} else if (line.startsWith("v")) {
+				String[] dats = line.split("\\s+");
+				Vector3D point = new Vector3D(Double.parseDouble(dats[1]),
+						Double.parseDouble(dats[2]),
+						Double.parseDouble(dats[3]));
+				vertices.add(point);
+			} else if (line.startsWith("f")) {
+				String[] dats = line.split("\\s+");
+				output.add(vertices.get(Integer.parseInt(dats[1]) - 1));
+				output.add(vertices.get(Integer.parseInt(dats[2]) - 1));
+				output.add(vertices.get(Integer.parseInt(dats[3]) - 1));
+			} else
+				throw new IllegalArgumentException(
+						"Invalid format for .obj file on: " + line);
+		}
+		Vector3D[] verts = new Vector3D[output.size()];
+		output.toArray(verts);
+		return new Object3D(verts);
 	}
 }

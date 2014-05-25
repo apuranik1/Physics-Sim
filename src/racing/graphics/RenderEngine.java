@@ -16,6 +16,8 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.glu.GLU;
 
+import racing.physics.Vector3D;
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.opengl.GLWindow;
@@ -104,14 +106,14 @@ public class RenderEngine implements GLEventListener {
 
 	double dist = 5;
 
-	public void cameraSetup(GL2 gl) {
+	public void cameraSetup(GameEngine engine, GL2 gl) {
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		GLU.createGLU(gl).gluPerspective(45, aspectRatio, 1, 1000);
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
 		//gl.glTranslated(Math.random() * 10, 0, 0);
-		GLU.createGLU(gl).gluLookAt(0, 0, -dist, 0, 0, 0, 0, 1, 0);
+		GLU.createGLU(gl).gluLookAt(engine.getCameraPos().x, engine.getCameraPos().y, engine.getCameraPos().z, 0, 0, 0, 0, 1, 0);
 	}
 
 	@Override
@@ -138,17 +140,17 @@ public class RenderEngine implements GLEventListener {
 		drawable.swapBuffers();
 		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		cameraSetup(gl);
-		gl.glPushMatrix();
-			gl.glRotated(theta, 1, 0, 0);
-			new GLUT().glutSolidTeapot(.3);
-		gl.glPopMatrix();
-		
-		for (int i = 0; i < 4; i++) {
+		GameEngine engine = GameEngine.getGameEngine();
+		cameraSetup(engine, gl);
+		for(Object3D object : engine) {
 			gl.glPushMatrix();
-				gl.glTranslated(Math.pow(-1, i) * .5, Math.pow(-1, i / 2) * .5, 1);
-				gl.glRotated(-theta, 1, 0, 0);
-				new GLUT().glutSolidTeapot(.25);
+			Vector3D rot = object.getRotation();
+			gl.glRotated(rot.x, 1, 0, 0);
+			gl.glRotated(rot.y, 0, 1, 0);
+			gl.glRotated(rot.z, 0, 0, 1);
+			Vector3D pos = object.getPosition();
+			gl.glTranslated(pos.x, pos.y, pos.z);
+			object.render(gl);
 			gl.glPopMatrix();
 		}
 		drawable.swapBuffers();
