@@ -5,6 +5,8 @@ public class Vector3D {
 	public final double x;
 	public final double y;
 	public final double z;
+	public final static Vector3D origin = new Vector3D(0, 0, 0);
+	public final static Vector3D gravity = new Vector3D(0, -9.8, 0);
 
 	public Vector3D(double x, double y, double z) {
 		this.x = x;
@@ -29,16 +31,16 @@ public class Vector3D {
 	}
 
 	public Vector3D cross(Vector3D other) {
-		// may need to be changed if we are using a left-handed coordinate system
-		return new Vector3D(y * other.z - z * other.y,
-							z * other.x - x	* other.z,
-							x * other.y - y * other.x);
+		// may need to be changed if we are using a left-handed coordinate
+		// system
+		return new Vector3D(y * other.z - z * other.y, z * other.x - x
+				* other.z, x * other.y - y * other.x);
 	}
-	
+
 	public double project(Vector3D axis) {
 		return this.dot(axis) / axis.magnitude();
 	}
-	
+
 	public Vector3D vecProject(Vector3D axis) {
 		return axis.multiply(this.dot(axis) / axis.dot(axis));
 	}

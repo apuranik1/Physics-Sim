@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
+import racing.GameEngine;
+import racing.ResourceManager;
 import racing.physics.CarForces;
 import racing.physics.Vector2D;
 import racing.physics.Motion;
@@ -17,25 +19,26 @@ import racing.physics.PhysicsSpec;
 import racing.physics.Vector3D;
 import static javax.media.opengl.GL2.*;
 
-public class Object3D implements Renderable3D {
+public class Object3D implements Renderable3D, Cloneable {
 	protected Motion motion;
 	private Vector3D rotation;
 	private Vector3D[] vertices;
 	private Vector3D[] normals;
 	private Color[] colors;
 	private Vector2D[] textureCoords;
-	protected PhysicsSpec spec;
+	private PhysicsSpec spec;
 	private long frame = -1;
 
-	public Object3D(Vector3D[] vertices, Vector3D[] normals, Vector2D[] textureCoords,
-			Color[] colors) {
+	public Object3D(Vector3D[] vertices, Vector3D[] normals,
+			Vector2D[] textureCoords, Color[] colors) {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.colors = colors;
-		
-		Color c = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
+
+		Color c = new Color((float) Math.random(), (float) Math.random(),
+				(float) Math.random());
 		this.colors = new Color[vertices.length];
-		for(int i=0;i<vertices.length;i++)
+		for (int i = 0; i < vertices.length; i++)
 			this.colors[i] = c;
 		this.normals = normals;
 		motion = new Motion(new Vector3D(0, 0, 0), new Vector3D(0, 0, 0),
@@ -49,8 +52,8 @@ public class Object3D implements Renderable3D {
 		Vector3D empty = new Vector3D(0, 0, 0);
 		motion = new Motion(empty, empty, empty);
 	}
-	
-	public Object3D duplicateReference() {
+
+	public Object3D clone() {
 		return new Object3D(vertices, normals, textureCoords, colors);
 	}
 
@@ -58,28 +61,28 @@ public class Object3D implements Renderable3D {
 		return motion.getPosition();
 	}
 
-	public void setPosition(Vector3D position) {
-		motion.setPosition(position);
+	public Vector3D getVelocity() {
+		return motion.getVelocity();
+	}
+
+	public Vector3D getAcceleration() {
+		return motion.getAccel();
 	}
 
 	public Vector3D getRotation() {
 		return rotation;
 	}
 
-	public void setRotation(Vector3D rotation) {
-		this.rotation = rotation;
-	}
-
 	public void render(GL2 gl) {
 		gl.glBegin(GL_TRIANGLES);
 		for (int i = 0; i < vertices.length; i++) {
-			//System.out.println(colors[i].getRed() / 255d);
+			// System.out.println(colors[i].getRed() / 255d);
 			if (colors != null)
 				gl.glColor3d(colors[i].getRed() / 255d,
 						colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
 			if (textureCoords != null)
 				gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
-			if(normals != null)
+			if (normals != null)
 				gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
 			gl.glVertex3d(vertices[i].x, vertices[i].y, vertices[i].z);
 		}
@@ -131,14 +134,13 @@ public class Object3D implements Renderable3D {
 
 			} else if (line.startsWith("o")) {
 
-			} else if(line.startsWith("vn")) {
+			} else if (line.startsWith("vn")) {
 				String[] dats = line.split("\\s+");
 				Vector3D point = new Vector3D(Double.parseDouble(dats[1]),
 						Double.parseDouble(dats[2]),
 						Double.parseDouble(dats[3]));
 				normals.add(point);
-			}
-			else if (line.startsWith("v")) {
+			} else if (line.startsWith("v")) {
 				String[] dats = line.split("\\s+");
 				Vector3D point = new Vector3D(Double.parseDouble(dats[1]),
 						Double.parseDouble(dats[2]),
@@ -176,5 +178,32 @@ public class Object3D implements Renderable3D {
 		Vector3D[] norms = new Vector3D[noutput.size()];
 		noutput.toArray(norms);
 		return new Object3D(verts, norms, null, null);
+	}
+
+	public void setPosition(Vector3D vec) {
+		if (ResourceManager.getResourceManager().isInScene(this)) {
+			GameEngine.getGameEngine().prepareUpdate(this);
+			motion.setPosition(vec);
+			GameEngine.getGameEngine().completeUpdate(this);
+		} else
+			motion.setPosition(vec);
+	}
+
+	public void setVelocity(Vector3D vec) {
+		motion.setVelocity(vec);
+	}
+
+	public void setAcceleration(Vector3D vec) {
+		motion.setAccel(vec);
+	}
+
+	@Override
+	public void setRotation(Vector3D rotation) {
+		if (ResourceManager.getResourceManager().isInScene(this)) {
+			GameEngine.getGameEngine().prepareUpdate(this);
+			this.rotation = rotation;
+			GameEngine.getGameEngine().completeUpdate(this);
+		} else
+			this.rotation = rotation;
 	}
 }

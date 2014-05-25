@@ -1,4 +1,4 @@
-package racing.graphics;
+package racing;
 
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
@@ -17,8 +17,8 @@ import javax.media.opengl.glu.GLU;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
-import racing.BoundingBox;
-import racing.Octree;
+import racing.graphics.Object3D;
+import racing.graphics.RenderEngine;
 import racing.physics.Vector3D;
 
 public class GameEngine implements Iterable<Object3D>, KeyListener,
@@ -32,6 +32,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private boolean targetedCamera;
 	private double width;
 	private double height;
+	private ArrayList<EventProcessor> processors;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -42,6 +43,12 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 		width = screen.getWidth();
 		height = screen.getHeight();
+		processors = new ArrayList<EventProcessor>();
+		processors.add(new ExitEngine());
+	}
+
+	public void beginGame() {
+		new RenderEngine("");
 	}
 
 	public void removeObject(Object3D object) {
@@ -81,11 +88,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 			gl.glTranslated(-cameraPos.x, -cameraPos.y, -cameraPos.z);
 		}
 	}
-	
+
 	public void fireFrameUpdate(long frame, long dt) {
 		physicsRefresh(frame, dt);
 	}
-	
+
 	private void physicsRefresh(long frame, long dt) {
 		ArrayList<Object3D> proc = new ArrayList<>();
 		for (Object3D object : this)
@@ -93,13 +100,21 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		for (Object3D object : proc) {
 			if (object.getFrameUpdate() == frame)
 				continue;
-			removeObject(object);
+			prepareUpdate(object);
 			object.update(dt);
-			addObject(object);
+			completeUpdate(object);
 			object.setFrame(frame);
 		}
 		for (Object3D object : this)
 			object.setFrame(frame - 1);
+	}
+
+	public void prepareUpdate(Object3D object) {
+		removeObject(object);
+	}
+
+	public void completeUpdate(Object3D object) {
+		addObject(object);
 	}
 
 	public static GameEngine getGameEngine() {
@@ -119,28 +134,16 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-			System.exit(0);
-		switch (e.getKeyCode()) {
-		case KeyEvent.VK_W:
-			cameraPos = cameraPos.add(new Vector3D(0, 1, 0));
-			break;
-		case KeyEvent.VK_A:
-			cameraPos = cameraPos.add(new Vector3D(-1, 0, 0));
-			break;
-		case KeyEvent.VK_D:
-			cameraPos = cameraPos.add(new Vector3D(1, 0, 0));
-			break;
-		case KeyEvent.VK_S:
-			cameraPos = cameraPos.add(new Vector3D(0, -1, 0));
-			break;
-		}
+		for (EventProcessor processor : processors)
+			if (processor.keyPressed(e.getKeyCode()))
+				return;
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-
+		for (EventProcessor processor : processors)
+			if (processor.keyReleased(e.getKeyCode()))
+				return;
 	}
 
 	@Override
@@ -166,5 +169,13 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 			int height) {
 		this.width = width;
 		this.height = height;
+	}
+
+	private class ExitEngine extends EventProcessor {
+		public boolean keyPressed(int keyCode) {
+			if (keyCode == KeyEvent.VK_ESCAPE)
+				System.exit(0);
+			return false;
+		}
 	}
 }

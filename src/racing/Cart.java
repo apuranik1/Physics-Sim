@@ -20,7 +20,6 @@ public class Cart extends Object3D {
 	}
 
 	public void update(long nanos) {
-		
 		motion.update(nanos);
 	}
 	

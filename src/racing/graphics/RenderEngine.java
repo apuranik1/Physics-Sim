@@ -1,31 +1,30 @@
 package racing.graphics;
 
-import static javax.media.opengl.GL.*;
-import static javax.media.opengl.GL2.*;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.*;
-
-import java.awt.Toolkit;
-import java.util.ArrayList;
-import java.util.Iterator;
+import static javax.media.opengl.GL.GL_BACK;
+import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_CULL_FACE;
+import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
+import static javax.media.opengl.GL.GL_DEPTH_TEST;
+import static javax.media.opengl.GL.GL_LESS;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_COLOR_MATERIAL;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 
 import javax.media.nativewindow.WindowClosingProtocol.WindowClosingMode;
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
-import javax.media.opengl.glu.GLU;
 
-import racing.Octree;
+import racing.GameEngine;
 import racing.physics.Vector3D;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.gl2.GLUT;
 
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;
@@ -122,19 +121,6 @@ public class RenderEngine implements GLEventListener {
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GameEngine engine = GameEngine.getGameEngine();
 		engine.setupCamera(gl);
-		ArrayList<Object3D> proc = new ArrayList<>();
-		for (Object3D object : engine)
-			proc.add(object);
-		for (Object3D object : proc) {
-			if (object.getFrameUpdate() == frame)
-				continue;
-			engine.removeObject(object);
-			object.update(dt);
-			engine.addObject(object);
-			object.setFrame(frame);
-		}
-		for (Object3D object : engine)
-			object.setFrame(frame - 1);
 		for (Object3D object : engine) {
 			if (object.getFrameUpdate() == frame)
 				continue;
