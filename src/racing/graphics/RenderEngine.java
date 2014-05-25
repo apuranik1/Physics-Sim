@@ -29,21 +29,19 @@ import com.jogamp.opengl.util.gl2.GLUT;
 
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;
-	private double aspectRatio;
+	private Object3D obj = null;
 
 	public RenderEngine(String title) {
-		configureOpenGL();
-		configureWindow();
+		try {
+			obj = Object3D.load("/Users/michael/Desktop/monkey.obj");
+		} catch (Exception ex) {
+			// TODO Auto-generated catch block
+			ex.printStackTrace();
+		}
+		configure();
 	}
 
-	private void configureWindow() {
-		// window.setFullscreen(true);
-		aspectRatio = ((double) Toolkit.getDefaultToolkit().getScreenSize()
-				.getWidth())
-				/ Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-	}
-
-	private void configureOpenGL() {
+	private void configure() {
 		GLProfile.initSingleton();
 		GLProfile glp = GLProfile.getDefault();
 		GLCapabilities capabilities = new GLCapabilities(glp);
@@ -54,7 +52,7 @@ public class RenderEngine implements GLEventListener {
 		window.addGLEventListener(this);
 		window.setFullscreen(true);
 		window.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
-		window.addKeyListener(new GameKeyListener());
+		window.addKeyListener(GameEngine.getGameEngine());
 		window.setVisible(true);
 		FPSAnimator anim = new FPSAnimator(window, 600);
 		anim.start();
@@ -64,46 +62,8 @@ public class RenderEngine implements GLEventListener {
 	int frame = 0;
 
 	private void updateSpace() {
-		theta += 5;
 		frame++;
-		s = Math.sin(theta);
-		c = Math.cos(theta);
-		dist = 3 + 1 * Math.sin(Math.toRadians(theta));
-		if (frame % 1 == 0) {
-			Object3D obj;
-			try {
-				obj = Object3D.load("/Users/michael/Desktop/monkey.obj");
-				obj.motion.setAccel(new Vector3D(0, 0, 9.8));
-				obj.motion.setPosition(new Vector3D(Math.random() * 50 - 25,
-						Math.random() * 50 - 25, Math.random() * 10));
-				GameEngine.getGameEngine().addObject(obj);
-			} catch (Exception ex) {
-				// TODO Auto-generated catch block
-				ex.printStackTrace();
-			}
-		}
-	}
-
-	private void exitEngine() {
-		window.setVisible(false);
-		System.exit(0);
-	}
-
-	private class GameKeyListener implements KeyListener {
-
-		@Override
-		public void keyPressed(KeyEvent e) {
-			if (e.getKeyCode() == KeyEvent.VK_ESCAPE)
-				exitEngine();
-
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
+		GameEngine.getGameEngine().fireFrameUpdate(frame, dt);
 	}
 
 	@Override
@@ -127,18 +87,6 @@ public class RenderEngine implements GLEventListener {
 	}
 
 	double dist = 5;
-
-	public void cameraSetup(GameEngine engine, GL2 gl) {
-		gl.glMatrixMode(GL_PROJECTION);
-		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluPerspective(45, aspectRatio, 1, 1000);
-		gl.glMatrixMode(GL_MODELVIEW);
-		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluLookAt(engine.getCameraPos().x,
-				engine.getCameraPos().y, engine.getCameraPos().z, 0, 0, 0, 0,
-				1, 0);
-		// 6 planes: bases have normal = 
-	}
 
 	@Override
 	public void dispose(GLAutoDrawable drawable) {
@@ -165,34 +113,32 @@ public class RenderEngine implements GLEventListener {
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
 			int height) {
 		drawable.getGL().getGL2().glViewport(0, 0, width, height);
+		GameEngine.getGameEngine().reshape(drawable, x, y, width, height);
 	}
-
-	double theta = 0;
 
 	private void render(GLAutoDrawable drawable) {
 		// drawable.swapBuffers();
 		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GameEngine engine = GameEngine.getGameEngine();
-		cameraSetup(engine, gl); 
-		
-		gl.glColor3f(1f, .5f, 0f);
-		// gl.glMaterialf(face, pname, param)
+		engine.setupCamera(gl);
 		ArrayList<Object3D> proc = new ArrayList<>();
-		for(Object3D object : engine)
+		for (Object3D object : engine)
 			proc.add(object);
-		for(Object3D object : proc) {
-			if(object.getFrameUpdate() == frame)
+		for (Object3D object : proc) {
+			if (object.getFrameUpdate() == frame)
 				continue;
 			engine.removeObject(object);
 			object.update(dt);
 			engine.addObject(object);
 			object.setFrame(frame);
 		}
-		for(Object3D object : engine)
+		for (Object3D object : engine)
 			object.setFrame(frame - 1);
 		for (Object3D object : engine) {
-			if(object.getFrameUpdate() == frame)
+			if (object.getFrameUpdate() == frame)
+				continue;
+			if (object.getPosition().z > engine.getCameraPos().z)
 				continue;
 			gl.glPushMatrix();
 			Vector3D rot = object.getRotation();

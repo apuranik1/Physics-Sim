@@ -32,6 +32,11 @@ public class Object3D implements Renderable3D {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.colors = colors;
+		
+		Color c = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
+		this.colors = new Color[vertices.length];
+		for(int i=0;i<vertices.length;i++)
+			this.colors[i] = c;
 		this.normals = normals;
 		motion = new Motion(new Vector3D(0, 0, 0), new Vector3D(0, 0, 0),
 				new Vector3D(0, 0, 0));
@@ -43,6 +48,10 @@ public class Object3D implements Renderable3D {
 		this.spec = spec;
 		Vector3D empty = new Vector3D(0, 0, 0);
 		motion = new Motion(empty, empty, empty);
+	}
+	
+	public Object3D duplicateReference() {
+		return new Object3D(vertices, normals, textureCoords, colors);
 	}
 
 	public Vector3D getPosition() {
@@ -64,6 +73,7 @@ public class Object3D implements Renderable3D {
 	public void render(GL2 gl) {
 		gl.glBegin(GL_TRIANGLES);
 		for (int i = 0; i < vertices.length; i++) {
+			//System.out.println(colors[i].getRed() / 255d);
 			if (colors != null)
 				gl.glColor3d(colors[i].getRed() / 255d,
 						colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
