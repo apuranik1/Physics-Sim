@@ -222,6 +222,6 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 	
 	public ArrayList<Object3D> selectFrustum() {
-		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, 45, 45 * width / height);
+		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, Math.PI / 4, Math.PI / 4 * width / height);
 	}
 }

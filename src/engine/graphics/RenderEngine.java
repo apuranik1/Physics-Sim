@@ -117,7 +117,7 @@ public class RenderEngine implements GLEventListener {
 		GameEngine engine = GameEngine.getGameEngine();
 		engine.setupCamera(gl, dt);
 		ArrayList<Object3D> frustalCull = engine.selectFrustum();
-		System.out.println(frustalCull.size());
+		//System.out.println(frustalCull.size());
 		for (Object3D object : frustalCull) {
 			if (object.getFrameUpdate() == frame)
 				continue;

@@ -221,19 +221,22 @@ public class Octree<T> implements Iterable<T> {
 		Vector3D topPlane = upRotate.toMatrix().multiply(upVec);
 		Vector3D botPlane = downRotate.toMatrix().multiply(upVec.multiply(-1));
 		
-		Quaternion rightRotate = new Quaternion(upVec, horizAngle);
+		Quaternion rightRotate = new Quaternion(upVec, -horizAngle);
 		Quaternion leftRotate = new Quaternion(rightRotate.w, -rightRotate.x, -rightRotate.y, -rightRotate.z);
 		
 		// compute normals to right and left bounding planes
 		Vector3D rightPlane = rightRotate.toMatrix().multiply(horizAxis);
-		Vector3D leftPlane = leftRotate.toMatrix().multiply(horizAxis);
+		Vector3D leftPlane = leftRotate.toMatrix().multiply(horizAxis.multiply(-1));
 		
 		// Ax + By + Cz = D
 		double topD = topPlane.x * apex.x + topPlane.y * apex.y + topPlane.z * apex.z;
 		double botD = botPlane.x * apex.x + botPlane.y * apex.y + botPlane.z * apex.z;
 		double rightD = rightPlane.x * apex.x + rightPlane.y * apex.y + rightPlane.z * apex.z;
 		double leftD = leftPlane.x * apex.x + leftPlane.y * apex.y + leftPlane.z * apex.z;
-		
+		System.out.println("Direction: " + direction);
+		System.out.println("Up: " + upVec);
+		System.out.println(topPlane + " " + botPlane + " " + leftPlane + " " + rightPlane);
+		//System.out.println(topD + " " + botD + " " + leftD + " " + rightD);
 		return getRegionContents(new Vector3D[]{topPlane, botPlane, leftPlane, rightPlane}, new double[]{topD, botD, rightD, leftD});
 	}
 
@@ -354,7 +357,7 @@ public class Octree<T> implements Iterable<T> {
 		ArrayList<T> inRegion = new ArrayList<T>();
 		if (leaf) {
 			for (Pair<BoundingBox, T> object : contents) {
-				if (object.first.withinRegion(normals, constants));
+				if (object.first.withinRegion(normals, constants))
 					inRegion.add(object.second);
 			}
 		
@@ -419,14 +422,22 @@ public class Octree<T> implements Iterable<T> {
 				* 1000000000 + " searches/sec");
 		*/
 		
-		//System.out.println(
-		//		new BoundingBox(new Vector3D(0,0,0), 1, 1, 1,
-		//						new Quaternion(new Vector3D(1, 0, 0), Math.PI))
-		//		.intersectsPlane(new Vector3D(1,1,1), 3.0001));
-//		System.out.println(Arrays.toString(new BoundingBox(
-//				new Vector3D(0,0,0), 1, 1, 1,
-//				new Quaternion(new Vector3D(1, 1, 0), Math.PI))
-//				.vertexList()));
+		Octree<String> oct = new Octree<>();
+		BoundingBox outside = new BoundingBox(new Vector3D(-1, 0.9, 0), 1, 1, 1);
+		Vector3D[] test = new Vector3D[]{new Vector3D(-0.7071067811865476, 0.7071067811865475, 0.0)};
+		//oct.insert(new BoundingBox(new Vector3D(0, 0, 0), 0.1, 0.1, 0.1), "a");
+		oct.insert(outside, "b");
+		//oct.insert(new BoundingBox(new Vector3D(1, -0.9, 0), 1, 1, 1), "c");
+		//oct.insert(new BoundingBox(new Vector3D(1, 0, 0), 1, 1, 1), "d");
+		//oct.insert(new BoundingBox(new Vector3D(1, 0.9, 0.9), 1, 1, 1), "e");
+		//oct.insert(new BoundingBox(new Vector3D(10, 0, 0), 1, 1, 1), "f");
+		//System.out.println(oct.getFrustumContents(new Vector3D(0,0,0),
+		//		new Vector3D(1,0,0), new Vector3D(0,1,0), Math.PI / 2, Math.PI / 2));
+		System.out.println(outside.withinRegion(
+				test,
+				new double[]{0}));
+		System.out.println(oct.getRegionContents(test,
+				new double[]{0}));
 	}
 
 	/**
