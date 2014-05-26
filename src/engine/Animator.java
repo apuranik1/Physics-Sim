@@ -31,9 +31,8 @@ public class Animator {
 				&& animationQueue.peek().executionTime() <= time) {
 			AnimationEvent event = animationQueue.poll();
 			events.add(event);
-			if(event.prepareNext()) {
+			if(event.prepareNext())
 				animationQueue.offer(event);
-			}
 		}
 		return events;
 	}

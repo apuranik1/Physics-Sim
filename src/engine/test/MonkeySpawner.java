@@ -20,7 +20,7 @@ public class MonkeySpawner {
 		monkey.setAcceleration(new Vector3D(0,1,0));
 		monkey.setVelocity(new Vector3D(0,-10,0));
 		manager.loadObject("monkey",monkey);
-		//manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
+		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
 		engine.cameraLookAt(new Vector3D(0, 0, 10), origin);
 		engine.beginGame();
 		Animator.getAnimator().registerEvent(
@@ -32,7 +32,7 @@ public class MonkeySpawner {
 					}
 				});
 		Animator.getAnimator().registerEvent(
-				new ContinuousAnimationEvent(.1, .2) {
+				new ContinuousAnimationEvent(1, 2) {
 					@Override
 					public void animate() {
 						// TODO Auto-generated method stub

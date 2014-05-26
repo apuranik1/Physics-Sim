@@ -9,7 +9,7 @@ public abstract class ContinuousAnimationEvent extends AnimationEvent implements
 		this.period = period;
 	}
 
-	public boolean prepareNext() {
+	public final boolean prepareNext() {
 		execTime += period;
 		return true;
 	}

@@ -16,9 +16,9 @@ public abstract class AnimationEvent implements Comparable<AnimationEvent> {
 	}
 
 	public int compareTo(AnimationEvent other) {
-		if (executionTime() < executionTime())
+		if (executionTime() < other.executionTime())
 			return -1;
-		if (executionTime() == executionTime())
+		if (executionTime() == other.executionTime())
 			return 0;
 		return 1;
 	}

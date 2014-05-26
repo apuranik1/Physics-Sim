@@ -26,6 +26,10 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private static final int MIN_PER_NODE = 8;
 	/**
+	 * The maximum depth of the octree.
+	 */
+	private static final int MAX_DEPTH = 16;
+	/**
 	 * Is the octree a leaf octree?
 	 */
 	private boolean leaf;
@@ -45,6 +49,10 @@ public class Octree<T> implements Iterable<T> {
 	 * Number of elements stored.
 	 */
 	private int size;
+	/**
+	 * The depth of this octant.
+	 */
+	private int depth;
 	private static final int mappings[] = new int[] { 0, 3, 4, 7, 1, 2, 5, 6 };
 	private static final int INTERSECTION_CALIBRATION = 0;
 
@@ -55,6 +63,15 @@ public class Octree<T> implements Iterable<T> {
 		leaf = true;
 		contents = new ArrayList<Pair<BoundingBox, T>>();
 		size = 0;
+		depth = 0;
+	}
+	
+	/**
+	 * Constructor to create a new, empty octant with a given depth.
+	 */
+	public Octree(int depth) {
+		this();
+		this.depth = depth;
 	}
 
 	public Iterator<T> iterator() {
@@ -198,7 +215,7 @@ public class Octree<T> implements Iterable<T> {
 			values[i] = contents.get(i).first().getLocation();
 		splitPoint = OctreeUtils.median(values);
 		for (int i = 0; i < 8; i++)
-			octants[i] = new Octree<T>();
+			octants[i] = new Octree<T>(depth + 1);
 	}
 
 	/**
@@ -258,7 +275,7 @@ public class Octree<T> implements Iterable<T> {
 	 * Checks the current state of the octree and branches if necessary.
 	 */
 	private void considerBranch() {
-		if (leaf && contents.size() > MAX_PER_LEAF)
+		if (leaf && contents.size() > MAX_PER_LEAF && depth < MAX_DEPTH)
 			branch();
 		if (!leaf && size < MIN_PER_NODE)
 			collapse();
@@ -278,17 +295,6 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private void branch() {
 		assert leaf;
-		Vector3D position = contents.get(0).first().getLocation();
-		boolean okay = false;
-		for(Pair<BoundingBox, T> pair : contents)
-			if(!pair.first().getLocation().equals(position)) {
-				okay = true;
-				break;
-			}
-		if(!okay) {
-			System.out.println("Branching failed: complete overlap.");
-			return;
-		}
 		leaf = false;
 		makeSubOctants();
 		for (Pair<BoundingBox, T> pair : contents)
