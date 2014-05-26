@@ -20,7 +20,7 @@ import engine.physics.Vector3D;
 import static javax.media.opengl.GL2.*;
 
 public class Object3D implements Renderable3D, Cloneable {
-	protected Motion motion;
+	public Motion motion;
 	private Vector3D rotation;
 	private Vector3D[] vertices;
 	private Vector3D[] normals;
@@ -168,7 +168,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		output.toArray(verts);
 		Vector3D[] norms = new Vector3D[noutput.size()];
 		noutput.toArray(norms);
-		return new Object3D(verts, norms, null, null, Motion.gravity);
+		return new Object3D(verts, norms, null, null, Motion.gravity());
 	}
 
 	public void setPosition(Vector3D vec) {

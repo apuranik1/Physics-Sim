@@ -113,7 +113,7 @@ public class RenderEngine implements GLEventListener {
 		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GameEngine engine = GameEngine.getGameEngine();
-		engine.setupCamera(gl);
+		engine.setupCamera(gl, dt);
 		for (Object3D object : engine) {
 			if (object.getFrameUpdate() == frame)
 				continue;

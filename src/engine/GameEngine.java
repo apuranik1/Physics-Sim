@@ -4,7 +4,10 @@ import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 import java.awt.Dimension;
+import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
@@ -14,12 +17,14 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+import javax.swing.Timer;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
 import engine.graphics.Object3D;
 import engine.graphics.RenderEngine;
+import engine.physics.Motion;
 import engine.physics.Vector3D;
 import engine.processors.DefaultExitProcessor;
 
@@ -27,7 +32,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		GLEventListener {
 	private static GameEngine gameEngine;
 	private Octree<Object3D> octree;
-	private Vector3D cameraPos;
+	private Motion cameraMotion;
 	private Vector3D cameraRotation;
 	private Vector3D cameraTarget;
 	private Vector3D cameraUp;
@@ -39,7 +44,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private GameEngine() {
 		octree = new Octree<Object3D>();
 		targetedCamera = true;
-		cameraPos = new Vector3D(0, 0, 0);
+		cameraMotion = Motion.still();
 		cameraTarget = new Vector3D(0, 0, -1);
 		cameraUp = new Vector3D(0, 1, 0);
 		Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
@@ -69,27 +74,29 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void cameraLookAt(Vector3D position, Vector3D target) {
-		cameraPos = position;
+		cameraMotion.setPosition(position);
 		cameraTarget = target;
 		targetedCamera = true;
 	}
 
 	public void cameraOrient(Vector3D position, Vector3D rotation) {
-		cameraPos = position;
+		cameraMotion.setPosition(position);
 		cameraRotation = rotation;
 		targetedCamera = false;
 	}
-
-	public void cameraMove(Vector3D delta) {
-		cameraPos = cameraPos.add(delta);
+	
+	public Motion getCameraMotion() {
+		return cameraMotion;
 	}
 
-	public void setupCamera(GL2 gl) {
+	public void setupCamera(GL2 gl, long dt) {
+		cameraMotion.update(dt);
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		GLU.createGLU(gl).gluPerspective(45, width / height, 1, 1000);
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
+		Vector3D cameraPos = cameraMotion.getPosition();
 		if (targetedCamera)
 			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
 					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
@@ -147,7 +154,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public Vector3D getCameraPos() {
-		return cameraPos;
+		return cameraMotion.getPosition();
 	}
 
 	@Override
@@ -157,13 +164,33 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_Q) {
+			System.out.println("Cancelled!");
+			e.setConsumed(true);
+			return;
+		}
+		System.out.println(e.getKeyCode());
 		for (EventProcessor processor : processors)
 			if (processor.keyPressed(e.getKeyCode()))
-				return;
+				break;
+		// Don't ask...
+		try {
+			Robot r = new Robot();
+			r.keyPress(java.awt.event.KeyEvent.VK_Q);
+			r.keyRelease(java.awt.event.KeyEvent.VK_Q);
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_Q) {
+			System.out.println("Cancelled!");
+			e.setConsumed(true);
+			return;
+		}
 		for (EventProcessor processor : processors)
 			if (processor.keyReleased(e.getKeyCode()))
 				return;
