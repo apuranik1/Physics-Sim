@@ -49,18 +49,19 @@ public class MonkeySpawner {
 		engine.registerProcessor(new EventProcessor() {
 			public boolean keyPressed(int keyCode) {
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
+				Vector3D cam = GameEngine.getGameEngine().getCameraPos();
 				switch (keyCode) {
 				case KeyEvent.VK_A:
-					motion.setVelocity(new Vector3D(-10,motion.getVelocity().y,motion.getVelocity().z));
+					GameEngine.getGameEngine().cameraLookAt(new Vector3D(cam.x-1,cam.y,10),new Vector3D(cam.x-1,cam.y,0));
 					break;
 				case KeyEvent.VK_D:
-					motion.setVelocity(new Vector3D(10,motion.getVelocity().y,motion.getVelocity().z));
+					GameEngine.getGameEngine().cameraLookAt(new Vector3D(cam.x+1,cam.y,10),new Vector3D(cam.x+1,cam.y,0));
 					break;
 				case KeyEvent.VK_W:
-					motion.setVelocity(new Vector3D(motion.getVelocity().x,10,motion.getVelocity().z));
+					GameEngine.getGameEngine().cameraLookAt(new Vector3D(cam.x,cam.y+1,10),new Vector3D(cam.x,cam.y+1,0));
 					break;
 				case KeyEvent.VK_S:
-					motion.setVelocity(new Vector3D(motion.getVelocity().x,-10,motion.getVelocity().z));
+					GameEngine.getGameEngine().cameraLookAt(new Vector3D(cam.x,cam.y-1,10),new Vector3D(cam.x,cam.y-1,0));
 					break;
 				default:
 					return false;
@@ -72,16 +73,12 @@ public class MonkeySpawner {
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
 				switch (keyCode) {
 				case KeyEvent.VK_A:
-					motion.setVelocity(new Vector3D(0,motion.getVelocity().y,motion.getVelocity().z));
 					break;
 				case KeyEvent.VK_D:
-					motion.setVelocity(new Vector3D(0,motion.getVelocity().y,motion.getVelocity().z));
 					break;
 				case KeyEvent.VK_W:
-					motion.setVelocity(new Vector3D(motion.getVelocity().x,0,motion.getVelocity().z));
 					break;
 				case KeyEvent.VK_S:
-					motion.setVelocity(new Vector3D(motion.getVelocity().x,0,motion.getVelocity().z));
 					break;
 				default:
 					return false;

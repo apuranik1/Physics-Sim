@@ -103,7 +103,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		Vector3D cameraPos = cameraMotion.getPosition();
 		if (targetedCamera)
 			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
-					cameraPos.x, cameraPos.y, cameraPos.z - 10, cameraUp.x,
+					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
 					cameraUp.y, cameraUp.z);
 		else {
 			gl.glRotated(-cameraRotation.x, 1, 0, 0);
