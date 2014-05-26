@@ -30,6 +30,7 @@ import engine.physics.Vector3D;
 
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;
+	private int lastRendered;
 
 	public RenderEngine(String title) {
 		configure();
@@ -134,7 +135,11 @@ public class RenderEngine implements GLEventListener {
 			gl.glPopMatrix();
 			object.setFrame(frame);
 		}
-		System.out.println(distinct + "/" + engine.getSize() + " rendered.");
+		lastRendered = distinct;
 		gl.glFlush();
+	}
+	
+	public int lastRendered() {
+		return lastRendered;
 	}
 }

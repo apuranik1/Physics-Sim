@@ -40,6 +40,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private double width;
 	private double height;
 	private Stack<EventProcessor> processors;
+	private RenderEngine renderer;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -52,6 +53,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		height = screen.getHeight();
 		processors = new Stack<EventProcessor>();
 		registerProcessor(new DefaultExitProcessor());
+		new HealthMonitor();
 	}
 	
 	public int getSize() {
@@ -63,7 +65,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void beginGame() {
-		new RenderEngine("");
+		renderer = new RenderEngine("");
 	}
 
 	public void removeObject(Object3D object) {
@@ -227,5 +229,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	
 	public ArrayList<Object3D> selectFrustum() {
 		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, Math.PI / 4, Math.PI / 4 * width / height);
+	}
+	
+	public int treeSize() {
+		return octree.getTrueSize();
+	}
+	
+	public int treeDepth() {
+		return octree.getDepth();
+	}
+	
+	public int lastRendered() {
+		if(renderer != null)
+			return renderer.lastRendered();
+		else return 0;
 	}
 }

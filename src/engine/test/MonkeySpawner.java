@@ -31,7 +31,7 @@ public class MonkeySpawner {
 		engine.beginGame();
 		
 		Animator.getAnimator().registerEvent(
-				new ContinuousAnimationEvent(0, .2) {
+				new ContinuousAnimationEvent(0, .05) {
 					@Override
 					public void animate() {
 						ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5, 0, 0));

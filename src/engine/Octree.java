@@ -2,6 +2,7 @@ package engine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Deque;
 import java.util.ArrayDeque;
@@ -78,6 +79,28 @@ public class Octree<T> implements Iterable<T> {
 
 	public int getSize() {
 		return size;
+	}
+	
+	public int getTrueSize() {
+		if(leaf)
+			return contents.size();
+		else {
+			int total = 0;
+			for(Octree<T> octant : octants)
+				total += octant.getTrueSize();
+			return total;
+		}
+	}
+	
+	public int getDepth() {
+		if(leaf)
+			return depth;
+		else {
+			int max = 0;
+			for(Octree<T> octant : octants)
+				max = Math.max(max, octant.getDepth());
+			return max;
+		}
 	}
 	
 	public Iterator<T> iterator() {
@@ -322,12 +345,30 @@ public class Octree<T> implements Iterable<T> {
 	}
 	
 	private void collapse() {
-		leaf = true;
 		contents.clear();
-		for(Octree<T> octant : octants)
-			contents.addAll(octant.contents);
+		HashSet<T> added = new HashSet<T>();
+		for(Octree<T> octant : octants) {
+			ArrayList<Pair<BoundingBox, T>> toAdd = octant.getAll();
+			for(Pair<BoundingBox, T> pair : toAdd)
+				if(!added.contains(pair.second())) {
+					contents.add(pair);
+					added.add(pair.second());
+				}
+		}
 		octants = null;
+		leaf = true;
 		System.out.println("Octant collapsed!");
+	}
+	
+	private ArrayList<Pair<BoundingBox, T>> getAll() {
+		if(leaf)
+			return contents;
+		else {
+			ArrayList<Pair<BoundingBox, T>> stuff = new ArrayList<Pair<BoundingBox, T>>();
+			for(Octree<T> octant : octants)
+				stuff.addAll(octant.getAll());
+			return stuff;
+		}
 	}
 
 	/**
@@ -340,7 +381,7 @@ public class Octree<T> implements Iterable<T> {
 		for (Pair<BoundingBox, T> pair : contents)
 			for (Octree<T> octant : octantsContaining(pair.first()))
 				octant.insert(pair.first(), pair.second());
-		System.out.print("The octree has branched with ");
+		System.out.print("The octree of size " + getSize() +" and depth " + depth + " has branched with ");
 		int tot = 0;
 		for (int i = 0; i < 8; i++)
 			tot += octants[i].contents.size();
