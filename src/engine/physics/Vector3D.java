@@ -21,6 +21,10 @@ public class Vector3D {
 	public Vector3D add(Vector3D other) {
 		return new Vector3D(x + other.x, y + other.y, z + other.z);
 	}
+	
+	public Vector3D subtract(Vector3D other) {
+		return new Vector3D(x - other.x, y - other.y, z - other.z);
+	}
 
 	public Vector3D multiply(double scalar) {
 		return new Vector3D(x * scalar, y * scalar, z * scalar);

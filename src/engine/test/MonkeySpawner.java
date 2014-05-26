@@ -25,7 +25,8 @@ public class MonkeySpawner {
 		manager.loadObject("monkey",monkey);
 		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
 		
-		engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
+		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
+		engine.cameraLookAt(new Vector3D(0,0,10),new Vector3D(0,0,0));
 		
 		engine.beginGame();
 		
@@ -64,7 +65,7 @@ public class MonkeySpawner {
 				default:
 					return false;
 				}
-				System.out.println(motion);
+				//System.out.println(motion);
 				return true;
 			}
 			public boolean keyReleased(int keyCode) {
@@ -85,7 +86,7 @@ public class MonkeySpawner {
 				default:
 					return false;
 				}
-				System.out.println(motion);
+				//System.out.println(motion);
 				return true;
 			}
 		});

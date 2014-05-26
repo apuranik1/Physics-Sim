@@ -165,7 +165,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_Q) {
-			System.out.println("Cancelled!");
+			//System.out.println("Cancelled!");
 			e.setConsumed(true);
 			return;
 		}
@@ -187,7 +187,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_Q) {
-			System.out.println("Cancelled!");
+			//System.out.println("Cancelled!");
 			e.setConsumed(true);
 			return;
 		}
@@ -219,5 +219,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 			int height) {
 		this.width = width;
 		this.height = height;
+	}
+	
+	public ArrayList<Object3D> selectFrustum() {
+		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, 45, 45 * width / height);
 	}
 }

@@ -12,6 +12,8 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 
+import java.util.ArrayList;
+
 import javax.media.nativewindow.WindowClosingProtocol.WindowClosingMode;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
@@ -114,7 +116,9 @@ public class RenderEngine implements GLEventListener {
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GameEngine engine = GameEngine.getGameEngine();
 		engine.setupCamera(gl, dt);
-		for (Object3D object : engine) {
+		ArrayList<Object3D> frustalCull = engine.selectFrustum();
+		System.out.println(frustalCull.size());
+		for (Object3D object : frustalCull) {
 			if (object.getFrameUpdate() == frame)
 				continue;
 			gl.glPushMatrix();
