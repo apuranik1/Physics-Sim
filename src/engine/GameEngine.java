@@ -53,6 +53,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		processors = new Stack<EventProcessor>();
 		registerProcessor(new DefaultExitProcessor());
 	}
+	
+	public int getSize() {
+		return octree.getSize();
+	}
 
 	public void registerProcessor(EventProcessor p) {
 		processors.push(p);
@@ -99,7 +103,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		Vector3D cameraPos = cameraMotion.getPosition();
 		if (targetedCamera)
 			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
-					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
+					cameraPos.x, cameraPos.y, cameraPos.z - 10, cameraUp.x,
 					cameraUp.y, cameraUp.z);
 		else {
 			gl.glRotated(-cameraRotation.x, 1, 0, 0);

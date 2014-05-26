@@ -76,6 +76,10 @@ public class Octree<T> implements Iterable<T> {
 		this.depth = depth;
 	}
 
+	public int getSize() {
+		return size;
+	}
+	
 	public Iterator<T> iterator() {
 		return new Iterator<T>() {
 

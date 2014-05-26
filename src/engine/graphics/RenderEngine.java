@@ -118,9 +118,11 @@ public class RenderEngine implements GLEventListener {
 		engine.setupCamera(gl, dt);
 		ArrayList<Object3D> frustalCull = engine.selectFrustum();
 		//System.out.println(frustalCull.size());
+		int distinct = 0;
 		for (Object3D object : frustalCull) {
 			if (object.getFrameUpdate() == frame)
 				continue;
+			distinct ++;
 			gl.glPushMatrix();
 			Vector3D rot = object.getRotation();
 			gl.glRotated(rot.x, 1, 0, 0);
@@ -132,6 +134,7 @@ public class RenderEngine implements GLEventListener {
 			gl.glPopMatrix();
 			object.setFrame(frame);
 		}
+		System.out.println(distinct + "/" + engine.getSize() + " rendered.");
 		gl.glFlush();
 	}
 }
