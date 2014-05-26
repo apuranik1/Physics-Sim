@@ -1,4 +1,4 @@
-package racing.graphics;
+package engine.graphics;
 
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import racing.GameEngine;
-import racing.ResourceManager;
-import racing.physics.CarForces;
-import racing.physics.Vector2D;
-import racing.physics.Motion;
-import racing.physics.PhysicsSpec;
-import racing.physics.Vector3D;
+import racing.CarForces;
+import engine.GameEngine;
+import engine.ResourceManager;
+import engine.physics.Motion;
+import engine.physics.PhysicsSpec;
+import engine.physics.Vector2D;
+import engine.physics.Vector3D;
 import static javax.media.opengl.GL2.*;
 
 public class Object3D implements Renderable3D, Cloneable {

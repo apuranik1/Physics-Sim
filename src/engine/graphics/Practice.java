@@ -1,4 +1,4 @@
-package racing.graphics;
+package engine.graphics;
 
 import java.awt.Frame;
 

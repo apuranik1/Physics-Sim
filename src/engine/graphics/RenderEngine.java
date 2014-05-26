@@ -1,4 +1,4 @@
-package racing.graphics;
+package engine.graphics;
 
 import static javax.media.opengl.GL.GL_BACK;
 import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
@@ -20,11 +20,11 @@ import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 
-import racing.GameEngine;
-import racing.physics.Vector3D;
-
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
+
+import engine.GameEngine;
+import engine.physics.Vector3D;
 
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;

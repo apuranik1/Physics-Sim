@@ -1,4 +1,7 @@
-package racing.physics;
+package racing;
+
+import engine.physics.Motion;
+import engine.physics.Vector3D;
 
 public class CarForces {
 

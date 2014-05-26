@@ -1,4 +1,4 @@
-package racing;
+package engine;
 
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
@@ -18,9 +18,9 @@ import javax.media.opengl.glu.GLU;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
-import racing.graphics.Object3D;
-import racing.graphics.RenderEngine;
-import racing.physics.Vector3D;
+import engine.graphics.Object3D;
+import engine.graphics.RenderEngine;
+import engine.physics.Vector3D;
 
 public class GameEngine implements Iterable<Object3D>, KeyListener,
 		GLEventListener {

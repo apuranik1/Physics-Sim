@@ -1,12 +1,12 @@
-package racing.graphics;
+package engine.graphics;
 
 import java.awt.Image;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import racing.physics.Vector2D;
-import racing.physics.Vector3D;
+import engine.physics.Vector2D;
+import engine.physics.Vector3D;
 
 public interface Renderable3D {
 	public Vector3D getPosition();

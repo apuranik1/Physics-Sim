@@ -1,17 +1,16 @@
-package racing.test;
+package engine.test;
 
 import com.jogamp.newt.event.KeyEvent;
 
-import racing.AnimationEvent;
-import racing.Animator;
-import racing.ContinuousAnimationEvent;
-import racing.EventProcessor;
-import racing.GameEngine;
-import racing.ResourceManager;
-import racing.graphics.Object3D;
-import racing.physics.Vector3D;
-
-import static racing.physics.Vector3D.*;
+import engine.AnimationEvent;
+import engine.Animator;
+import engine.ContinuousAnimationEvent;
+import engine.EventProcessor;
+import engine.GameEngine;
+import engine.ResourceManager;
+import engine.graphics.Object3D;
+import engine.physics.Vector3D;
+import static engine.physics.Vector3D.*;
 
 public class MonkeySpawner {
 	public static void main(String[] args) throws Exception {
