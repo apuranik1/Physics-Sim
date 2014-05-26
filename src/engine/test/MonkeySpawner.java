@@ -16,7 +16,10 @@ public class MonkeySpawner {
 	public static void main(String[] args) throws Exception {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
-		manager.loadObject("monkey",Object3D.load("/Users/michael/Desktop/monkey.obj"));
+		Object3D monkey = Object3D.load("/Users/michael/Desktop/monkey.obj");
+		monkey.setAcceleration(new Vector3D(0,1,0));
+		monkey.setVelocity(new Vector3D(0,-10,0));
+		manager.loadObject("monkey",monkey);
 		//manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
 		engine.cameraLookAt(new Vector3D(0, 0, 10), origin);
 		engine.beginGame();

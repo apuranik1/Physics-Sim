@@ -22,6 +22,10 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private static final int MAX_PER_LEAF = 16;
 	/**
+	 * The minimum number of objects per node.
+	 */
+	private static final int MIN_PER_NODE = 8;
+	/**
 	 * Is the octree a leaf octree?
 	 */
 	private boolean leaf;
@@ -37,6 +41,10 @@ public class Octree<T> implements Iterable<T> {
 	 * Splitting point of the octree.
 	 */
 	private Vector3D splitPoint;
+	/**
+	 * Number of elements stored.
+	 */
+	private int size;
 	private static final int mappings[] = new int[] { 0, 3, 4, 7, 1, 2, 5, 6 };
 	private static final int INTERSECTION_CALIBRATION = 0;
 
@@ -46,6 +54,7 @@ public class Octree<T> implements Iterable<T> {
 	public Octree() {
 		leaf = true;
 		contents = new ArrayList<Pair<BoundingBox, T>>();
+		size = 0;
 	}
 
 	public Iterator<T> iterator() {
@@ -144,6 +153,7 @@ public class Octree<T> implements Iterable<T> {
 	 *            the object to be added
 	 */
 	public void insert(BoundingBox bb, T object) {
+		size ++;
 		if (leaf) {
 			contents.add(new Pair<BoundingBox, T>(bb, object));
 			considerBranch();
@@ -171,6 +181,9 @@ public class Octree<T> implements Iterable<T> {
 		} else
 			for (Octree<T> octant : octantsContaining(bb))
 				found |= octant.remove(bb, match);
+		if(found)
+			size --;
+		considerBranch();
 		return found;
 	}
 
@@ -245,8 +258,19 @@ public class Octree<T> implements Iterable<T> {
 	 * Checks the current state of the octree and branches if necessary.
 	 */
 	private void considerBranch() {
-		if (contents.size() > MAX_PER_LEAF)
+		if (leaf && contents.size() > MAX_PER_LEAF)
 			branch();
+		if (!leaf && size < MIN_PER_NODE)
+			collapse();
+	}
+	
+	private void collapse() {
+		leaf = true;
+		contents.clear();
+		for(Octree<T> octant : octants)
+			contents.addAll(octant.contents);
+		octants = null;
+		System.out.println("Octant collapsed!");
 	}
 
 	/**
