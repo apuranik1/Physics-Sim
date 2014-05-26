@@ -20,6 +20,7 @@ public class MonkeySpawner {
 		manager.loadObject("monkey",Object3D.load("/Users/michael/Desktop/monkey.obj"));
 		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
 		engine.cameraLookAt(new Vector3D(0, 0, 10), origin);
+		engine.beginGame();
 		Animator.getAnimator().registerEvent(
 				new ContinuousAnimationEvent(0, .2) {
 					@Override
@@ -61,6 +62,5 @@ public class MonkeySpawner {
 				return true;
 			}
 		});
-		engine.beginGame();
 	}
 }

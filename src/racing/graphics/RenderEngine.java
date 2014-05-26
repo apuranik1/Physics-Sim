@@ -128,6 +128,6 @@ public class RenderEngine implements GLEventListener {
 			gl.glPopMatrix();
 			object.setFrame(frame);
 		}
-		// drawable.swapBuffers();
+		gl.glFlush();
 	}
 }
