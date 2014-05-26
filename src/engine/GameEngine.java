@@ -21,6 +21,7 @@ import com.jogamp.newt.event.KeyListener;
 import engine.graphics.Object3D;
 import engine.graphics.RenderEngine;
 import engine.physics.Vector3D;
+import engine.processors.DefaultExitProcessor;
 
 public class GameEngine implements Iterable<Object3D>, KeyListener,
 		GLEventListener {
@@ -45,7 +46,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		width = screen.getWidth();
 		height = screen.getHeight();
 		processors = new Stack<EventProcessor>();
-		registerProcessor(new ExitEngine());
+		registerProcessor(new DefaultExitProcessor());
 	}
 
 	public void registerProcessor(EventProcessor p) {
@@ -109,7 +110,12 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private void animationRefresh() {
 		for (AnimationEvent event : Animator.getAnimator().retrieve(
 				System.nanoTime() / 1000000000d))
-			event.animate();
+			try {
+				event.animate();
+			}
+			catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
 	}
 
 	private void physicsRefresh(long frame, long dt) {
@@ -186,13 +192,5 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 			int height) {
 		this.width = width;
 		this.height = height;
-	}
-
-	private class ExitEngine extends EventProcessor {
-		public boolean keyPressed(int keyCode) {
-			if (keyCode == KeyEvent.VK_ESCAPE)
-				System.exit(0);
-			return false;
-		}
 	}
 }

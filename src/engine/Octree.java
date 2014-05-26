@@ -89,8 +89,6 @@ public class Octree<T> implements Iterable<T> {
 			}
 
 			private void searchForContents() {
-				// precondition: current is a leaf node
-				// TODO: check for correctness/debug
 				while (current.contents.size() <= objIndex
 						&& retrace.size() != 0) {
 					objIndex = 0;
@@ -272,11 +270,11 @@ public class Octree<T> implements Iterable<T> {
 		for (Pair<BoundingBox, T> pair : contents)
 			for (Octree<T> octant : octantsContaining(pair.first()))
 				octant.insert(pair.first(), pair.second());
-		System.out.print("Branched quality: ");
+		System.out.print("The octree has branched with ");
 		int tot = 0;
 		for (int i = 0; i < 8; i++)
 			tot += octants[i].contents.size();
-		System.out.println(tot / 17d);
+		System.out.println(tot - 17 + " duplicate(s).");
 		contents.clear();
 	}
 

@@ -17,7 +17,7 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		manager.loadObject("monkey",Object3D.load("/Users/michael/Desktop/monkey.obj"));
-		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
+		//manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
 		engine.cameraLookAt(new Vector3D(0, 0, 10), origin);
 		engine.beginGame();
 		Animator.getAnimator().registerEvent(
