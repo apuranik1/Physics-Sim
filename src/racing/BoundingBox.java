@@ -17,7 +17,7 @@ public class BoundingBox {
 	private Vector3D location;
 	/**
 	 * Orientation matrix of the box, with respect to <code>location</code>,
-	 * or null if box is not rotated.
+	 * or null if not rotated.
 	 */
 	private Matrix3D rotation;
 	/**
@@ -51,16 +51,26 @@ public class BoundingBox {
 	 */
 	public BoundingBox(Vector3D location, double width, double height,
 			double depth) {
-		this(location, width, height, depth, new Quaternion(1.0, 0.0, 0.0, 0.0));
+		this(location, width, height, depth, null);
 	}
 	
+	/**
+	 * Constructs bounding box with the given dimensions, oriented about
+	 * <code>location</code> as defined by <code>rotation</code>.
+	 * 
+	 * @param location
+	 * @param width
+	 * @param height
+	 * @param depth
+	 * @param rotation
+	 */
 	public BoundingBox(Vector3D location, double width, double height,
 			double depth, Quaternion rotation) {
 		this.location = location;
 		this.width = width;
 		this.height = height;
 		this.depth = depth;
-		this.rotation = rotation.toMatrix();
+		this.rotation = rotation == null ? null : rotation.toMatrix();
 		positify();
 		vertexList = new Vector3D[8];
 		vertexCacheValid = false;
@@ -120,19 +130,29 @@ public class BoundingBox {
 			vertexList[5] = new Vector3D(width, 0, depth);
 			vertexList[6] = new Vector3D(0, height, depth);
 			vertexList[7] = new Vector3D(width, height, depth);
-			for (int i = 0; i < 8; i++)
-				vertexList[i] = rotation.multiply(vertexList[i]).add(location);
+			if (rotation != null)
+				for (int i = 0; i < 8; i++)
+					vertexList[i] = rotation.multiply(vertexList[i]).add(location);
+			else
+				for (int i = 0; i < 8; i++)
+					vertexList[i] = vertexList[i].add(location);
 			vertexCacheValid = true;
 		}
 		return vertexList.clone();
 	}
 	
 	public Vector3D[] axisList() {
-		return new Vector3D[] {
-				rotation.multiply(new Vector3D(width, 0, 0)),
-				rotation.multiply(new Vector3D(0, height, 0)),
-				rotation.multiply(new Vector3D(0, 0, depth))
-		};
+		return rotation == null ?
+				new Vector3D[] {
+						new Vector3D(width, 0, 0),
+						new Vector3D(0, height, 0),
+						new Vector3D(0, 0, depth)
+				}
+				: new Vector3D[] {
+						rotation.multiply(new Vector3D(width, 0, 0)),
+						rotation.multiply(new Vector3D(0, height, 0)),
+						rotation.multiply(new Vector3D(0, 0, depth))
+				};
 	}
 
 	private void positify() {
@@ -215,6 +235,14 @@ public class BoundingBox {
 		if (planeDist > range[1])
 			return -1;
 		return 0;
+	}
+	
+	boolean withinRegion(Vector3D[] normals, double[] constants) {
+		for (int i = 0; i < normals.length; i++) {
+			if(intersectsPlane(normals[i], constants[i]) == 1)
+				return false;
+		}
+		return true;
 	}
 	
 	public double[] project(Vector3D axis) {

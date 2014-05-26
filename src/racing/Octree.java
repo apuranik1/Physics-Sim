@@ -1,6 +1,7 @@
 package racing;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Deque;
 import java.util.ArrayDeque;
@@ -303,21 +304,60 @@ public class Octree<T> implements Iterable<T> {
 		contents.clear();
 	}
 	
+	/**
+	 * Considers equations of the form Ax + By + Cz = D, with coefficients and
+	 * constants coming from the parallel arrays
+	 * 
+	 * @param normals
+	 * 			The normal vectors to the planes, i.e. A, B, C
+	 * @param constants
+	 * @return
+	 */
 	private ArrayList<T> getRegionContents(Vector3D[] normals, double[] constants) {
-		
+		ArrayList<T> inRegion = new ArrayList<T>();
 		if (leaf) {
-			ArrayList<T> inRegion = new ArrayList<T>();
-			objectLoop:
 			for (Pair<BoundingBox, T> object : contents) {
-				for (int i = 0; i < normals.length; i++) {
-					if(object.first.intersectsPlane(normals[i], constants[i]) == 1)
-						continue objectLoop;
-				}
-				inRegion.add(object.second);
+				if (object.first.withinRegion(normals, constants));
+					inRegion.add(object.second);
 			}
+		
 			return inRegion;
 		}
-		else return null;
+		else {
+			BoundingBox bb = new BoundingBox(splitPoint, 1e7, 1e7, 1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[0].getRegionContents(normals, constants));
+			
+			bb.setDepth(-1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[1].getRegionContents(normals, constants));
+			
+			bb.setHeight(-1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[3].getRegionContents(normals, constants));
+			
+			bb.setWidth(-1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[7].getRegionContents(normals, constants));
+			
+			bb.setHeight(1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[5].getRegionContents(normals, constants));
+			
+			bb.setDepth(1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[4].getRegionContents(normals, constants));
+			
+			bb.setHeight(1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[6].getRegionContents(normals, constants));
+			
+			bb.setWidth(-1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[2].getRegionContents(normals, constants));
+			
+			return null;
+		}
 	}
 
 	public static void main(String[] args) {
@@ -341,7 +381,15 @@ public class Octree<T> implements Iterable<T> {
 		System.out.println((double) N / (System.nanoTime() - start)
 				* 1000000000 + " searches/sec");
 		*/
-		System.out.println(new BoundingBox(new Vector3D(0,0,0), 1, 1, 1).intersectsPlane(new Vector3D(-1,-1,-1), -3.01));
+		
+		//System.out.println(
+		//		new BoundingBox(new Vector3D(0,0,0), 1, 1, 1,
+		//						new Quaternion(new Vector3D(1, 0, 0), Math.PI))
+		//		.intersectsPlane(new Vector3D(1,1,1), 3.0001));
+//		System.out.println(Arrays.toString(new BoundingBox(
+//				new Vector3D(0,0,0), 1, 1, 1,
+//				new Quaternion(new Vector3D(1, 1, 0), Math.PI))
+//				.vertexList()));
 	}
 
 	/**
