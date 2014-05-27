@@ -3,10 +3,6 @@ import java.awt.Image;
 import racing.graphics.Object3D;
 import racing.physics.*;
 public class Cart extends Object3D{
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/networking
 	@Override
 	public Vector3D[] getVertices() {
 		// TODO Auto-generated method stub

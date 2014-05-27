@@ -87,6 +87,7 @@ public class NetServer {
 	}
 	public static void main(String[] args){
 		NetServer server=new NetServer(5555);
+		System.out.println(server.getIP());
 		server.connect();
 	}
 }
