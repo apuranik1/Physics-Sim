@@ -14,15 +14,13 @@ public class Track extends Object3D{
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
 	public Vector2D[] getTextureMappingCoordinates() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
-	public Image getTexture() {
+	public java.awt.Image getTexture() {
 		// TODO Auto-generated method stub
 		return null;
 	}
