@@ -1,11 +1,16 @@
 package racing.game;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
+import racing.networking.NetClient;
+import racing.networking.NetServer;
 public class Manager {
 	private Cart cart;
 	private Track track;
+	private NetClient client;
 	public Manager(){
 		cart=new Cart();
 		track=new Track();
+		client=null;
 	}
 	/**
 	 * Create new singleplayer game
@@ -19,8 +24,9 @@ public class Manager {
 	 * @return Server IP
 	 */
 	public InetAddress newMultiServer(int port){
+		if(client!=null)return null;
 		NetServer server=new NetServer(port);
-		NetClient client=new NetClient(InetAddress.getLocalHost, port, cart, track);//local client
+		client=new NetClient(server.getIP(), port, cart, track);//local client
 		server.connect();//connect local client
 		return server.getIP();
 	}
@@ -30,6 +36,10 @@ public class Manager {
 	 * @param port Port to connect to
 	 */
 	public void netMultiClient(InetAddress address, int port){
-		NetClient client=new NetClient(address, port, cart, track);//remote client
+		if(client!=null)return;
+		client=new NetClient(address, port, cart, track);//remote client
+	}
+	public NetClient getNetClient(){
+		return client;
 	}
 }

@@ -5,6 +5,7 @@ import racing.physics.Vector2D;
 import racing.physics.Vector3D;
 public class Item extends Object3D{
 <<<<<<< HEAD
+<<<<<<< HEAD
 	private Status effects;
 	/**
 	 * 
@@ -14,6 +15,8 @@ public class Item extends Object3D{
 		return effects;
 =======
 
+=======
+>>>>>>> net test setup
 	@Override
 	public Vector3D[] getVertices() {
 		// TODO Auto-generated method stub
@@ -30,6 +33,7 @@ public class Item extends Object3D{
 	public Image getTexture() {
 		// TODO Auto-generated method stub
 		return null;
+<<<<<<< HEAD
 >>>>>>> basis for gm
 	}
 	@Override
@@ -46,5 +50,8 @@ public class Item extends Object3D{
 	public Image getTexture() {
 		// TODO Auto-generated method stub
 		return null;
+=======
+>>>>>>> net test setup
 	}
+
 }

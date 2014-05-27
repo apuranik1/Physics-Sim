@@ -48,9 +48,14 @@ public class NetClient {
 	}
 	public static void main(String[] args){
 		try {
-			new NetClient(InetAddress.getLocalHost(),5555,new Cart(),new Track());
+			BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
+			System.out.println("IP: ");
+			new NetClient(InetAddress.getByName(reader.readLine()),5555,new Cart(),new Track());
 		} catch (UnknownHostException e) {
 			System.out.println("IP error: "+e.getMessage());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }
