@@ -1,5 +1,4 @@
 package racing.game;
-import java.awt.Image;
 import java.util.ArrayList;
 import racing.graphics.Object3D;
 import racing.physics.Vector2D;

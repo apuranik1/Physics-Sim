@@ -42,14 +42,18 @@ public class NetServer {
 	}
 	/**
 	 * Connect client new client
+	 * @return IP of client that connected
 	 */
-	public void connect(){
+	public InetAddress connect(){
 		try {
-			clients.add(new NetServerThread(server.accept()));//accept client
-			System.out.println("Connected");
+			Socket socket=server.accept();//accept client
+			clients.add(new NetServerThread(socket));//accept client and add to client list
+			System.out.println("Connected: "+socket.getLocalAddress().getHostAddress());
+			return socket.getLocalAddress();
 		} catch (IOException e) {
 			System.out.println("Connection error: "+e.getMessage());
 		}
+		return null;
 	}
 	/**
 	 * Receive data from all threads
@@ -68,14 +72,14 @@ public class NetServer {
 		}
 	}
 	/**
-	 * Send data to all threads
+	 * Send networked data to all threads
 	 */
 	private void sendData(){
 		for(NetServerThread thread:clients)
 			try {
 				thread.getOutputStream().writeObject(data);//print data to client
 			} catch (IOException e) {
-				e.printStackTrace();
+				System.out.println("Send : "+e.getMessage());
 			}
 	}
 	/**

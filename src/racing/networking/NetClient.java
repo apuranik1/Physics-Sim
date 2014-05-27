@@ -10,7 +10,7 @@ public class NetClient {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	/**
-	 * @param address Address of server to connect to
+	 * @param address IP Address of server to connect to
 	 * @param port	Port of server to connect to
 	 * @param cart Client cart to update
 	 * @param Track Client track to update
@@ -25,9 +25,8 @@ public class NetClient {
 			input=new ObjectInputStream(socket.getInputStream());
 			this.cart=cart;
 			this.track=track;
-			
 		} catch (IOException e) {
-			System.out.println("IO error: "+e.getMessage());
+			System.out.println("Connect error: "+e.getMessage());
 		}
 	}
 	/**
