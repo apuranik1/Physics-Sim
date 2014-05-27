@@ -69,14 +69,13 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void removeObject(Object3D object) {
-		if (!octree.remove(new BoundingBox(object.getPosition(), 1, 1, 1),
-				object))
+		if (!octree.remove(object.getBoundingBox(), object))
 			throw new IllegalArgumentException(
 					"Cannot remove non-existant object from the octree.");
 	}
 
 	public void addObject(Object3D object) {
-		octree.insert(new BoundingBox(object.getPosition(), 1, 1, 1), object);
+		octree.insert(object.getBoundingBox(), object);
 	}
 
 	public void cameraLookAt(Vector3D position, Vector3D target) {

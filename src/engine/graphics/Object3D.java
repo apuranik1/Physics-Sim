@@ -11,6 +11,7 @@ import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import racing.CarForces;
+import engine.BoundingBox;
 import engine.GameEngine;
 import engine.ResourceManager;
 import engine.physics.Motion;
@@ -27,6 +28,8 @@ public class Object3D implements Renderable3D, Cloneable {
 	private Color[] colors;
 	private Vector2D[] textureCoords;
 	private long frame = -1;
+	private Vector3D offset;
+	private Vector3D size;
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
@@ -42,10 +45,12 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.normals = normals;
 		this.motion = motion;
 		rotation = new Vector3D(0, 0, 0);
+		computeBoundingBox();
 	}
 
 	public Object3D clone() {
-		return new Object3D(vertices, normals, textureCoords, colors, motion.clone());
+		return new Object3D(vertices, normals, textureCoords, colors,
+				motion.clone());
 	}
 
 	public Vector3D getPosition() {
@@ -196,5 +201,32 @@ public class Object3D implements Renderable3D, Cloneable {
 			GameEngine.getGameEngine().completeUpdate(this);
 		} else
 			this.rotation = rotation;
+	}
+	
+	private void computeBoundingBox() {
+		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz = Double.MAX_VALUE;
+		double maxx = Double.MIN_VALUE, maxy = Double.MIN_VALUE, maxz = Double.MIN_VALUE;
+		for (Vector3D point : vertices) {
+			if (point.x < minx)
+				minx = point.x;
+			if (point.x > maxx)
+				maxx = point.x;
+			if (point.y < miny)
+				miny = point.y;
+			if (point.y > maxy)
+				maxy = point.y;
+			if (point.z < minz)
+				minz = point.z;
+			if (point.z > maxz)
+				maxz = point.z;
+		}
+		offset = new Vector3D(minx, miny, minz);
+		size = new Vector3D(maxx - minx, maxy - miny, maxz - minz);	
+	}
+
+	public BoundingBox getBoundingBox() {
+		Vector3D position = motion.getPosition();
+		return new BoundingBox(new Vector3D(offset.x + position.x, offset.y
+				+ position.y, offset.z + position.z), size.x, size.y, size.z);
 	}
 }
