@@ -6,7 +6,7 @@ public class NetServerThread{
 	private ObjectOutputStream output;
 	/**
 	 * 
-	 * @param socket client socket
+	 * @param socket Client socket to create streams
 	 */
 	public NetServerThread(Socket socket){
 		try{

@@ -31,14 +31,14 @@ public class NetData {
 	}
 	/**
 	 * 
-	 * @return Database carts
+	 * @return Networked carts
 	 */
 	public ArrayList<Cart> getCarts(){
 		return carts;
 	}
 	/**
 	 * 
-	 * @return Database items
+	 * @return Networked items
 	 */
 	public ArrayList<Item> getItems(){
 		return items;
