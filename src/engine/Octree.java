@@ -68,7 +68,7 @@ public class Octree<T> implements Iterable<T> {
 		size = 0;
 		depth = 0;
 	}
-	
+
 	/**
 	 * Constructor to create a new, empty octant with a given depth.
 	 */
@@ -80,93 +80,29 @@ public class Octree<T> implements Iterable<T> {
 	public int getSize() {
 		return size;
 	}
-	
+
 	public int getTrueSize() {
-		if(leaf)
-			return contents.size();
-		else {
-			int total = 0;
-			for(Octree<T> octant : octants)
+		int total = 0;
+		total += contents.size();
+		if (!leaf)
+			for (Octree<T> octant : octants)
 				total += octant.getTrueSize();
-			return total;
-		}
+		return total;
 	}
-	
+
 	public int getDepth() {
-		if(leaf)
+		if (leaf)
 			return depth;
 		else {
 			int max = 0;
-			for(Octree<T> octant : octants)
+			for (Octree<T> octant : octants)
 				max = Math.max(max, octant.getDepth());
 			return max;
 		}
 	}
-	
+
 	public Iterator<T> iterator() {
-		return new Iterator<T>() {
-
-			private Octree<T> current;
-			private int objIndex;
-			private Deque<Octree<T>> retrace;
-			private Deque<Integer> octantIndices;
-			BoundingBox prev;
-			{
-				current = Octree.this;
-				objIndex = 0;
-				retrace = new ArrayDeque<Octree<T>>();
-				octantIndices = new ArrayDeque<Integer>();
-				while (!current.leaf) {
-					retrace.addFirst(current);
-					octantIndices.addFirst(0);
-					current = current.octants[0];
-				}
-				searchForContents();
-			}
-
-			public boolean hasNext() {
-				return !(current.contents.size() <= objIndex && retrace
-						.isEmpty());
-			}
-
-			public T next() {
-				if (!hasNext())
-					throw new IllegalStateException(
-							"No more elements in Octree");
-				Pair<BoundingBox, T> value = current.contents.get(objIndex++);
-				prev = value.first();
-				searchForContents();
-				return value.second();
-			}
-
-			public void remove() {
-				
-			}
-
-			private void searchForContents() {
-				while (current.contents.size() <= objIndex
-						&& retrace.size() != 0) {
-					objIndex = 0;
-					int octant;
-					do {
-						current = retrace.removeFirst();
-						octant = octantIndices.removeFirst();
-					} while (retrace.size() > 0 && octant >= 7);
-
-					octant++;
-
-					if (octant >= 8)
-						return;
-
-					do {
-						retrace.addFirst(current);
-						octantIndices.addFirst(octant);
-						current = current.octants[octant];
-						octant = 0;
-					} while (!current.leaf);
-				}
-			}
-		};
+		return getAllObjects().iterator();
 	}
 
 	/**
@@ -180,13 +116,11 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	public ArrayList<T> intersects(BoundingBox bb) {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
-		if (leaf) {
-			for (Pair<BoundingBox, T> entry : contents)
-				if (entry.first().simpleIntersects(bb))
-					intersections.add(entry.second());
-		} else
-			for (Octree<T> oct : octantsContaining(bb))
-				intersections.addAll(oct.intersects(bb));
+		for (Pair<BoundingBox, T> entry : contents)
+			if (entry.first().simpleIntersects(bb))
+				intersections.add(entry.second());
+		if (!leaf)
+			intersections.addAll(octantsContaining(bb).get(0).intersects(bb));
 		return intersections;
 	}
 
@@ -199,13 +133,17 @@ public class Octree<T> implements Iterable<T> {
 	 *            the object to be added
 	 */
 	public void insert(BoundingBox bb, T object) {
-		size ++;
+		size++;
 		if (leaf) {
 			contents.add(new Pair<BoundingBox, T>(bb, object));
 			considerBranch();
-		} else
-			for (Octree<T> octant : octantsContaining(bb))
-				octant.insert(bb, object);
+		} else {
+			ArrayList<Octree<T>> locations = octantsContaining(bb);
+			if (locations.size() == 1)
+				locations.get(0).insert(bb, object);
+			else
+				contents.add(new Pair<BoundingBox, T>(bb, object));
+		}
 	}
 
 	/**
@@ -217,22 +155,19 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	public boolean remove(BoundingBox bb, T match) {
 		boolean found = false;
-		if (leaf) {
-			for (int i = contents.size() - 1; i >= 0; i--) {
-				if (contents.get(i).first().simpleIntersects(bb) && contents.get(i).second() == match) {
-					contents.remove(i);
-					found = true;
-				}
+		for (int i = contents.size() - 1; i >= 0; i--)
+			if (contents.get(i).second() == match) {
+				contents.remove(i);
+				found = true;
 			}
-		} else
-			for (Octree<T> octant : octantsContaining(bb))
-				found |= octant.remove(bb, match);
-		if(found)
-			size --;
+		if (!leaf && !found)
+			found |= octantsContaining(bb).get(0).remove(bb, match);
+		if (found)
+			size--;
 		considerBranch();
 		return found;
 	}
-	
+
 	public ArrayList<T> getFrustumContents(Vector3D apex, Vector3D lookAt,
 			Vector3D upVec, double fovy, double fovx) {
 		Vector3D direction = lookAt.subtract(apex);
@@ -242,29 +177,36 @@ public class Octree<T> implements Iterable<T> {
 		// TODO: confirm it is vertAngle, not -vertAngle
 		Quaternion upRotate = new Quaternion(horizAxis, vertAngle);
 		// save some clock cycles on recomputing the sines and cosines
-		Quaternion downRotate = new Quaternion(upRotate.w, -upRotate.x, -upRotate.y, -upRotate.z);
-		
+		Quaternion downRotate = new Quaternion(upRotate.w, -upRotate.x,
+				-upRotate.y, -upRotate.z);
+
 		// compute normals to top and bottom bounding planes
 		Vector3D topPlane = upRotate.toMatrix().multiply(upVec);
 		Vector3D botPlane = downRotate.toMatrix().multiply(upVec.multiply(-1));
-		
+
 		Quaternion rightRotate = new Quaternion(upVec, -horizAngle);
-		Quaternion leftRotate = new Quaternion(rightRotate.w, -rightRotate.x, -rightRotate.y, -rightRotate.z);
-		
+		Quaternion leftRotate = new Quaternion(rightRotate.w, -rightRotate.x,
+				-rightRotate.y, -rightRotate.z);
+
 		// compute normals to right and left bounding planes
 		Vector3D rightPlane = rightRotate.toMatrix().multiply(horizAxis);
-		Vector3D leftPlane = leftRotate.toMatrix().multiply(horizAxis.multiply(-1));
-		
+		Vector3D leftPlane = leftRotate.toMatrix().multiply(
+				horizAxis.multiply(-1));
+
 		// Ax + By + Cz = D
-		double topD = topPlane.x * apex.x + topPlane.y * apex.y + topPlane.z * apex.z;
-		double botD = botPlane.x * apex.x + botPlane.y * apex.y + botPlane.z * apex.z;
-		double rightD = rightPlane.x * apex.x + rightPlane.y * apex.y + rightPlane.z * apex.z;
-		double leftD = leftPlane.x * apex.x + leftPlane.y * apex.y + leftPlane.z * apex.z;
-		System.out.println("Direction: " + direction);
-		System.out.println("Up: " + upVec);
-		System.out.println(topPlane + " " + botPlane + " " + leftPlane + " " + rightPlane);
-		//System.out.println(topD + " " + botD + " " + leftD + " " + rightD);
-		return getRegionContents(new Vector3D[]{topPlane, botPlane, leftPlane, rightPlane}, new double[]{topD, botD, rightD, leftD});
+		double topD = topPlane.x * apex.x + topPlane.y * apex.y + topPlane.z
+				* apex.z;
+		double botD = botPlane.x * apex.x + botPlane.y * apex.y + botPlane.z
+				* apex.z;
+		double rightD = rightPlane.x * apex.x + rightPlane.y * apex.y
+				+ rightPlane.z * apex.z;
+		double leftD = leftPlane.x * apex.x + leftPlane.y * apex.y
+				+ leftPlane.z * apex.z;
+		// System.out.println(topD + " " + botD + " " + leftD + " " + rightD);
+		Vector3D[] normals = new Vector3D[] { topPlane, botPlane, leftPlane,
+				rightPlane };
+		double[] constants = new double[] { topD, botD, rightD, leftD };
+		return getRegionContents(normals, constants);
 	}
 
 	/**
@@ -330,7 +272,8 @@ public class Octree<T> implements Iterable<T> {
 	private int octantContaining(Vector3D vec) {
 		// assert !leaf;
 		// we're not going to talk about this method
-		return (vec.x >= splitPoint.x ? 4 : 0) + (vec.y >= splitPoint.y ? 2 : 0)
+		return (vec.x >= splitPoint.x ? 4 : 0)
+				+ (vec.y >= splitPoint.y ? 2 : 0)
 				+ (vec.z >= splitPoint.z ? 1 : 0);
 	}
 
@@ -343,32 +286,32 @@ public class Octree<T> implements Iterable<T> {
 		if (!leaf && size < MIN_PER_NODE)
 			collapse();
 	}
-	
+
 	private void collapse() {
-		contents.clear();
-		HashSet<T> added = new HashSet<T>();
-		for(Octree<T> octant : octants) {
-			ArrayList<Pair<BoundingBox, T>> toAdd = octant.getAll();
-			for(Pair<BoundingBox, T> pair : toAdd)
-				if(!added.contains(pair.second())) {
-					contents.add(pair);
-					added.add(pair.second());
-				}
-		}
+		for (Octree<T> octant : octants)
+			contents.addAll(octant.getAll());
 		octants = null;
 		leaf = true;
 		System.out.println("Octant collapsed!");
 	}
-	
+
 	private ArrayList<Pair<BoundingBox, T>> getAll() {
-		if(leaf)
-			return contents;
-		else {
-			ArrayList<Pair<BoundingBox, T>> stuff = new ArrayList<Pair<BoundingBox, T>>();
-			for(Octree<T> octant : octants)
+		ArrayList<Pair<BoundingBox, T>> stuff = new ArrayList<Pair<BoundingBox, T>>();
+		stuff.addAll(contents);
+		if (!leaf)
+			for (Octree<T> octant : octants)
 				stuff.addAll(octant.getAll());
-			return stuff;
-		}
+		return stuff;
+	}
+
+	private ArrayList<T> getAllObjects() {
+		ArrayList<T> stuff = new ArrayList<T>();
+		for (Pair<BoundingBox, T> pair : contents)
+			stuff.add(pair.second());
+		if (!leaf)
+			for (Octree<T> octant : octants)
+				stuff.addAll(octant.getAllObjects());
+		return stuff;
 	}
 
 	/**
@@ -378,111 +321,114 @@ public class Octree<T> implements Iterable<T> {
 		assert leaf;
 		leaf = false;
 		makeSubOctants();
-		for (Pair<BoundingBox, T> pair : contents)
-			for (Octree<T> octant : octantsContaining(pair.first()))
-				octant.insert(pair.first(), pair.second());
-		System.out.print("The octree of size " + getSize() +" and depth " + depth + " has branched with ");
+		ArrayList<Pair<BoundingBox, T>> between = new ArrayList<Pair<BoundingBox, T>>();
+		for (Pair<BoundingBox, T> pair : contents) {
+			ArrayList<Octree<T>> locations = octantsContaining(pair.first());
+			if (locations.size() == 1)
+				locations.get(0).insert(pair.first(), pair.second());
+			else
+				between.add(pair);
+		}
+		System.out.print("The octree of size " + getSize() + " and depth "
+				+ depth + " has branched with ");
 		int tot = 0;
 		for (int i = 0; i < 8; i++)
 			tot += octants[i].contents.size();
 		System.out.println(tot - 17 + " duplicate(s).");
-		contents.clear();
+		contents = between;
 	}
-	
+
 	/**
 	 * Considers equations of the form Ax + By + Cz = D, with coefficients and
 	 * constants coming from the parallel arrays
 	 * 
 	 * @param normals
-	 * 			The normal vectors to the planes, i.e. A, B, C
+	 *            The normal vectors to the planes, i.e. A, B, C
 	 * @param constants
 	 * @return
 	 */
-	private ArrayList<T> getRegionContents(Vector3D[] normals, double[] constants) {
+	private ArrayList<T> getRegionContents(Vector3D[] normals,
+			double[] constants) {
 		ArrayList<T> inRegion = new ArrayList<T>();
-		if (leaf) {
-			for (Pair<BoundingBox, T> object : contents) {
-				if (object.first.withinRegion(normals, constants))
-					inRegion.add(object.second);
-			}
-		
-			return inRegion;
+		for (Pair<BoundingBox, T> object : contents) {
+			if (object.first.withinRegion(normals, constants))
+				inRegion.add(object.second);
 		}
-		else {
+		if (!leaf) {
 			BoundingBox bb = new BoundingBox(splitPoint, 1e7, 1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[0].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[0]
+						.getRegionContents(normals, constants));
+
 			bb.setDepth(-1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[1].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[1]
+						.getRegionContents(normals, constants));
+
 			bb.setHeight(-1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[3].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[3]
+						.getRegionContents(normals, constants));
+
 			bb.setWidth(-1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[7].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[7]
+						.getRegionContents(normals, constants));
+
 			bb.setHeight(1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[5].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[5]
+						.getRegionContents(normals, constants));
+
 			bb.setDepth(1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[4].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[4]
+						.getRegionContents(normals, constants));
+
 			bb.setHeight(1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[6].getRegionContents(normals, constants));
-			
+				inRegion.addAll(octants[6]
+						.getRegionContents(normals, constants));
+
 			bb.setWidth(-1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[2].getRegionContents(normals, constants));
-			
-			return inRegion;
+				inRegion.addAll(octants[2]
+						.getRegionContents(normals, constants));
 		}
+		return inRegion;
 	}
 
 	public static void main(String[] args) {
-		/*long start = System.nanoTime();
-		Octree<String> octree = new Octree<String>();
-		for (int i = 0; i < 1000000; i++) {
-			octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(),
-					1000 * Math.random(), 1000 * Math.random()), 1, 1, 1), i
-					+ "");
-		}
-		System.out.println((double) (System.nanoTime() - start) / 1000000000
-				+ " for setup.");
+		/*
+		 * long start = System.nanoTime(); Octree<String> octree = new
+		 * Octree<String>(); for (int i = 0; i < 1000000; i++) {
+		 * octree.insert(new BoundingBox(new Vector3D(1000 * Math.random(), 1000
+		 * * Math.random(), 1000 * Math.random()), 1, 1, 1), i + ""); }
+		 * System.out.println((double) (System.nanoTime() - start) / 1000000000
+		 * + " for setup.");
+		 * 
+		 * start = System.nanoTime(); int N = 10000000; for (int i = 0; i < N;
+		 * i++) { ArrayList<String> intersects = octree.intersects(new
+		 * BoundingBox( new Vector3D(1000 * Math.random(), 1000 * Math.random(),
+		 * 1000 * Math.random()), 1, 1, 1)); } System.out.println((double) N /
+		 * (System.nanoTime() - start) 1000000000 + " searches/sec");
+		 */
 
-		start = System.nanoTime();
-		int N = 10000000;
-		for (int i = 0; i < N; i++) {
-			ArrayList<String> intersects = octree.intersects(new BoundingBox(
-					new Vector3D(1000 * Math.random(), 1000 * Math.random(),
-							1000 * Math.random()), 1, 1, 1));
-		}
-		System.out.println((double) N / (System.nanoTime() - start)
-				* 1000000000 + " searches/sec");
-		*/
-		
-		Octree<String> oct = new Octree<>();
+		Octree<String> oct = new Octree<String>();
 		BoundingBox outside = new BoundingBox(new Vector3D(-1, 0.9, 0), 1, 1, 1);
-		Vector3D[] test = new Vector3D[]{new Vector3D(-0.7071067811865476, 0.7071067811865475, 0.0)};
-		//oct.insert(new BoundingBox(new Vector3D(0, 0, 0), 0.1, 0.1, 0.1), "a");
+		Vector3D[] test = new Vector3D[] { new Vector3D(-0.7071067811865476,
+				0.7071067811865475, 0.0) };
+		// oct.insert(new BoundingBox(new Vector3D(0, 0, 0), 0.1, 0.1, 0.1),
+		// "a");
 		oct.insert(outside, "b");
-		//oct.insert(new BoundingBox(new Vector3D(1, -0.9, 0), 1, 1, 1), "c");
-		//oct.insert(new BoundingBox(new Vector3D(1, 0, 0), 1, 1, 1), "d");
-		//oct.insert(new BoundingBox(new Vector3D(1, 0.9, 0.9), 1, 1, 1), "e");
-		//oct.insert(new BoundingBox(new Vector3D(10, 0, 0), 1, 1, 1), "f");
-		//System.out.println(oct.getFrustumContents(new Vector3D(0,0,0),
-		//		new Vector3D(1,0,0), new Vector3D(0,1,0), Math.PI / 2, Math.PI / 2));
-		System.out.println(outside.withinRegion(
-				test,
-				new double[]{0}));
-		System.out.println(oct.getRegionContents(test,
-				new double[]{0}));
+		// oct.insert(new BoundingBox(new Vector3D(1, -0.9, 0), 1, 1, 1), "c");
+		// oct.insert(new BoundingBox(new Vector3D(1, 0, 0), 1, 1, 1), "d");
+		// oct.insert(new BoundingBox(new Vector3D(1, 0.9, 0.9), 1, 1, 1), "e");
+		// oct.insert(new BoundingBox(new Vector3D(10, 0, 0), 1, 1, 1), "f");
+		// System.out.println(oct.getFrustumContents(new Vector3D(0,0,0),
+		// new Vector3D(1,0,0), new Vector3D(0,1,0), Math.PI / 2, Math.PI / 2));
+		System.out.println(outside.withinRegion(test, new double[] { 0 }));
+		System.out.println(oct.getRegionContents(test, new double[] { 0 }));
 	}
 
 	/**

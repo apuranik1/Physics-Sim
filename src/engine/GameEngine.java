@@ -131,7 +131,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	private void physicsRefresh(long frame, long dt) {
-		ArrayList<Object3D> proc = new ArrayList<>();
+		ArrayList<Object3D> proc = new ArrayList<Object3D>();
 		for (Object3D object : this)
 			proc.add(object);
 		for (Object3D object : proc) {
