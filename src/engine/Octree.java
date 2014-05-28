@@ -208,6 +208,16 @@ public class Octree<T> implements Iterable<T> {
 		return getRegionContents(normals, constants);
 	}
 
+	public ArrayList<T> getAllObjects() {
+		ArrayList<T> stuff = new ArrayList<T>();
+		for (Pair<BoundingBox, T> pair : contents)
+			stuff.add(pair.second());
+		if (!leaf)
+			for (Octree<T> octant : octants)
+				stuff.addAll(octant.getAllObjects());
+		return stuff;
+	}
+
 	/**
 	 * Creates the sub-octants for the octree.
 	 */
@@ -302,16 +312,6 @@ public class Octree<T> implements Iterable<T> {
 		return stuff;
 	}
 
-	private ArrayList<T> getAllObjects() {
-		ArrayList<T> stuff = new ArrayList<T>();
-		for (Pair<BoundingBox, T> pair : contents)
-			stuff.add(pair.second());
-		if (!leaf)
-			for (Octree<T> octant : octants)
-				stuff.addAll(octant.getAllObjects());
-		return stuff;
-	}
-
 	/**
 	 * Converts the octree from a leaf into a node.
 	 */
@@ -352,39 +352,39 @@ public class Octree<T> implements Iterable<T> {
 				inRegion.addAll(octants[0]
 						.getRegionContents(normals, constants));
 
-			bb.setDepth(-1e7);
+			bb = new BoundingBox(splitPoint, 1e7, 1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[1]
 						.getRegionContents(normals, constants));
 
-			bb.setHeight(-1e7);
+			bb = new BoundingBox(splitPoint, 1e7, -1e7, 1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[2]
+						.getRegionContents(normals, constants));
+
+			bb = new BoundingBox(splitPoint, 1e7, -1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[3]
 						.getRegionContents(normals, constants));
 
-			bb.setWidth(-1e7);
-			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[7]
-						.getRegionContents(normals, constants));
-
-			bb.setHeight(1e7);
-			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[5]
-						.getRegionContents(normals, constants));
-
-			bb.setDepth(1e7);
+			bb = new BoundingBox(splitPoint, -1e7, 1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[4]
 						.getRegionContents(normals, constants));
 
-			bb.setHeight(1e7);
+			bb = new BoundingBox(splitPoint, -1e7, 1e7, -1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[5]
+						.getRegionContents(normals, constants));
+
+			bb = new BoundingBox(splitPoint, -1e7, -1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[6]
 						.getRegionContents(normals, constants));
 
-			bb.setWidth(-1e7);
+			bb = new BoundingBox(splitPoint, -1e7, -1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[2]
+				inRegion.addAll(octants[7]
 						.getRegionContents(normals, constants));
 		}
 		return inRegion;
