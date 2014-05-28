@@ -346,42 +346,42 @@ public class Octree<T> implements Iterable<T> {
 			if (object.first.withinRegion(normals, constants))
 				inRegion.add(object.second);
 		if (!leaf) {
-			BoundingBox bb = new BoundingBox(splitPoint, 1e7, 1e7, 1e7);
+			BoundingBox bb = new BoundingBox(splitPoint, -1e7, -1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[0]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, 1e7, 1e7, -1e7);
+			bb = new BoundingBox(splitPoint, -1e7, -1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[1]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, 1e7, -1e7, 1e7);
+			bb = new BoundingBox(splitPoint, -1e7, 1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[2]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, 1e7, -1e7, -1e7);
+			bb = new BoundingBox(splitPoint, -1e7, 1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[3]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, -1e7, 1e7, 1e7);
+			bb = new BoundingBox(splitPoint, 1e7, -1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[4]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, -1e7, 1e7, -1e7);
+			bb = new BoundingBox(splitPoint, 1e7, -1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[5]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, -1e7, -1e7, 1e7);
+			bb = new BoundingBox(splitPoint, 1e7, 1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[6]
 						.getRegionContents(normals, constants));
 
-			bb = new BoundingBox(splitPoint, -1e7, -1e7, -1e7);
+			bb = new BoundingBox(splitPoint, 1e7, 1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[7]
 						.getRegionContents(normals, constants));
