@@ -31,10 +31,10 @@ public class MonkeySpawner {
 		engine.beginGame();
 		
 		Animator.getAnimator().registerEvent(
-				new ContinuousAnimationEvent(0, .005) {
+				new ContinuousAnimationEvent(0, .5) {
 					@Override
 					public void animate() {
-						ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5));
+						ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5,  Math.random() * 10 - 5, Math.random() * 10 - 5));
 					}
 				});
 		

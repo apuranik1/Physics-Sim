@@ -112,7 +112,6 @@ public class RenderEngine implements GLEventListener {
 	}
 
 	private void render(GLAutoDrawable drawable) {
-		// drawable.swapBuffers();
 		GL2 gl = GLContext.getCurrent().getGL().getGL2();
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		GameEngine engine = GameEngine.getGameEngine();
@@ -136,7 +135,6 @@ public class RenderEngine implements GLEventListener {
 			object.setFrame(frame);
 		}
 		lastRendered = distinct;
-		gl.glFlush();
 	}
 	
 	public int lastRendered() {

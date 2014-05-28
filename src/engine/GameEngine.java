@@ -41,7 +41,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private double height;
 	private Stack<EventProcessor> processors;
 	private RenderEngine renderer;
-	private double fovy = Math.PI / 4;
+	private double fovy;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -55,6 +55,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		processors = new Stack<EventProcessor>();
 		registerProcessor(new DefaultExitProcessor());
 		new HealthMonitor();
+		fovy =  Math.PI / 4;
 	}
 	
 	public int getSize() {

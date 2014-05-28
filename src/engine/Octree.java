@@ -202,8 +202,8 @@ public class Octree<T> implements Iterable<T> {
 				+ rightPlane.z * apex.z;
 		double leftD = leftPlane.x * apex.x + leftPlane.y * apex.y
 				+ leftPlane.z * apex.z;
-		Vector3D[] normals = new Vector3D[] { topPlane, botPlane, leftPlane,
-				rightPlane };
+		Vector3D[] normals = new Vector3D[] { topPlane, botPlane, rightPlane,
+				leftPlane };
 		double[] constants = new double[] { topD, botD, rightD, leftD };
 		return getRegionContents(normals, constants);
 	}
@@ -342,10 +342,9 @@ public class Octree<T> implements Iterable<T> {
 	private ArrayList<T> getRegionContents(Vector3D[] normals,
 			double[] constants) {
 		ArrayList<T> inRegion = new ArrayList<T>();
-		for (Pair<BoundingBox, T> object : contents) {
+		for (Pair<BoundingBox, T> object : contents)
 			if (object.first.withinRegion(normals, constants))
 				inRegion.add(object.second);
-		}
 		if (!leaf) {
 			BoundingBox bb = new BoundingBox(splitPoint, 1e7, 1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
