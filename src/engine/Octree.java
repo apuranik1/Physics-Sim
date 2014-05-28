@@ -202,7 +202,6 @@ public class Octree<T> implements Iterable<T> {
 				+ rightPlane.z * apex.z;
 		double leftD = leftPlane.x * apex.x + leftPlane.y * apex.y
 				+ leftPlane.z * apex.z;
-		// System.out.println(topD + " " + botD + " " + leftD + " " + rightD);
 		Vector3D[] normals = new Vector3D[] { topPlane, botPlane, leftPlane,
 				rightPlane };
 		double[] constants = new double[] { topD, botD, rightD, leftD };
@@ -292,7 +291,6 @@ public class Octree<T> implements Iterable<T> {
 			contents.addAll(octant.getAll());
 		octants = null;
 		leaf = true;
-		System.out.println("Octant collapsed!");
 	}
 
 	private ArrayList<Pair<BoundingBox, T>> getAll() {
@@ -329,12 +327,6 @@ public class Octree<T> implements Iterable<T> {
 			else
 				between.add(pair);
 		}
-		System.out.print("The octree of size " + getSize() + " and depth "
-				+ depth + " has branched with ");
-		int tot = 0;
-		for (int i = 0; i < 8; i++)
-			tot += octants[i].contents.size();
-		System.out.println(tot - 17 + " duplicate(s).");
 		contents = between;
 	}
 

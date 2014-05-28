@@ -41,6 +41,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private double height;
 	private Stack<EventProcessor> processors;
 	private RenderEngine renderer;
+	private double fovy = Math.PI / 4;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -161,6 +162,14 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public Vector3D getCameraPos() {
 		return cameraMotion.getPosition();
 	}
+	
+	public void setFOVY(double value) {
+		this.fovy = value;
+	}
+	
+	public double getFOVY() {
+		return fovy;
+	}
 
 	@Override
 	public Iterator<Object3D> iterator() {
@@ -227,7 +236,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 	
 	public ArrayList<Object3D> selectFrustum() {
-		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, Math.PI / 4, Math.PI / 4 * width / height);
+		double fovx = 2 * Math.atan(Math.tan(fovy / 2) * width / height);
+		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, fovy, fovx);
 	}
 	
 	public int treeSize() {
