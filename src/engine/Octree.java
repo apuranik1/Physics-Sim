@@ -209,6 +209,16 @@ public class Octree<T> implements Iterable<T> {
 		return getRegionContents(normals, constants);
 	}
 
+	public ArrayList<T> getAllObjects() {
+		ArrayList<T> stuff = new ArrayList<T>();
+		for (Pair<BoundingBox, T> pair : contents)
+			stuff.add(pair.second());
+		if (!leaf)
+			for (Octree<T> octant : octants)
+				stuff.addAll(octant.getAllObjects());
+		return stuff;
+	}
+
 	/**
 	 * Creates the sub-octants for the octree.
 	 */
@@ -301,16 +311,6 @@ public class Octree<T> implements Iterable<T> {
 		if (!leaf)
 			for (Octree<T> octant : octants)
 				stuff.addAll(octant.getAll());
-		return stuff;
-	}
-
-	private ArrayList<T> getAllObjects() {
-		ArrayList<T> stuff = new ArrayList<T>();
-		for (Pair<BoundingBox, T> pair : contents)
-			stuff.add(pair.second());
-		if (!leaf)
-			for (Octree<T> octant : octants)
-				stuff.addAll(octant.getAllObjects());
 		return stuff;
 	}
 
