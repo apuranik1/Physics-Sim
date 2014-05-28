@@ -360,39 +360,39 @@ public class Octree<T> implements Iterable<T> {
 				inRegion.addAll(octants[0]
 						.getRegionContents(normals, constants));
 
-			bb.setDepth(-1e7);
+			bb = new BoundingBox(splitPoint, 1e7, 1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[1]
 						.getRegionContents(normals, constants));
 
-			bb.setHeight(-1e7);
+			bb = new BoundingBox(splitPoint, 1e7, -1e7, 1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[2]
+						.getRegionContents(normals, constants));
+
+			bb = new BoundingBox(splitPoint, 1e7, -1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[3]
 						.getRegionContents(normals, constants));
 
-			bb.setWidth(-1e7);
-			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[7]
-						.getRegionContents(normals, constants));
-
-			bb.setHeight(1e7);
-			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[5]
-						.getRegionContents(normals, constants));
-
-			bb.setDepth(1e7);
+			bb = new BoundingBox(splitPoint, -1e7, 1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[4]
 						.getRegionContents(normals, constants));
 
-			bb.setHeight(1e7);
+			bb = new BoundingBox(splitPoint, -1e7, 1e7, -1e7);
+			if (bb.withinRegion(normals, constants))
+				inRegion.addAll(octants[5]
+						.getRegionContents(normals, constants));
+
+			bb = new BoundingBox(splitPoint, -1e7, -1e7, 1e7);
 			if (bb.withinRegion(normals, constants))
 				inRegion.addAll(octants[6]
 						.getRegionContents(normals, constants));
 
-			bb.setWidth(-1e7);
+			bb = new BoundingBox(splitPoint, -1e7, -1e7, -1e7);
 			if (bb.withinRegion(normals, constants))
-				inRegion.addAll(octants[2]
+				inRegion.addAll(octants[7]
 						.getRegionContents(normals, constants));
 		}
 		return inRegion;
