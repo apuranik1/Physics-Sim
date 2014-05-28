@@ -2,7 +2,7 @@ package racing.game;
 import java.net.InetAddress;
 import racing.networking.NetClient;
 import racing.networking.NetServer;
-public class Manager {
+public class Manager{
 	/**
 	 * Local player cart
 	 */
@@ -11,6 +11,7 @@ public class Manager {
 	 * Local player track
 	 */
 	private Track track;
+	private Menu menu;
 	public Manager(){
 		cart=new Cart();
 		track=new Track();
@@ -28,7 +29,7 @@ public class Manager {
 	 */
 	public NetServer newMultiServer(int port){
 		NetServer server=new NetServer(port);
-		NetClient client=netMultiClient(server.getIP(), port);//local client
+		NetClient client=newMultiClient(server.getIP(), port);//local client
 		server.connect();//connect local client
 		return server;
 	}
@@ -37,7 +38,7 @@ public class Manager {
 	 * @param address IP Address to connect to
 	 * @param port Port to connect to
 	 */
-	public NetClient netMultiClient(InetAddress address, int port){
+	public NetClient newMultiClient(InetAddress address, int port){
 		NetClient client=new NetClient(address, port, cart, track);//remote client
 		return client;
 	}
