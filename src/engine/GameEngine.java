@@ -199,17 +199,22 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		Timer prev = timers.get(keyCode);
 		if (prev != null)
 			prev.restart();
-		else
-			timers.put(keyCode, new Timer(100, new ActionListener() {
+		else {
+			final Timer t = new Timer(40, null);
+			t.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					for (EventProcessor processor : processors)
 						if (processor.keyReleased(keyCode))
 							break;
+					t.stop();
 					timers.remove(keyCode);
 				}
-			}));
+			});
+			timers.put(keyCode, t);
+			t.start();
+		}
 	}
 
 	public void updateKeys() {
