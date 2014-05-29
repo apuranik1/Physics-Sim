@@ -11,7 +11,6 @@ public class Manager{
 	 * Local player track
 	 */
 	private Track track;
-	private Menu menu;
 	public Manager(){
 		cart=new Cart();
 		track=new Track();
