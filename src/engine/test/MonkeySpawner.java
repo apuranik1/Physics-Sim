@@ -18,15 +18,15 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Object3D monkey = Object3D.load("/Users/michael/Desktop/monkey.obj");
+		Object3D monkey = Object3D.load("/Users/16mcolavita/Desktop/monkey.obj");
 		monkey.setAcceleration(new Vector3D(0,1,0));
 		monkey.setVelocity(new Vector3D(0,-10,0));
 		
 		manager.loadObject("monkey",monkey);
-		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
+		manager.loadObject("sphere",Object3D.load("/Users/16mcolavita/Desktop/sphere.obj"));
 		
 		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
-		engine.cameraLookAt(new Vector3D(0,0,10),new Vector3D(0,0,0));
+		engine.cameraLookAt(new Vector3D(0,-5,10),new Vector3D(0,0,0));
 		
 		engine.beginGame();
 		
@@ -48,21 +48,22 @@ public class MonkeySpawner {
 		
 		engine.registerProcessor(new EventProcessor() {
 			public boolean keyPressed(int keyCode) {
+				System.out.println("Down: " + keyCode);
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
 				Vector3D cam = GameEngine.getGameEngine().getCameraPos();
 				Vector3D vel = motion.getVelocity();
 				switch (keyCode) {
 				case KeyEvent.VK_A:
-					motion.setVelocity(new Vector3D(-5, vel.y, vel.z));
+					motion.setVelocity(new Vector3D(-15, vel.y, vel.z));
 					break;
 				case KeyEvent.VK_D:
-					motion.setVelocity(new Vector3D(5, vel.y, vel.z));
+					motion.setVelocity(new Vector3D(15, vel.y, vel.z));
 					break;
 				case KeyEvent.VK_W:
-					motion.setVelocity(new Vector3D(vel.x, 5, vel.z));
+					motion.setVelocity(new Vector3D(vel.x, 15, vel.z));
 					break;
 				case KeyEvent.VK_S:
-					motion.setVelocity(new Vector3D(vel.x, -5, vel.z));
+					motion.setVelocity(new Vector3D(vel.x, -15, vel.z));
 					break;
 				default:
 					return false;
@@ -70,6 +71,7 @@ public class MonkeySpawner {
 				return true;
 			}
 			public boolean keyReleased(int keyCode) {
+				System.out.println("Up: " + keyCode);
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
 				Vector3D vel = motion.getVelocity();
 				switch (keyCode) {
