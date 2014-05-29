@@ -36,7 +36,6 @@ public class Menu extends JPanel implements ActionListener{
 		frame.pack();
 		frame.setVisible(true);
 	}
-//	public Component[] getClientInfo(){
 //		JPanel inputPanel=new JPanel(new GridLayout(0,4));
 //		inputPanel.add(new JLabel("IP: "));
 //		inputPanel.add(new JTextField());
@@ -51,8 +50,6 @@ public class Menu extends JPanel implements ActionListener{
 //		inputDialog.setContentPane(inputPanel);
 //		inputDialog.pack();
 //		inputDialog.setVisible(true);
-//		return inputPanel.getComponents();
-//	}
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(single))manager.newSingle();
 	}
