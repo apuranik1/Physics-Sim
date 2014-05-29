@@ -32,7 +32,8 @@ public class HealthMonitor extends JFrame {
 							"Duplication percentage: " + duplicationPercentage +"%\n" +
 							"Octree depth: " + treeDepth + "\n" +
 							"Depth overshoot: " +  overshoot + "%\n" +
-							"Culling status: " + rendered +"/"+objects+"\n"
+							"Culling status: " + rendered +"/"+objects+"\n" +
+							"FPS: " + engine.getFPS()
 					);
 				}
 				catch(Exception ex) {
