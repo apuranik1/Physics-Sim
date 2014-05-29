@@ -53,5 +53,7 @@ public class Menu extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(single))manager.newSingle();
 	}
-	
+	public static void main(String[] args){
+		new Menu(new Manager());
+	}
 }

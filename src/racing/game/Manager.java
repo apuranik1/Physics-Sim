@@ -1,5 +1,6 @@
 package racing.game;
 import java.net.InetAddress;
+import engine.GameEngine;
 import racing.networking.NetClient;
 import racing.networking.NetServer;
 public class Manager{
@@ -19,7 +20,6 @@ public class Manager{
 	 * Create new singleplayer game
 	 */
 	public void newSingle(){
-		
 	}
 	/**
 	 * Create new multiplayer game server
