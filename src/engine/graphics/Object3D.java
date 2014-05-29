@@ -21,7 +21,8 @@ import engine.physics.Vector3D;
 import static javax.media.opengl.GL2.*;
 
 public class Object3D implements Renderable3D, Cloneable {
-	public Motion motion;
+	private Motion motion;
+	private PhysicsSpec spec;
 	private Vector3D rotation;
 	private Vector3D[] vertices;
 	private Vector3D[] normals;
@@ -30,9 +31,16 @@ public class Object3D implements Renderable3D, Cloneable {
 	private long frame = -1;
 	private Vector3D offset;
 	private Vector3D size;
-
+	
+	
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
+		this(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(false, false, false, 0.0));
+	}
+
+	public Object3D(Vector3D[] vertices, Vector3D[] normals,
+			Vector2D[] textureCoords, Color[] colors, Motion motion,
+			PhysicsSpec spec) {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.colors = colors;
@@ -45,12 +53,13 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.normals = normals;
 		this.motion = motion;
 		rotation = new Vector3D(0, 0, 0);
+		this.spec = spec;
 		computeBoundingBox();
 	}
 
 	public Object3D clone() {
 		return new Object3D(vertices, normals, textureCoords, colors,
-				motion.clone());
+				motion.clone(), spec);
 	}
 
 	public Vector3D getPosition() {
@@ -67,6 +76,10 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public Vector3D getRotation() {
 		return rotation;
+	}
+
+	public PhysicsSpec getSpec() {
+		return spec;
 	}
 
 	public void render(GL2 gl) {
@@ -203,6 +216,10 @@ public class Object3D implements Renderable3D, Cloneable {
 			this.rotation = rotation;
 	}
 	
+	public void setSpec(PhysicsSpec spec) {
+		this.spec = spec;
+	}
+
 	private void computeBoundingBox() {
 		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz = Double.MAX_VALUE;
 		double maxx = Double.MIN_VALUE, maxy = Double.MIN_VALUE, maxz = Double.MIN_VALUE;
