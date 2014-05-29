@@ -31,7 +31,8 @@ import engine.physics.Vector3D;
 public class RenderEngine implements GLEventListener {
 	private GLWindow window;
 	private int lastRendered;
-
+	private FPSAnimator anim;
+	
 	public RenderEngine(String title) {
 		configure();
 	}
@@ -48,7 +49,7 @@ public class RenderEngine implements GLEventListener {
 		window.setFullscreen(true);
 		window.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
 		window.addKeyListener(GameEngine.getGameEngine());
-		FPSAnimator anim = new FPSAnimator(window, 600);
+		anim = new FPSAnimator(window, 60);
 		anim.start();
 		window.setVisible(true);
 	}
@@ -139,5 +140,9 @@ public class RenderEngine implements GLEventListener {
 	
 	public int lastRendered() {
 		return lastRendered;
+	}
+	
+	public int getFPS() {
+		return Math.round(anim.getLastFPS());
 	}
 }

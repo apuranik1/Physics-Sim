@@ -180,11 +180,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	@Override
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_Q) {
-			//System.out.println("Cancelled!");
-			e.setConsumed(true);
+			System.out.println("Cancelled!");
 			return;
 		}
-		System.out.println(e.getKeyCode());
 		for (EventProcessor processor : processors)
 			if (processor.keyPressed(e.getKeyCode()))
 				break;
@@ -202,8 +200,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_Q) {
-			//System.out.println("Cancelled!");
-			e.setConsumed(true);
+			System.out.println("Cancelled!");
 			return;
 		}
 		for (EventProcessor processor : processors)
@@ -238,7 +235,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	
 	public ArrayList<Object3D> selectFrustum() {
 		double fovx = 2 * Math.atan(Math.tan(fovy / 2) * width / height);
-		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp, fovy, fovx);
+		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget).normalize();
+		Vector3D cameraUp2 = f.cross(cameraUp.normalize()).normalize().cross(f);
+		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp2, fovy, fovx);
 	}
 	
 	public int treeSize() {
@@ -253,5 +252,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		if(renderer != null)
 			return renderer.lastRendered();
 		else return 0;
+	}
+	
+	public int getFPS() {
+		return renderer.getFPS();
 	}
 }

@@ -59,4 +59,9 @@ public class Vector3D {
 		Vector3D v = (Vector3D) other;
 		return v.x == x && v.y == y && v.z == z;
 	}
+	
+	public Vector3D normalize() {
+		double magnitude = magnitude();
+		return new Vector3D(x / magnitude, y / magnitude, z/magnitude);
+	}
 }

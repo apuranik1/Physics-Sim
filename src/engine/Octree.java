@@ -119,8 +119,11 @@ public class Octree<T> implements Iterable<T> {
 		for (Pair<BoundingBox, T> entry : contents)
 			if (entry.first().simpleIntersects(bb))
 				intersections.add(entry.second());
-		if (!leaf)
-			intersections.addAll(octantsContaining(bb).get(0).intersects(bb));
+		if (!leaf) {
+			Octree<T> octant = octantsContaining(bb);
+			if(octant != null)
+				intersections.addAll(octant.intersects(bb));
+		}
 		return intersections;
 	}
 
@@ -138,9 +141,9 @@ public class Octree<T> implements Iterable<T> {
 			contents.add(new Pair<BoundingBox, T>(bb, object));
 			considerBranch();
 		} else {
-			ArrayList<Octree<T>> locations = octantsContaining(bb);
-			if (locations.size() == 1)
-				locations.get(0).insert(bb, object);
+			Octree<T> location = octantsContaining(bb);
+			if (location != null)
+				location.insert(bb, object);
 			else
 				contents.add(new Pair<BoundingBox, T>(bb, object));
 		}
@@ -160,8 +163,11 @@ public class Octree<T> implements Iterable<T> {
 				contents.remove(i);
 				found = true;
 			}
-		if (!leaf && !found)
-			found |= octantsContaining(bb).get(0).remove(bb, match);
+		if (!leaf && !found) {
+			Octree<T> octant = octantsContaining(bb);
+			if(octant != null)
+				found |= octant.remove(bb, match);
+		}
 		if (found)
 			size--;
 		considerBranch();
@@ -240,35 +246,56 @@ public class Octree<T> implements Iterable<T> {
 	 * @return an ArrayList of all octants that contain any part of that
 	 *         BoundingBox
 	 */
-	private ArrayList<Octree<T>> octantsContaining(BoundingBox bb) {
+	private Octree<T> octantsContaining(BoundingBox bb) {
 		assert !leaf;
-		ArrayList<Octree<T>> intersect = new ArrayList<Octree<T>>();
 		Vector3D pos = bb.getLocation();
 		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
 				+ bb.getHeight(), pos.z + bb.getDepth());
 		int tmp = octantContaining(pos);
 		int tmp2 = octantContaining(corner);
 		if (tmp == tmp2) {
-			intersect.add(octants[tmp]);
-			return intersect;
+			return octants[tmp];
 		}
-		if (tmp == 0)
-			intersect.add(octants[0]);
-		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 3)
-			intersect.add(octants[3]);
-		if (octantContaining(new Vector3D(pos.x, corner.y, pos.z)) == 2)
-			intersect.add(octants[2]);
-		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 6)
-			intersect.add(octants[6]);
-		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 5)
-			intersect.add(octants[5]);
-		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 1)
-			intersect.add(octants[1]);
-		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 4)
-			intersect.add(octants[4]);
-		if (tmp2 == 7)
-			intersect.add(octants[7]);
-		return intersect;
+		int found = -1;
+		if (tmp == 0) {
+			found = 0;
+		}
+		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 3) {
+			if(found != -1)
+				return null;
+			found = 3;
+		}
+		if (octantContaining(new Vector3D(pos.x, corner.y, pos.z)) == 2) {
+			if(found != -1)
+				return null;
+			found = 2;
+		}
+		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 6) {
+			if(found != -1)
+				return null;
+			found = 6;
+		}
+		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 5) {
+			if(found != -1)
+				return null;
+			found = 5;
+		}
+		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 1) {
+			if(found != -1)
+				return null;
+			found = 1;
+		}
+		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 4) {
+			if(found != -1)
+				return null;
+			found = 4;
+		}
+		if (tmp2 == 7) {
+			if(found != -1)
+				return null;
+			found = 7;
+		}
+		return octants[found];
 	}
 
 	/**
@@ -321,9 +348,9 @@ public class Octree<T> implements Iterable<T> {
 		makeSubOctants();
 		ArrayList<Pair<BoundingBox, T>> between = new ArrayList<Pair<BoundingBox, T>>();
 		for (Pair<BoundingBox, T> pair : contents) {
-			ArrayList<Octree<T>> locations = octantsContaining(pair.first());
-			if (locations.size() == 1)
-				locations.get(0).insert(pair.first(), pair.second());
+			Octree<T> location = octantsContaining(pair.first());
+			if (location != null)
+				location.insert(pair.first(), pair.second());
 			else
 				between.add(pair);
 		}
