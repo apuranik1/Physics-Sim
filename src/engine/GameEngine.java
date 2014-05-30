@@ -44,7 +44,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private Stack<EventProcessor> processors;
 	private RenderEngine renderer;
 	private double fovy;
-	private HashMap<Short, Timer> timers;
+	private HashSet<Short> keysPressed;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -59,7 +59,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		registerProcessor(new DefaultExitProcessor());
 		new HealthMonitor();
 		fovy = Math.PI / 4;
-		timers = new HashMap<Short, Timer>();
+		keysPressed = new HashSet<Short>();
 	}
 
 	public int getSize() {
@@ -183,41 +183,17 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	@Override
 	public synchronized void keyPressed(KeyEvent e) {
-		final short keyCode = e.getKeyCode();
-		Timer prev = timers.get(keyCode);
-		if (prev != null)
-			prev.restart();
-		else
-			for (EventProcessor processor : processors)
-				if (processor.keyPressed(keyCode))
-					break;
+		keysPressed.add(e.getKeyCode());
 	}
 
 	@Override
 	public synchronized void keyReleased(KeyEvent e) {
-		final short keyCode = e.getKeyCode();
-		Timer prev = timers.get(keyCode);
-		if (prev != null)
-			prev.restart();
-		else {
-			final Timer t = new Timer(40, null);
-			t.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					for (EventProcessor processor : processors)
-						if (processor.keyReleased(keyCode))
-							break;
-					t.stop();
-					timers.remove(keyCode);
-				}
-			});
-			timers.put(keyCode, t);
-			t.start();
-		}
+		keysPressed.remove(e.getKeyCode());
 	}
 
 	public void updateKeys() {
+		for (EventProcessor processor : processors)
+			processor.keysPressed(keysPressed);
 	}
 
 	@Override

@@ -1,13 +1,14 @@
 package engine.processors;
 
+import java.util.Set;
+
 import com.jogamp.newt.event.KeyEvent;
 
 import engine.EventProcessor;
 
 public class DefaultExitProcessor extends EventProcessor {
-	public boolean keyPressed(int keyCode) {
-		if (keyCode == KeyEvent.VK_ESCAPE)
+	public void keysPressed(Set<Short> keys) {
+		if (keys.contains(KeyEvent.VK_ESCAPE))
 			System.exit(0);
-		return false;
 	}
 }

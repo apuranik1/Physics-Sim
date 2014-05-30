@@ -1,5 +1,7 @@
 package engine.test;
 
+import java.util.Set;
+
 import com.jogamp.newt.event.KeyEvent;
 
 import engine.AnimationEvent;
@@ -18,12 +20,12 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Object3D monkey = Object3D.load("C:/Users/michael/Desktop/monkey.obj");
+		Object3D monkey = Object3D.load("/Users/michael/Desktop/monkey.obj");
 		monkey.setAcceleration(new Vector3D(0,0,0));
 		//monkey.setVelocity(new Vector3D(0,-10,0));
 		
 		manager.loadObject("monkey",monkey);
-		manager.loadObject("sphere",Object3D.load("C:/Users/michael/Desktop/sphere.obj"));
+		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
 		
 		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
 		engine.cameraLookAt(new Vector3D(0,-5,10),new Vector3D(0,0,0));
@@ -48,50 +50,25 @@ public class MonkeySpawner {
 				});
 		
 		engine.registerProcessor(new EventProcessor() {
-			public boolean keyPressed(int keyCode) {
-				System.out.println("Down: " + keyCode);
+			public void keysPressed(Set<Short> keys) {
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
-				Vector3D cam = GameEngine.getGameEngine().getCameraPos();
-				Vector3D vel = motion.getVelocity();
-				switch (keyCode) {
-				case KeyEvent.VK_A:
-					motion.setVelocity(new Vector3D(-15, vel.y, vel.z));
-					break;
-				case KeyEvent.VK_D:
-					motion.setVelocity(new Vector3D(15, vel.y, vel.z));
-					break;
-				case KeyEvent.VK_W:
-					motion.setVelocity(new Vector3D(vel.x, 15, vel.z));
-					break;
-				case KeyEvent.VK_S:
-					motion.setVelocity(new Vector3D(vel.x, -15, vel.z));
-					break;
-				default:
-					return false;
-				}
-				return true;
-			}
-			public boolean keyReleased(int keyCode) {
-				System.out.println("Up: " + keyCode);
-				Motion motion = GameEngine.getGameEngine().getCameraMotion();
-				Vector3D vel = motion.getVelocity();
-				switch (keyCode) {
-				case KeyEvent.VK_A:
-					motion.setVelocity(new Vector3D(0, vel.y, vel.z));
-					break;
-				case KeyEvent.VK_D:
-					motion.setVelocity(new Vector3D(0, vel.y, vel.z));
-					break;
-				case KeyEvent.VK_W:
-					motion.setVelocity(new Vector3D(vel.x, 0, vel.z));
-					break;
-				case KeyEvent.VK_S:
-					motion.setVelocity(new Vector3D(vel.x, 0, vel.z));
-					break;
-				default:
-					return false;
-				}
-				return true;
+				double x = 0, y = 0, z = 0;
+				for(Short keyCode : keys)
+					switch (keyCode) {
+					case KeyEvent.VK_A:
+						x = -15;
+						break;
+					case KeyEvent.VK_D:
+						x = 15;
+						break;
+					case KeyEvent.VK_W:
+						y = 15;
+						break;
+					case KeyEvent.VK_S:
+						y = -15;
+						break;
+					}
+				motion.setVelocity(new Vector3D(x, y, z));
 			}
 		});
 	}
