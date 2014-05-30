@@ -158,13 +158,20 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	public boolean remove(BoundingBox bb, T match) {
 		boolean found = false;
-		for (int i = contents.size() - 1; i >= 0; i--)
-			if (contents.get(i).second() == match) {
-				contents.remove(i);
-				found = true;
-			}
-		if (!leaf && !found) {
-			Octree<T> octant = octantsContaining(bb);
+		Octree<T> octant;
+		if(!leaf)
+			octant = octantsContaining(bb);
+		else
+			octant = null;
+		if(octant == null) {
+			for (int i = contents.size() - 1; i >= 0; i--)
+				if (contents.get(i).second() == match) {
+					contents.remove(i);
+					found = true;
+					break;
+				}
+		}
+		else if (!leaf && !found) {
 			if(octant != null)
 				found |= octant.remove(bb, match);
 		}

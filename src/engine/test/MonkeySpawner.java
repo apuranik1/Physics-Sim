@@ -18,12 +18,12 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Object3D monkey = Object3D.load("/Users/16mcolavita/Desktop/monkey.obj");
-		monkey.setAcceleration(new Vector3D(0,1,0));
-		monkey.setVelocity(new Vector3D(0,-10,0));
+		Object3D monkey = Object3D.load("C:/Users/michael/Desktop/monkey.obj");
+		monkey.setAcceleration(new Vector3D(0,0,0));
+		//monkey.setVelocity(new Vector3D(0,-10,0));
 		
 		manager.loadObject("monkey",monkey);
-		manager.loadObject("sphere",Object3D.load("/Users/16mcolavita/Desktop/sphere.obj"));
+		manager.loadObject("sphere",Object3D.load("C:/Users/michael/Desktop/sphere.obj"));
 		
 		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
 		engine.cameraLookAt(new Vector3D(0,-5,10),new Vector3D(0,0,0));
@@ -34,7 +34,8 @@ public class MonkeySpawner {
 				new ContinuousAnimationEvent(0, .05) {
 					@Override
 					public void animate() {
-						ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5,  Math.random() * 10 - 5, Math.random() * 10 - 5));
+						long id = ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5,  Math.random() * 10 - 5, Math.random() * 10 - 5));
+						ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new Vector3D(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5));
 					}
 				});
 		
