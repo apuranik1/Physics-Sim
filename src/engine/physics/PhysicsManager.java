@@ -76,20 +76,39 @@ public class PhysicsManager {
 		// normalization may be needed
 		
 		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
-		double massRatio = obj0.getSpec().getMass() / obj1.getSpec().getMass();
-		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * Math.pow(0.5, massRatio))));
-		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * Math.pow(0.5, massRatio))));
+		double m0 = obj0.getSpec().getMass(),
+			   m1 = obj1.getSpec().getMass();
+		double refMass = 1.0 / (1/m0 + 1/m1);
+		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * refMass / m0)));
+		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * refMass / m1)));
+		
+		if (m0 < m1)
+			translateAway(bb0, bb1, collisionVec);
+		else
+			translateAway(bb1, bb0, collisionVec);
 	}
 
-	// hopefully unless the game's frame rate goes reeeeaaaally bad, we won't need this 
+	/**
+	 * Translate a bounding box along the specified axis so it no longer
+	 * intersects the other.
+	 * 
+	 * @param toMove
+	 * 			The bounding box to translate
+	 * @param away
+	 * 			The bounding box to translate it away from
+	 * @param axis
+	 */
 	private void translateAway(BoundingBox toMove, BoundingBox away,
 			Vector3D axis) {
-		
+		// TODO: test to hopefully fix collision handling
+		// could have been one line, but holy crap
+		Vector3D dPos = axis.multiply(toMove.distance(away, axis) * 1.0000001 / axis.magnitude());
+		toMove.setLocation(toMove.getLocation().add(dPos));
 	}
 
 	private static double overlap(double min0, double max0, double min1,
 			double max1) {
-		// this method exists just in case the implementation changes later
+		// this method exists just in case its implementation changes later
 		return Math.min(max0, max1) - Math.max(min0, min1);
 	}
 

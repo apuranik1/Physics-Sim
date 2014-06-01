@@ -10,6 +10,9 @@ import engine.physics.Vector3D;
  * @author Michael Colavita and Alok Puranik
  */
 public class BoundingBox {
+	
+	private static final int NUM_AXES = 15;
+	
 	/**
 	 * The position of the front-bottom-left corner of the box. Also the fixed
 	 * point of rotation.
@@ -156,23 +159,6 @@ public class BoundingBox {
 				};
 	}
 
-	private void positify() {
-		double new_x = location.x, new_y = location.y, new_z = location.z;
-		if (width < 0) {
-			width *= -1;
-			new_x -= width;
-		}
-		if (height < 0) {
-			height *= -1;
-			new_y -= height;
-		}
-		if (depth < 0) {
-			depth *= -1;
-			new_z -= depth;
-		}
-		location = new Vector3D(new_x, new_y, new_z);
-	}
-
 	/**
 	 * Determine whether this BoundingBox intersects <code>other</code>,
 	 * assuming both boxes have no orientation.
@@ -192,7 +178,19 @@ public class BoundingBox {
 	}
 
 	public boolean intersects(BoundingBox other) {
-		final int NUM_AXES = 15;
+		if (rotation == null && other.rotation == null)
+			return simpleIntersects(other);
+		
+		for (Vector3D axis : getIntersectAxes(other)) {
+			double[] range1 = project(axis);
+			double[] range2 = other.project(axis);
+			if (range1[0] > range2[1] || range2[0] > range1[1])
+				return false;
+		}
+		return true;
+	}
+	
+	private Vector3D[] getIntersectAxes(BoundingBox other) {
 		Vector3D[] axes = new Vector3D[NUM_AXES];
 		Vector3D[] aList = axisList();
 		Vector3D[] otherList = other.axisList();
@@ -204,14 +202,34 @@ public class BoundingBox {
 				axes[3 * i + j + 6] = aList[i].cross(otherList[j]);
 			}
 		}
-
-		for (Vector3D axis : axes) {
-			double[] range1 = project(axis);
-			double[] range2 = other.project(axis);
-			if (range1[0] > range2[1] || range2[0] > range1[1])
-				return false;
+		return axes;
+	}
+	
+	/**
+	 * Find the signed distance from <code>this</code> to <code>other</code>
+	 * along <code>axis</code>.
+	 * In other words, returns the distance to translate this along axis to
+	 * make it exactly adjacent to other and farther along axis.
+	 * 
+	 * @param other
+	 * @param axis
+	 */
+	public double distance(BoundingBox other, Vector3D axis) {
+		double minDist = Double.POSITIVE_INFINITY;
+		for (Vector3D intersectAxis : getIntersectAxes(other)) {
+			double[] r0 = project(intersectAxis);
+			double[] r1 = other.project(intersectAxis);
+			double dist = (r1[1] - r0[0]) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
+			if (dist < minDist)
+				minDist = dist;
 		}
-		return true;
+		return minDist;
+		// reverse scalar projection
+		/*
+		 * (k*this) * axis) / (axis magnitude) = x
+		 * k * (this * axis) = x * (axis magnitude)
+		 * k = x * (axis magnitude) / (this * axis)
+		 */
 	}
 
 	/**
@@ -246,8 +264,7 @@ public class BoundingBox {
 		return true;
 	}
 	
-	
-	public double[] project(Vector3D axis) {
+	private double[] project(Vector3D axis) {
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (Vector3D vertex : vertexList()) {
 			double pos = vertex.project(axis);
@@ -284,5 +301,22 @@ public class BoundingBox {
 		}
 		return new BoundingBox(new Vector3D(min_x, min_y, min_z),
 				max_x - min_x, max_y - min_y, max_z - min_z);
+	}
+
+	private void positify() {
+		double new_x = location.x, new_y = location.y, new_z = location.z;
+		if (width < 0) {
+			width *= -1;
+			new_x -= width;
+		}
+		if (height < 0) {
+			height *= -1;
+			new_y -= height;
+		}
+		if (depth < 0) {
+			depth *= -1;
+			new_z -= depth;
+		}
+		location = new Vector3D(new_x, new_y, new_z);
 	}
 }
