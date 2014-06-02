@@ -1,8 +1,8 @@
 package engine.test;
 
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
-import com.jogamp.newt.event.KeyEvent;
 
 import engine.AnimationEvent;
 import engine.Animator;
@@ -54,11 +54,11 @@ public class MonkeySpawner {
 				});
 		
 		engine.registerProcessor(new EventProcessor() {
-			public void keysPressed(Set<Short> keys) {
+			public void keysPressed(Set<Integer> keys) {
 				System.out.println(keys);
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
 				double x = 0, y = 0, z = 0;
-				for(Short keyCode : keys)
+				for(int keyCode : keys)
 					switch (keyCode) {
 					case KeyEvent.VK_A:
 						x = -15;

@@ -12,6 +12,9 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 
+import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 
 import javax.media.nativewindow.WindowClosingProtocol.WindowClosingMode;
@@ -21,15 +24,15 @@ import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import javax.media.opengl.awt.GLCanvas;
 
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import engine.GameEngine;
 import engine.physics.Vector3D;
 
 public class RenderEngine implements GLEventListener {
-	private GLWindow window;
+	private Frame window;
 	private int lastRendered;
 	private FPSAnimator anim;
 	
@@ -44,12 +47,15 @@ public class RenderEngine implements GLEventListener {
 		capabilities.setDoubleBuffered(true);
 		capabilities.setSampleBuffers(true);
 		capabilities.setNumSamples(8);
-		window = GLWindow.create(capabilities);
-		window.addGLEventListener(this);
-		window.setFullscreen(true);
-		window.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
+		window = new Frame("Game");
+		GLCanvas canvas = new GLCanvas(capabilities);
+		canvas.addGLEventListener(this);
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		gd.setFullScreenWindow(window);
 		window.addKeyListener(GameEngine.getGameEngine());
-		anim = new FPSAnimator(window, 60);
+		canvas.addKeyListener(GameEngine.getGameEngine());
+		window.add(canvas);
+		anim = new FPSAnimator(canvas, 60);
 		anim.start();
 		window.setVisible(true);
 	}

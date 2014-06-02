@@ -8,6 +8,8 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,8 +23,6 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 import javax.swing.Timer;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
 
 import engine.graphics.Object3D;
 import engine.graphics.RenderEngine;
@@ -45,7 +45,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private Stack<EventProcessor> processors;
 	private RenderEngine renderer;
 	private double fovy;
-	private HashSet<Short> keysPressed;
+	private HashSet<Integer> keysPressed;
 	private PhysicsManager physics;
 
 	private GameEngine() {
@@ -61,7 +61,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		registerProcessor(new DefaultExitProcessor());
 		new HealthMonitor();
 		fovy = Math.PI / 4;
-		keysPressed = new HashSet<Short>();
+		keysPressed = new HashSet<Integer>();
 		physics = new PhysicsManager();
 	}
 
@@ -260,5 +260,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public void exit() {
 		renderer.stop();
 		System.exit(0);
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 }
