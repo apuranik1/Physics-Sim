@@ -3,6 +3,7 @@ package engine.physics;
 import java.util.ArrayList;
 
 import engine.BoundingBox;
+import engine.GameEngine;
 import engine.Octree;
 import engine.graphics.Object3D;
 
@@ -18,21 +19,13 @@ public class PhysicsManager {
 		this.frame = 0;
 	}
 
-	public void increment(long nanos) {
-		for (Object3D obj : objects) {
-			if (obj.getFrameUpdate() != frame) {
-				obj.update(nanos);
-				obj.setFrame(frame);
-			}
-			frame++;
-		}
-	}
-
-	private void checkCollisions() {
+	public void checkCollisions() {
 		// so beautiful... it won't last
-		for (Object3D obj : world)
-			for (Object3D other : world.intersects(obj.getBoundingBox()))
-				handleCollision(obj, other);
+		GameEngine engine = GameEngine.getGameEngine();
+		for (Object3D obj : engine)
+			for (Object3D other : engine.intersects(obj.getBoundingBox()))
+				if(other != obj)
+					handleCollision(obj, other);
 	}
 
 	/**
@@ -76,6 +69,7 @@ public class PhysicsManager {
 		// normalization may be needed
 		
 		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
+<<<<<<< HEAD
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
 		double refMass = 1.5 / (1/m0 + 1/m1);
