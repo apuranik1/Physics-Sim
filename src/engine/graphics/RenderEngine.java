@@ -125,12 +125,12 @@ public class RenderEngine implements GLEventListener {
 				continue;
 			distinct ++;
 			gl.glPushMatrix();
+			Vector3D pos = object.getPosition();
+			gl.glTranslated(pos.x, pos.y, pos.z);
 			Vector3D rot = object.getRotation();
 			gl.glRotated(rot.x, 1, 0, 0);
 			gl.glRotated(rot.y, 0, 1, 0);
 			gl.glRotated(rot.z, 0, 0, 1);
-			Vector3D pos = object.getPosition();
-			gl.glTranslated(pos.x, pos.y, pos.z);
 			object.render(gl);
 			gl.glPopMatrix();
 			object.setFrame(frame);

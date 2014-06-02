@@ -58,8 +58,10 @@ public class Object3D implements Renderable3D, Cloneable {
 	}
 
 	public Object3D clone() {
-		return new Object3D(vertices, normals, textureCoords, colors,
+		Object3D that = new Object3D(vertices, normals, textureCoords, colors,
 				motion.clone(), spec);
+		that.setRotation(this.getRotation());
+		return that;
 	}
 
 	public Vector3D getPosition() {
