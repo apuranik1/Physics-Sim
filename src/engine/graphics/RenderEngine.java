@@ -48,6 +48,7 @@ public class RenderEngine implements GLEventListener {
 		capabilities.setSampleBuffers(true);
 		capabilities.setNumSamples(8);
 		window = new Frame("Game");
+		window.setUndecorated(true);
 		GLCanvas canvas = new GLCanvas(capabilities);
 		canvas.addGLEventListener(this);
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
