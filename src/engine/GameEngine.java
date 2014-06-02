@@ -256,4 +256,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public ArrayList<Object3D> intersects(BoundingBox bb) {
 		return octree.intersects(bb);
 	}
+	
+	public void exit() {
+		renderer.stop();
+		System.exit(0);
+	}
 }
