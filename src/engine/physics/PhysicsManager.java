@@ -69,7 +69,6 @@ public class PhysicsManager {
 		// normalization may be needed
 		
 		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
-<<<<<<< HEAD
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
 		double refMass = 1.5 / (1/m0 + 1/m1);

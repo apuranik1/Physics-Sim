@@ -62,7 +62,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		new HealthMonitor();
 		fovy = Math.PI / 4;
 		keysPressed = new HashSet<Short>();
-		physics = new PhysicsManager();
+		physics = new PhysicsManager(octree);
 	}
 
 	public int getSize() {
