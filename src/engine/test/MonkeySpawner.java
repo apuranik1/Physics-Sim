@@ -22,10 +22,14 @@ public class MonkeySpawner {
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
 		Object3D monkey = Object3D.load("/Users/16mcolavita/Desktop/monkey.obj");
-		monkey.setAcceleration(new Vector3D(0,0,0));
+		//monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
 		monkey.setRotation(new Vector3D(90, 0, 0));
+		Object3D floor = Object3D.load("/Users/16mcolavita/Desktop/floor.obj");
+		floor.setAcceleration(Vector3D.origin);
+		floor.setSpec(new PhysicsSpec(false, false, false, 5000));
 		manager.loadObject("monkey",monkey);
+		manager.loadObject("floor",floor);
 		
 		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
 		engine.cameraLookAt(new Vector3D(0,0,10),new Vector3D(0,0,0));
@@ -33,15 +37,16 @@ public class MonkeySpawner {
 		engine.beginGame();
 		
 		manager.insertInstance("monkey", new Vector3D(0, -10, 0));
+		manager.insertInstance("floor", new Vector3D(0, -20, 0));
 		
 		
 		Animator.getAnimator().registerEvent(
 				new ContinuousAnimationEvent(0, .25) {
 					@Override
 					public void animate() {
-						long id = ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5,  Math.random() * 10 - 5, Math.random() * 10 - 5));
-						ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new Vector3D(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5));
-						System.out.println(ResourceManager.getResourceManager().retrieveInstance(id).getBoundingBox());
+						long id = ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 20 - 10,  Math.random() * 20 - 10, Math.random() * 20 - 10));
+						//ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new Vector3D(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5));
+						//ResourceManager.getResourceManager().retrieveInstance(id).setRotation(new Vector3D(Math.random() * 360, Math.random() * 360, Math.random() * 360));
 					}
 				});
 		
