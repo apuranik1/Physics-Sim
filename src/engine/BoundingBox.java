@@ -120,8 +120,12 @@ public class BoundingBox {
 	}
 
 	public Vector3D midpoint() {
-		return new Vector3D(location.x + width / 2, location.y + height / 2,
+		if (rotation == null)
+			return new Vector3D(location.x + width / 2, location.y + height / 2,
 				location.z + depth / 2);
+		else
+			return location.add(rotation.multiply(new Vector3D(location.x + width / 2, location.y + height / 2,
+				location.z + depth / 2)));
 	}
 
 	public Vector3D[] vertexList() {
