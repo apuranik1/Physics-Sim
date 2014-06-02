@@ -3,38 +3,29 @@ package engine.physics;
 import java.util.ArrayList;
 
 import engine.BoundingBox;
+import engine.GameEngine;
 import engine.Octree;
 import engine.graphics.Object3D;
 
 public class PhysicsManager {
 
-	private Octree<Object3D> world;
 	private ArrayList<Object3D> objects;
 	private long frame;
 
-	public PhysicsManager(Octree<Object3D> world) {
-		this.world = world;
+	public PhysicsManager() {
 		this.objects = new ArrayList<Object3D>();
 		this.frame = 0;
 	}
 
-	public void increment(long nanos) {
-		for (Object3D obj : objects) {
-			if (obj.getFrameUpdate() != frame) {
-				obj.update(nanos);
-				obj.setFrame(frame);
-			}
-			frame++;
-		}
-	}
-
-	private void checkCollisions() {
+	public void checkCollisions() {
 		// so beautiful... it won't last
-		for (Object3D obj : world)
-			for (Object3D other : world.intersects(obj.getBoundingBox()))
-				handleCollision(obj, other);
+		GameEngine engine = GameEngine.getGameEngine();
+		for (Object3D obj : engine)
+			for (Object3D other : engine.intersects(obj.getBoundingBox()))
+				if(other != obj)
+					handleCollision(obj, other);
 	}
-
+int i = 0;
 	/**
 	 * Handle a collision between two objects taking their relative masses into
 	 * account.
@@ -77,6 +68,8 @@ public class PhysicsManager {
 		
 		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
 		double massRatio = obj0.getSpec().getMass() / obj1.getSpec().getMass();
+		//System.out.println(problemVeloc);
+		//System.out.println(massRatio);
 		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * Math.pow(0.5, massRatio))));
 		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * Math.pow(0.5, massRatio))));
 	}

@@ -27,6 +27,7 @@ import com.jogamp.newt.event.KeyListener;
 import engine.graphics.Object3D;
 import engine.graphics.RenderEngine;
 import engine.physics.Motion;
+import engine.physics.PhysicsManager;
 import engine.physics.Vector3D;
 import engine.processors.DefaultExitProcessor;
 
@@ -45,6 +46,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private RenderEngine renderer;
 	private double fovy;
 	private HashSet<Short> keysPressed;
+	private PhysicsManager physics;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -60,6 +62,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		new HealthMonitor();
 		fovy = Math.PI / 4;
 		keysPressed = new HashSet<Short>();
+		physics = new PhysicsManager();
 	}
 
 	public int getSize() {
@@ -121,6 +124,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
+		physics.checkCollisions();
 		animationRefresh();
 		physicsRefresh(frame, dt);
 		updateKeys();
@@ -247,5 +251,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	public int getFPS() {
 		return renderer.getFPS();
+	}
+	
+	public ArrayList<Object3D> intersects(BoundingBox bb) {
+		return octree.intersects(bb);
 	}
 }
