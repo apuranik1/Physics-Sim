@@ -211,9 +211,11 @@ public class BoundingBox {
 	
 	/**
 	 * Find the signed distance from <code>this</code> to <code>other</code>
-	 * along <code>axis</code>.
+	 * along <code>axis</code>. Axis must be a unit vector.
 	 * In other words, returns the distance to translate this along axis to
 	 * make it exactly adjacent to other and farther along axis.
+	 * 
+	 * Precondition: axis is a unit vector.
 	 * 
 	 * @param other
 	 * @param axis
@@ -224,7 +226,7 @@ public class BoundingBox {
 			double[] r0 = project(intersectAxis);
 			double[] r1 = other.project(intersectAxis);
 			double dist = (r1[1] - r0[0]) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
-			if (dist < minDist)
+			if (Math.abs(dist) < Math.abs(minDist))
 				minDist = dist;
 		}
 		return minDist;

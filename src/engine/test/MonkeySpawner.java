@@ -31,7 +31,7 @@ public class MonkeySpawner {
 		monkey2.setVelocity(new Vector3D(-1, -1, 1));
 		monkey2.setSpec(new PhysicsSpec(false, false, false, 25));
 		manager.loadObject("monkey2", monkey2);
-		manager.loadObject("sphere",Object3D.load("/Users/michael/Desktop/sphere.obj"));
+		manager.loadObject("sphere",Object3D.load("/run/media/root/Data/Downloads/sphere.obj"));
 		
 		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
 		engine.cameraLookAt(new Vector3D(0,-5,10),new Vector3D(0,0,0));

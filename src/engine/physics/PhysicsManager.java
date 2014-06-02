@@ -26,6 +26,7 @@ public class PhysicsManager {
 			for (Object3D other : engine.intersects(obj.getBoundingBox()))
 				if(other != obj)
 					handleCollision(obj, other);
+		frame++;
 	}
 
 	/**
@@ -65,7 +66,7 @@ public class PhysicsManager {
 				overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
 				overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
 				overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-		// collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
+		collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
 		// normalization may be needed
 		
 		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
@@ -76,9 +77,10 @@ public class PhysicsManager {
 		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(refMass / m1)));
 		
 		if (m0 < m1)
-			translateAway(bb0, bb1, collisionVec);
+			translateAway(obj0, obj1, collisionVec);
 		else
-			translateAway(bb1, bb0, collisionVec);
+			translateAway(obj0, obj1, collisionVec);
+		System.out.println(frame);
 	}
 
 	/**
@@ -91,12 +93,21 @@ public class PhysicsManager {
 	 * 			The bounding box to translate it away from
 	 * @param axis
 	 */
-	private void translateAway(BoundingBox toMove, BoundingBox away,
+	private static void translateAway(Object3D toMove, Object3D away,
 			Vector3D axis) {
 		// TODO: test to hopefully fix collision handling
 		// could have been one line, but holy crap
-		Vector3D dPos = axis.multiply(toMove.distance(away, axis) * 1.0000001 / axis.magnitude());
-		toMove.setLocation(toMove.getLocation().add(dPos));
+		BoundingBox bb0 = toMove.getBoundingBox(),
+					bb1 = away.getBoundingBox();
+		Vector3D dPos = axis.multiply(bb0.distance(bb1, axis) * 1.0000001);
+		//System.out.println("Distance: " + bb0.distance(bb1, axis));
+		Vector3D newPos = bb0.getLocation().add(dPos);
+		//XXX: WHY ARE THESE NOT THE SAME?
+		System.out.println("bb pos: " + bb0.getLocation());
+		System.out.println("obj pos: " + toMove.getPosition());
+		bb0.setLocation(newPos);
+		toMove.setPosition(newPos);
+		//System.out.println(dPos);
 	}
 
 	private static double overlap(double min0, double max0, double min1,
@@ -134,5 +145,12 @@ public class PhysicsManager {
 			else
 				return -0.0;
 		}
+	}
+	
+	public static void main(String[] args) {
+//		translateAway(new BoundingBox(Vector3D.origin, 10,10,10),
+//				new BoundingBox(new Vector3D(-5,-7,-7), 10,10,10),
+//				new Vector3D(-1/Math.sqrt(2),-1/Math.sqrt(2),0));
+		// translates by 7.5 * sqrt(2) in x and y
 	}
 }
