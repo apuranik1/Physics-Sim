@@ -1,23 +1,17 @@
 package engine;
 
+import java.util.Set;
+
 public class EventProcessor {
-	public boolean keyPressed(int keyCode) {
-		return false;
+	public void keysPressed(Set<Short> keys) {
+	}
+	
+	public void mouseMoved(int dx, int dy) {
 	}
 
-	public boolean keyReleased(int keyCode) {
-		return false;
+	public void mousePressed() {
 	}
 
-	public boolean mouseMoved(int dx, int dy) {
-		return false;
-	}
-
-	public boolean mousePressed() {
-		return false;
-	}
-
-	public boolean mouseReleased() {
-		return false;
+	public void mouseReleased() {
 	}
 }

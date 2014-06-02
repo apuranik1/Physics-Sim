@@ -9,6 +9,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -25,6 +27,7 @@ import com.jogamp.newt.event.KeyListener;
 import engine.graphics.Object3D;
 import engine.graphics.RenderEngine;
 import engine.physics.Motion;
+import engine.physics.PhysicsManager;
 import engine.physics.Vector3D;
 import engine.processors.DefaultExitProcessor;
 
@@ -42,6 +45,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private Stack<EventProcessor> processors;
 	private RenderEngine renderer;
 	private double fovy;
+	private HashSet<Short> keysPressed;
+	private PhysicsManager physics;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -55,9 +60,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		processors = new Stack<EventProcessor>();
 		registerProcessor(new DefaultExitProcessor());
 		new HealthMonitor();
-		fovy =  Math.PI / 4;
+		fovy = Math.PI / 4;
+		keysPressed = new HashSet<Short>();
+		physics = new PhysicsManager();
 	}
-	
+
 	public int getSize() {
 		return octree.getSize();
 	}
@@ -91,7 +98,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		cameraRotation = rotation;
 		targetedCamera = false;
 	}
-	
+
 	public Motion getCameraMotion() {
 		return cameraMotion;
 	}
@@ -117,8 +124,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
+		physics.checkCollisions();
 		animationRefresh();
 		physicsRefresh(frame, dt);
+		updateKeys();
 	}
 
 	private void animationRefresh() {
@@ -126,8 +135,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 				System.nanoTime() / 1000000000d))
 			try {
 				event.animate();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}
 	}
@@ -163,11 +171,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public Vector3D getCameraPos() {
 		return cameraMotion.getPosition();
 	}
-	
+
 	public void setFOVY(double value) {
 		this.fovy = value;
 	}
-	
+
 	public double getFOVY() {
 		return fovy;
 	}
@@ -178,34 +186,18 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_Q) {
-			System.out.println("Cancelled!");
-			return;
-		}
-		for (EventProcessor processor : processors)
-			if (processor.keyPressed(e.getKeyCode()))
-				break;
-		// Don't ask...
-		try {
-			Robot r = new Robot();
-			r.keyPress(java.awt.event.KeyEvent.VK_Q);
-			r.keyRelease(java.awt.event.KeyEvent.VK_Q);
-		}
-		catch(Exception ex) {
-			ex.printStackTrace();
-		}
+	public synchronized void keyPressed(KeyEvent e) {
+		keysPressed.add(e.getKeyCode());
 	}
 
 	@Override
-	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode() == KeyEvent.VK_Q) {
-			System.out.println("Cancelled!");
-			return;
-		}
+	public synchronized void keyReleased(KeyEvent e) {
+		keysPressed.remove(e.getKeyCode());
+	}
+
+	public void updateKeys() {
 		for (EventProcessor processor : processors)
-			if (processor.keyReleased(e.getKeyCode()))
-				return;
+			processor.keysPressed(keysPressed);
 	}
 
 	@Override
@@ -232,29 +224,41 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		this.width = width;
 		this.height = height;
 	}
-	
+
 	public ArrayList<Object3D> selectFrustum() {
 		double fovx = 2 * Math.atan(Math.tan(fovy / 2) * width / height);
-		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget).normalize();
+		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget)
+				.normalize();
 		Vector3D cameraUp2 = f.cross(cameraUp.normalize()).normalize().cross(f);
-		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp2, fovy, fovx);
+		return octree.getFrustumContents(cameraMotion.getPosition(),
+				cameraTarget, cameraUp2, fovy, fovx);
 	}
-	
+
 	public int treeSize() {
 		return octree.getTrueSize();
 	}
-	
+
 	public int treeDepth() {
 		return octree.getDepth();
 	}
-	
+
 	public int lastRendered() {
-		if(renderer != null)
+		if (renderer != null)
 			return renderer.lastRendered();
-		else return 0;
+		else
+			return 0;
 	}
-	
+
 	public int getFPS() {
 		return renderer.getFPS();
+	}
+	
+	public ArrayList<Object3D> intersects(BoundingBox bb) {
+		return octree.intersects(bb);
+	}
+	
+	public void exit() {
+		renderer.stop();
+		System.exit(0);
 	}
 }

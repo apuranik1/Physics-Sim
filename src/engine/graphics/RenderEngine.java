@@ -145,4 +145,8 @@ public class RenderEngine implements GLEventListener {
 	public int getFPS() {
 		return Math.round(anim.getLastFPS());
 	}
+	
+	public void stop() {
+		anim.stop();
+	}
 }
