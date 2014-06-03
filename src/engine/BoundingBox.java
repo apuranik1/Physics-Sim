@@ -84,39 +84,16 @@ public class BoundingBox {
 		return width;
 	}
 
-	public void setWidth(double width) {
-		this.width = width;
-		positify();
-		vertexCacheValid = false;
-	}
-
 	public double getHeight() {
 		return height;
-	}
-
-	public void setHeight(double height) {
-		this.height = height;
-		positify();
-		vertexCacheValid = false;
 	}
 
 	public double getDepth() {
 		return depth;
 	}
 
-	public void setDepth(double depth) {
-		this.depth = depth;
-		positify();
-		vertexCacheValid = false;
-	}
-
 	public Vector3D getLocation() {
 		return location;
-	}
-
-	public void setLocation(Vector3D location) {
-		this.location = location;
-		vertexCacheValid = false;
 	}
 
 	public Vector3D midpoint() {

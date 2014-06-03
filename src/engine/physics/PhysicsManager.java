@@ -105,7 +105,6 @@ public class PhysicsManager {
 		//XXX: WHY ARE THESE NOT THE SAME?
 		System.out.println("bb pos: " + bb0.getLocation());
 		System.out.println("obj pos: " + toMove.getPosition());
-		bb0.setLocation(newPos);
 		toMove.setPosition(newPos);
 		//System.out.println(dPos);
 	}
