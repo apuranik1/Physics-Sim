@@ -23,7 +23,7 @@ import static javax.media.opengl.GL2.*;
 public class Object3D implements Renderable3D, Cloneable {
 	private Motion motion;
 	private PhysicsSpec spec;
-	private Vector3D rotation;
+	private Vector3D rotation;	// TODO: delete this ASAP
 	private Vector3D[] vertices;
 	private Vector3D[] normals;
 	private Color[] colors;
@@ -31,6 +31,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	private long frame = -1;
 	private Vector3D offset;
 	private Vector3D size;
+	private BoundingBox box;
 	
 	
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
@@ -94,6 +95,9 @@ public class Object3D implements Renderable3D, Cloneable {
 		return motion.getAccel();
 	}
 
+	/**
+	 * TODO: This method must burn (or at least change its return value)
+	 */
 	public Vector3D getRotation() {
 		return rotation;
 	}

@@ -9,11 +9,9 @@ import engine.graphics.Object3D;
 
 public class PhysicsManager {
 
-	private ArrayList<Object3D> objects;
 	private long frame;
 
 	public PhysicsManager() {
-		this.objects = new ArrayList<Object3D>();
 		this.frame = 0;
 	}
 
@@ -24,8 +22,9 @@ public class PhysicsManager {
 			for (Object3D other : engine.intersects(obj.getBoundingBox()))
 				if(other != obj)
 					handleCollision(obj, other);
+		frame++;
 	}
-int i = 0;
+
 	/**
 	 * Handle a collision between two objects taking their relative masses into
 	 * account.
@@ -63,26 +62,52 @@ int i = 0;
 				overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
 				overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
 				overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-		// collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
+		collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
 		// normalization may be needed
 		
 		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
-		double massRatio = obj0.getSpec().getMass() / obj1.getSpec().getMass();
-		//System.out.println(problemVeloc);
-		//System.out.println(massRatio);
-		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * Math.pow(0.5, massRatio))));
-		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * Math.pow(0.5, massRatio))));
+		double m0 = obj0.getSpec().getMass(),
+			   m1 = obj1.getSpec().getMass();
+		double refMass = 1.5 / (1/m0 + 1/m1);
+		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-refMass / m0)));
+		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(refMass / m1)));
+		
+		if (m0 < m1)
+			translateAway(obj0, obj1, collisionVec);
+		else
+			translateAway(obj0, obj1, collisionVec);
+		System.out.println(frame);
 	}
 
-	// hopefully unless the game's frame rate goes reeeeaaaally bad, we won't need this 
-	private void translateAway(BoundingBox toMove, BoundingBox away,
+	/**
+	 * Translate a bounding box along the specified axis so it no longer
+	 * intersects the other.
+	 * 
+	 * @param toMove
+	 * 			The bounding box to translate
+	 * @param away
+	 * 			The bounding box to translate it away from
+	 * @param axis
+	 */
+	private static void translateAway(Object3D toMove, Object3D away,
 			Vector3D axis) {
-		
+		// TODO: test to hopefully fix collision handling
+		// could have been one line, but holy crap
+		BoundingBox bb0 = toMove.getBoundingBox(),
+					bb1 = away.getBoundingBox();
+		Vector3D dPos = axis.multiply(bb0.distance(bb1, axis) * 1.0000001);
+		//System.out.println("Distance: " + bb0.distance(bb1, axis));
+		Vector3D newPos = bb0.getLocation().add(dPos);
+		//XXX: WHY ARE THESE NOT THE SAME?
+		System.out.println("bb pos: " + bb0.getLocation());
+		System.out.println("obj pos: " + toMove.getPosition());
+		toMove.setPosition(newPos);
+		//System.out.println(dPos);
 	}
 
 	private static double overlap(double min0, double max0, double min1,
 			double max1) {
-		// this method exists just in case the implementation changes later
+		// this method exists just in case its implementation changes later
 		return Math.min(max0, max1) - Math.max(min0, min1);
 	}
 
@@ -115,5 +140,12 @@ int i = 0;
 			else
 				return -0.0;
 		}
+	}
+	
+	public static void main(String[] args) {
+//		translateAway(new BoundingBox(Vector3D.origin, 10,10,10),
+//				new BoundingBox(new Vector3D(-5,-7,-7), 10,10,10),
+//				new Vector3D(-1/Math.sqrt(2),-1/Math.sqrt(2),0));
+		// translates by 7.5 * sqrt(2) in x and y
 	}
 }
