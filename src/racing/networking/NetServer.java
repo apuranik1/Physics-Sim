@@ -63,6 +63,7 @@ public class NetServer {
 			try {
 				data.addCart((Cart)thread.getInputStream().readObject());//receive cart data
 				data.setItems((ArrayList<Item>)thread.getInputStream().readObject());//receive items data
+				System.out.println("Recieve ready");
 			} catch (ClassNotFoundException e) {
 				System.out.println("Class: "+e.getMessage());
 			} catch (IOException e) {
@@ -78,6 +79,7 @@ public class NetServer {
 		for(NetServerThread thread:clients)
 			try {
 				thread.getOutputStream().writeObject(data);//print data to client
+				System.out.println("Send data");
 			} catch (IOException e) {
 				System.out.println("Send : "+e.getMessage());
 			}
@@ -87,6 +89,7 @@ public class NetServer {
 		for(NetServerThread thread:clients)
 			try {
 				thread.getOutputStream().writeUTF("ready");
+				System.out.println("Send ready");
 			} catch (IOException e) {
 				System.out.println("Send : "+e.getMessage());
 			}

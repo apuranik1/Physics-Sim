@@ -1,6 +1,5 @@
 package racing.game;
 import java.net.InetAddress;
-import engine.GameEngine;
 import racing.networking.NetClient;
 import racing.networking.NetServer;
 public class Manager{

@@ -36,11 +36,20 @@ public class NetClient {
 	 */
 	public NetData update(){
 		try {
-			while(input.available()==0);
+			int b;
+			do{
+				input.mark(1);
+				b=input.read(new byte[1]);
+				System.out.print(b+" - ");
+				if(b==-1)System.out.println("empty");
+				input.reset();
+			}while(b==-1);
 			if(input.readUTF().equals("ready")){
-			output.writeObject(cart);//send cart data
-			output.writeObject(track.getItems());//send item data
-			return (NetData)input.readObject();//return server data
+				System.out.println("ready");
+				output.writeObject(cart);//send cart data
+				output.writeObject(track.getItems());//send item data
+				System.out.println("Send data");
+				return (NetData)input.readObject();//return server data
 			}
 		} catch (ClassNotFoundException e) {
 			System.out.println("Cast: "+e.getMessage());
@@ -54,7 +63,8 @@ public class NetClient {
 			BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("IP: ");
 			NetClient client=new NetClient(InetAddress.getByName(reader.readLine()),5555,new Cart(),new Track(new Item(reader.readLine())));
-			client.update();
+			System.out.println("created");
+			client.update().getItems().toString();
 		} catch (UnknownHostException e) {
 			System.out.println("IP error: "+e.getMessage());
 		} catch (IOException e) {
