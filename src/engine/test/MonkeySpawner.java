@@ -13,6 +13,7 @@ import engine.ResourceManager;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 import static engine.physics.Vector3D.*;
 
@@ -24,7 +25,7 @@ public class MonkeySpawner {
 		Object3D monkey = Object3D.load("/Users/16mcolavita/Desktop/monkey.obj");
 		//monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
-		monkey.setRotation(new Vector3D(90, 0, 0));
+		//monkey.setRotation(new Quaternion(new Vector3D(0, 0, 1), 0));
 		Object3D floor = Object3D.load("/Users/16mcolavita/Desktop/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 5000));
@@ -32,7 +33,7 @@ public class MonkeySpawner {
 		manager.loadObject("floor",floor);
 		
 		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
-		engine.cameraLookAt(new Vector3D(0,0,10),new Vector3D(0,0,0));
+		engine.cameraLookAt(new Vector3D(0,0, 10),new Vector3D(0,0,0));
 		
 		engine.beginGame();
 		
@@ -44,9 +45,17 @@ public class MonkeySpawner {
 				new ContinuousAnimationEvent(0, .25) {
 					@Override
 					public void animate() {
-						long id = ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 20 - 10,  Math.random() * 20 - 10, Math.random() * 20 - 10));
+						final long id = ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random(),  Math.random(), Math.random()));
 						//ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new Vector3D(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5));
 						//ResourceManager.getResourceManager().retrieveInstance(id).setRotation(new Vector3D(Math.random() * 360, Math.random() * 360, Math.random() * 360));
+						Animator.getAnimator().registerEvent(new ContinuousAnimationEvent(0, .01) {
+							
+							@Override
+							public void animate() {
+								Object3D that = ResourceManager.getResourceManager().retrieveInstance(id);
+								that.setRotation(new Quaternion(that.getRotation().getAxis(), that.getRotation().getAngle() + .02));
+							}
+						});
 					}
 				});
 		

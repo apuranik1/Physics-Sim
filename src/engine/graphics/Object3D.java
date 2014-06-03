@@ -24,7 +24,7 @@ import static javax.media.opengl.GL2.*;
 public class Object3D implements Renderable3D, Cloneable {
 	protected Motion motion;
 	private PhysicsSpec spec;
-	private Quaternion rotation;	// TODO: delete this ASAP
+	private Quaternion rotation; // TODO: delete this ASAP
 	private Vector3D[] vertices;
 	private Vector3D[] normals;
 	private Color[] colors;
@@ -33,11 +33,11 @@ public class Object3D implements Renderable3D, Cloneable {
 	private Vector3D offset;
 	private Vector3D size;
 	private BoundingBox box;
-	
-	
+
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
-		this(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(false, false, false, 0.0));
+		this(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(
+				false, false, false, 0.0));
 	}
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
@@ -54,7 +54,7 @@ public class Object3D implements Renderable3D, Cloneable {
 			this.colors[i] = c;
 		this.normals = normals;
 		this.motion = motion;
-		rotation = new Quaternion(0, 0, 0, 1);
+		rotation = new Quaternion(new Vector3D(0, 0, 1), 0);
 		this.spec = spec;
 		realign();
 		computeBoundingBox();
@@ -64,19 +64,19 @@ public class Object3D implements Renderable3D, Cloneable {
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
 		double minz = Double.MAX_VALUE;
-		for(Vector3D vect : vertices) {
-			if(vect.x < minx)
+		for (Vector3D vect : vertices) {
+			if (vect.x < minx)
 				minx = vect.x;
-			if(vect.y < miny)
+			if (vect.y < miny)
 				miny = vect.y;
-			if(vect.z < minz)
+			if (vect.z < minz)
 				minz = vect.z;
 		}
 		Vector3D shiftVector = new Vector3D(minx, miny, minz);
-		for(int i=0;i<vertices.length;i++)
+		for (int i = 0; i < vertices.length; i++)
 			vertices[i] = vertices[i].subtract(shiftVector);
 	}
-	
+
 	public Object3D clone() {
 		Object3D that = new Object3D(vertices, normals, textureCoords, colors,
 				motion.clone(), spec);
@@ -136,7 +136,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		updateImpl(nanos);
 		GameEngine.getGameEngine().completeUpdate(this);
 	}
-	
+
 	protected void updateImpl(long nanos) {
 		motion.update(nanos);
 	}
@@ -244,7 +244,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		} else
 			this.rotation = rotation;
 	}
-	
+
 	public void setSpec(PhysicsSpec spec) {
 		this.spec = spec;
 	}
@@ -267,12 +267,12 @@ public class Object3D implements Renderable3D, Cloneable {
 				maxz = point.z;
 		}
 		offset = new Vector3D(minx, miny, minz);
-		size = new Vector3D(maxx - minx, maxy - miny, maxz - minz);	
+		size = new Vector3D(maxx - minx, maxy - miny, maxz - minz);
 	}
 
 	public BoundingBox getBoundingBox() {
 		Vector3D position = motion.getPosition();
 		return new BoundingBox(new Vector3D(offset.x + position.x, offset.y
-				+ position.y, offset.z + position.z), size.x, size.y, size.z);
+				+ position.y, offset.z + position.z), size.x, size.y, size.z, rotation);
 	}
 }

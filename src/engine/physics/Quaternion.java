@@ -30,6 +30,8 @@ public class Quaternion {
 	}
 
 	public Vector3D getAxis() {
+		if (w == 1)
+			return new Vector3D(0, 0, 1);
 		double half = Math.acos(w);
 		double sin = Math.sin(half);
 		return new Vector3D(x, y, z).multiply(1 / sin);
