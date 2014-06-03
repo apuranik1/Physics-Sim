@@ -13,7 +13,7 @@ public class CarDemo {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Cart cart = new Cart("C:\\Users\\16mcolavita\\Desktop\\monkey.obj");
+		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
 		cart.setAcceleration(Vector3D.origin);
 		cart.setSpec(new PhysicsSpec(false, false, false, 250));
 		manager.loadObject("cart0", cart);

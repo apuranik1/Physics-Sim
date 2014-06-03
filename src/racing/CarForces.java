@@ -45,7 +45,7 @@ public class CarForces {
 		double velocMagnitude = velocity.magnitude();
 		Vector3D dragF = velocity.multiply(-drag * velocMagnitude);
 		Vector3D frictionF = velocity.multiply(-mu);
-		System.out.println(velocMagnitude + " "+ velocity + " " + dragF + " " + frictionF);
+		System.out.println(dragF+" "+frictionF);
 		Vector3D dA = force.add(dragF).add(frictionF).multiply(1 / mass).add(Vector3D.gravity);
 		m.setAccel(dA);
 	}

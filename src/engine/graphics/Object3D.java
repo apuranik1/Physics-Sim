@@ -1,5 +1,7 @@
 package engine.graphics;
 
+import static javax.media.opengl.GL.GL_TRIANGLES;
+
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -7,10 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
-import racing.CarForces;
 import engine.BoundingBox;
 import engine.GameEngine;
 import engine.ResourceManager;
@@ -19,7 +19,6 @@ import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
 import engine.physics.Vector2D;
 import engine.physics.Vector3D;
-import static javax.media.opengl.GL2.*;
 
 public class Object3D implements Renderable3D, Cloneable {
 	protected Motion motion;

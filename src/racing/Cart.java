@@ -21,7 +21,8 @@ public class Cart extends Object3D {
 	}
 
 	public Cart clone() {
-		Object3D that = super.clone();
+		Cart that = (Cart)super.clone();
+		// Yes, this is messed up. Yes, clone is broken
 		that.force = force;
 		return that;
 	}

@@ -1,10 +1,7 @@
 package engine.physics;
 
-import java.util.ArrayList;
-
 import engine.BoundingBox;
 import engine.GameEngine;
-import engine.Octree;
 import engine.graphics.Object3D;
 
 public class PhysicsManager {
@@ -39,70 +36,87 @@ public class PhysicsManager {
 		Vector3D velocDiff = obj0.getVelocity().subtract(obj1.getVelocity());
 		BoundingBox bb0 = obj0.getBoundingBox().simpleBound();
 		BoundingBox bb1 = obj1.getBoundingBox().simpleBound();
-		Vector3D pos0 = bb0.getLocation();
-		Vector3D pos1 = bb1.getLocation();
-		double minX0 = pos0.x,
-			   maxX0 = pos0.x + bb0.getWidth(),
-			   minX1 = pos1.x,
-			   maxX1 = pos1.x + bb1.getWidth(),
-			   minY0 = pos0.y,
-			   maxY0 = pos0.y + bb0.getWidth(),
-			   minY1 = pos1.y,
-			   maxY1 = pos1.y + bb1.getWidth(),
-			   minZ0 = pos0.z,
-			   maxZ0 = pos0.z + bb0.getWidth(),
-			   minZ1 = pos1.z,
-			   maxZ1 = pos1.z + bb1.getWidth();
-		double overlapX = overlap(minX0, maxX0, minX1, maxX1); // points from obj0 toward obj1
-		double overlapY = overlap(minY0, maxY0, minY1, maxY1);
-		double overlapZ = overlap(minZ0, maxZ0, minZ1, maxZ1);
-		
-		// dear god what have I done
-		Vector3D collisionVec = new Vector3D(
-				overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
-				overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
-				overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-		collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
-		// normalization may be needed
-		
-		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
+//		Vector3D pos0 = bb0.getLocation();
+//		Vector3D pos1 = bb1.getLocation();
+//		double minX0 = pos0.x,
+//			   maxX0 = pos0.x + bb0.getWidth(),
+//			   minX1 = pos1.x,
+//			   maxX1 = pos1.x + bb1.getWidth(),
+//			   minY0 = pos0.y,
+//			   maxY0 = pos0.y + bb0.getWidth(),
+//			   minY1 = pos1.y,
+//			   maxY1 = pos1.y + bb1.getWidth(),
+//			   minZ0 = pos0.z,
+//			   maxZ0 = pos0.z + bb0.getWidth(),
+//			   minZ1 = pos1.z,
+//			   maxZ1 = pos1.z + bb1.getWidth();
+//		double overlapX = overlap(minX0, maxX0, minX1, maxX1); // points from obj0 toward obj1
+//		double overlapY = overlap(minY0, maxY0, minY1, maxY1);
+//		double overlapZ = overlap(minZ0, maxZ0, minZ1, maxZ1);
+//		
+////		Vector3D collisionVec = new Vector3D(
+//				overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
+//				overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
+//				overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
-		double refMass = 1.5 / (1/m0 + 1/m1);
-		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-refMass / m0)));
-		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(refMass / m1)));
+//		if (collisionVec.x == 0 && collisionVec.y == 0 && collisionVec.z == 0)
+//			collisionVec = velocDiff;
+//		if (collisionVec.x + collisionVec.y + collisionVec.z == 0) {
+//			System.out.println("We have a problem");
+//			if (m0 < m1)
+//				translateAway(obj0, obj1, obj0.getVelocity().multiply(-1));
+//			else
+//				translateAway(obj1, obj0, obj1.getVelocity().multiply(-1));
+//			return;
+//		}
+		//collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
+		//System.out.println(collisionVec);
+		// normalization may be needed
 		
-		if (m0 < m1)
-			translateAway(obj0, obj1, collisionVec);
-		else
-			translateAway(obj0, obj1, collisionVec);
-		System.out.println(frame);
+//		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
+//		System.out.println();
+		double refMass = 1.0 / (1/m0 + 1/m1);
+//		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-refMass / m0)));
+//		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(refMass / m1)));
+//		
+//		if (m0 < m1)
+//			translateAway(obj0, obj1, collisionVec.multiply(-1));
+//		else
+//			translateAway(obj1, obj0, collisionVec);
+//		System.out.println(frame);
+		translateAway(obj0, obj1, velocDiff.normalize(), refMass / m0);
+		obj0.setVelocity(obj0.getVelocity().add(velocDiff.multiply(-1.5 * refMass / m0)));
+		obj1.setVelocity(obj1.getVelocity().add(velocDiff.multiply(1.5 * refMass / m1)));
 	}
 
 	/**
 	 * Translate a bounding box along the specified axis so it no longer
 	 * intersects the other.
 	 * 
-	 * @param toMove
+	 * @param obj0
 	 * 			The bounding box to translate
-	 * @param away
+	 * @param obj1
 	 * 			The bounding box to translate it away from
 	 * @param axis
 	 */
-	private static void translateAway(Object3D toMove, Object3D away,
-			Vector3D axis) {
+	private static void translateAway(Object3D obj0, Object3D obj1,
+			Vector3D axis, double obj0MoveProp) {
 		// TODO: test to hopefully fix collision handling
-		// could have been one line, but holy crap
-		BoundingBox bb0 = toMove.getBoundingBox(),
-					bb1 = away.getBoundingBox();
-		Vector3D dPos = axis.multiply(bb0.distance(bb1, axis) * 1.0000001);
+		BoundingBox bb0 = obj0.getBoundingBox(),
+					bb1 = obj1.getBoundingBox();
+		double dist = bb0.distance(bb1, axis);
 		//System.out.println("Distance: " + bb0.distance(bb1, axis));
-		Vector3D newPos = bb0.getLocation().add(dPos);
-		//XXX: WHY ARE THESE NOT THE SAME?
-		System.out.println("bb pos: " + bb0.getLocation());
-		System.out.println("obj pos: " + toMove.getPosition());
-		toMove.setPosition(newPos);
-		//System.out.println(dPos);
+		Vector3D newPos0 = bb0.getLocation().add(axis.multiply(dist * 1.0 * obj0MoveProp));
+		Vector3D newPos1 = bb1.getLocation().add(axis.multiply(-dist * 1.0 * (1-obj0MoveProp)));
+//		System.out.println("m0: " + obj0.getSpec().getMass());
+//		System.out.println("m1: " + obj1.getSpec().getMass());
+//		System.out.println("prop of obj0: " + obj0MoveProp);
+//		System.out.println("bb pos: " + bb0.getLocation());
+//		System.out.println("obj pos: " + obj0.getPosition());
+		obj0.setPosition(newPos0);
+		obj1.setPosition(newPos1);
+//		System.out.println("dist: " + dist);
 	}
 
 	private static double overlap(double min0, double max0, double min1,

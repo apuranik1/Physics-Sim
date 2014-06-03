@@ -1,11 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Deque;
-import java.util.ArrayDeque;
 
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
@@ -56,7 +52,6 @@ public class Octree<T> implements Iterable<T> {
 	 * The depth of this octant.
 	 */
 	private int depth;
-	private static final int mappings[] = new int[] { 0, 3, 4, 7, 1, 2, 5, 6 };
 	private static final int INTERSECTION_CALIBRATION = 0;
 
 	/**
@@ -187,7 +182,6 @@ public class Octree<T> implements Iterable<T> {
 		Vector3D horizAxis = direction.cross(upVec);
 		double vertAngle = fovy / 2;
 		double horizAngle = fovx / 2;
-		// TODO: confirm it is vertAngle, not -vertAngle
 		Quaternion upRotate = new Quaternion(horizAxis, vertAngle);
 		// save some clock cycles on recomputing the sines and cosines
 		Quaternion downRotate = new Quaternion(upRotate.w, -upRotate.x,
