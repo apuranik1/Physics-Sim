@@ -18,6 +18,12 @@ public class CarDemo {
 		cart.setSpec(new PhysicsSpec(false, false, false, 250));
 		manager.loadObject("cart0", cart);
 		Cart myCart = (Cart) manager.retrieveInstance(manager.insertInstance("cart0"));
+		
+		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
+		floor.setAcceleration(Vector3D.origin);
+		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
+		manager.loadObject("floor", floor);
+		manager.insertInstance("floor", new Vector3D(-5, -10, -5));
 
 		engine.beginGame();
 		
