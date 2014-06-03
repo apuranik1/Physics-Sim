@@ -7,13 +7,11 @@ public class CarForces {
 
 	private double mu;
 	private double drag;
-	private double gravity;
 
-	public CarForces(double mu, double coefDrag, double gravity) {
+	public CarForces(double mu, double coefDrag) {
 		super();
 		this.mu = mu;
 		this.drag = coefDrag;
-		this.gravity = gravity;
 	}
 
 	public double getFriction() {
@@ -32,14 +30,6 @@ public class CarForces {
 		this.drag = drag;
 	}
 
-	public double getGravity() {
-		return gravity;
-	}
-
-	public void setGravity(double gravity) {
-		this.gravity = gravity;
-	}
-
 	/**
 	 * Apply drag and friction to an object
 	 * 
@@ -56,7 +46,7 @@ public class CarForces {
 		Vector3D dragF = velocity.multiply(-drag * velocMagnitude);
 		Vector3D frictionF = velocity.multiply(-mu);
 		System.out.println(dragF+" "+frictionF);
-		Vector3D dA = force.add(dragF).add(frictionF).multiply(1 / mass);
+		Vector3D dA = force.add(dragF).add(frictionF).multiply(1 / mass).add(Vector3D.gravity);
 		m.setAccel(dA);
 	}
 }

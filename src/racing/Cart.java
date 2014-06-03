@@ -9,14 +9,26 @@ import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class Cart extends Object3D {
+	private static final CarForces CAR_FORCES = new CarForces(.5, .3);
 	
+	private Vector3D force;
 	public Cart(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
 		super(vertices, normals, textureCoords, colors, motion);
-		// TODO Auto-generated constructor stub
+		force = new Vector3D(0, 0, 0);
 	}
-
-	private BoundingBox bb;
 	
+	public void setForward() {
+		force = new Vector3D(0, 0, -10);
+	}
 	
+	public void setBackward() {
+		force = new Vector3D(0, 0, 10);
+	}
+	
+	public void updateImpl(long nanos) {
+		force = force.normalize();
+		CAR_FORCES.updateAccel(motion, force, getSpec().getMass());
+		super.updateImpl(nanos);
+	}
 }

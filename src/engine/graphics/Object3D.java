@@ -16,14 +16,15 @@ import engine.GameEngine;
 import engine.ResourceManager;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 import static javax.media.opengl.GL2.*;
 
 public class Object3D implements Renderable3D, Cloneable {
-	private Motion motion;
+	protected Motion motion;
 	private PhysicsSpec spec;
-	private Vector3D rotation;	// TODO: delete this ASAP
+	private Quaternion rotation;	// TODO: delete this ASAP
 	private Vector3D[] vertices;
 	private Vector3D[] normals;
 	private Color[] colors;
@@ -53,7 +54,7 @@ public class Object3D implements Renderable3D, Cloneable {
 			this.colors[i] = c;
 		this.normals = normals;
 		this.motion = motion;
-		rotation = new Vector3D(0, 0, 0);
+		rotation = new Quaternion(0, 0, 0, 1);
 		this.spec = spec;
 		realign();
 		computeBoundingBox();
@@ -98,7 +99,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	/**
 	 * TODO: This method must burn (or at least change its return value)
 	 */
-	public Vector3D getRotation() {
+	public Quaternion getRotation() {
 		return rotation;
 	}
 
@@ -130,10 +131,14 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.frame = frame;
 	}
 
-	public void update(long nanos) {
+	public final void update(long nanos) {
 		GameEngine.getGameEngine().prepareUpdate(this);
-		motion.update(nanos);
+		updateImpl(nanos);
 		GameEngine.getGameEngine().completeUpdate(this);
+	}
+	
+	protected void updateImpl(long nanos) {
+		motion.update(nanos);
 	}
 
 	public static Object3D load(String file) throws IOException {
@@ -231,7 +236,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	}
 
 	@Override
-	public void setRotation(Vector3D rotation) {
+	public void setRotation(Quaternion rotation) {
 		if (ResourceManager.getResourceManager().isInScene(this)) {
 			GameEngine.getGameEngine().prepareUpdate(this);
 			this.rotation = rotation;
