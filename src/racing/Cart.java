@@ -46,7 +46,7 @@ public class Cart extends Object3D {
 	}
 
 	public void updateImpl(long nanos) {
-		force = force.normalize();
+		//force = force.normalize();
 		CAR_FORCES.updateAccel(motion, force, getSpec().getMass());
 		super.updateImpl(nanos);
 	}
