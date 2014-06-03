@@ -12,9 +12,11 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
 import javax.media.opengl.GL2;
@@ -51,9 +53,13 @@ public class RenderEngine implements GLEventListener {
 		window.setUndecorated(true);
 		GLCanvas canvas = new GLCanvas(capabilities);
 		canvas.addGLEventListener(this);
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
-				.getDefaultScreenDevice();
-		gd.setFullScreenWindow(window);
+		// GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
+		// .getDefaultScreenDevice();
+		// gd.setFullScreenWindow(window);
+		// <hackery>
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		window.setSize(d);
+		// </hackery>
 		window.addKeyListener(GameEngine.getGameEngine());
 		canvas.addKeyListener(GameEngine.getGameEngine());
 		window.add(canvas);

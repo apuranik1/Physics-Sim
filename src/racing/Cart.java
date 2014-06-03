@@ -10,7 +10,7 @@ import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class Cart extends Object3D {
-	private static final CarForces CAR_FORCES = new CarForces(.5, .3);
+	private static final CarForces CAR_FORCES = new CarForces(.03, .03);
 
 	private Vector3D force;
 
@@ -22,7 +22,6 @@ public class Cart extends Object3D {
 
 	public Cart clone() {
 		Cart that = (Cart)super.clone();
-		// Yes, this is messed up. Yes, clone is broken
 		that.force = force;
 		return that;
 	}
@@ -34,11 +33,11 @@ public class Cart extends Object3D {
 	}
 
 	public void setForward() {
-		force = new Vector3D(0, 0, -10);
+		force = new Vector3D(0, 0, -1000);
 	}
 
 	public void setBackward() {
-		force = new Vector3D(0, 0, 10);
+		force = new Vector3D(0, 0, 1000);
 	}
 
 	public void setNeutral() {
@@ -46,7 +45,6 @@ public class Cart extends Object3D {
 	}
 
 	public void updateImpl(long nanos) {
-		//force = force.normalize();
 		CAR_FORCES.updateAccel(motion, force, getSpec().getMass());
 		super.updateImpl(nanos);
 	}

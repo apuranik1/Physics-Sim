@@ -3,11 +3,11 @@ package engine.test;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-import engine.Animator;
 import engine.ContinuousAnimationEvent;
 import engine.EventProcessor;
 import engine.GameEngine;
 import engine.ResourceManager;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;

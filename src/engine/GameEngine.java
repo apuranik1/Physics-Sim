@@ -17,6 +17,8 @@ import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
+import engine.animation.AnimationEvent;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.graphics.RenderEngine;
 import engine.physics.Motion;

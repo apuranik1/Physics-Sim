@@ -1,4 +1,4 @@
-package engine;
+package engine.animation;
 
 public abstract class AnimationEvent implements Comparable<AnimationEvent> {
 	protected double execTime;

@@ -12,7 +12,7 @@ public class CarController extends EventProcessor {
 		this.cart = cart;
 	}
 
-	public void keyPressed(Set<Integer> keys) {
+	public void keysPressed(Set<Integer> keys) {
 		boolean w_pressed = keys.contains(KeyEvent.VK_W);
 		boolean s_pressed = keys.contains(KeyEvent.VK_S);
 		if (w_pressed && !s_pressed)
