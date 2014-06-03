@@ -24,11 +24,11 @@ import static javax.media.opengl.GL2.*;
 public class Object3D implements Renderable3D, Cloneable {
 	protected Motion motion;
 	private PhysicsSpec spec;
-	private Quaternion rotation; // TODO: delete this ASAP
-	private Vector3D[] vertices;
-	private Vector3D[] normals;
-	private Color[] colors;
-	private Vector2D[] textureCoords;
+	private Quaternion rotation;
+	protected Vector3D[] vertices;
+	protected Vector3D[] normals;
+	protected Color[] colors;
+	protected Vector2D[] textureCoords;
 	private long frame = -1;
 	private Vector3D offset;
 	private Vector3D size;
@@ -141,21 +141,21 @@ public class Object3D implements Renderable3D, Cloneable {
 		motion.update(nanos);
 	}
 
-	public static Object3D load(String file) throws IOException {
-		return load(new FileInputStream(file));
+	public Object3D(String file) throws IOException {
+		this(new FileInputStream(file));
 	}
 
-	public static Object3D load(InputStream is) throws IOException {
+	public Object3D(InputStream is) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[4096];
 		int len = 0;
 		while ((len = is.read(buffer)) != -1) {
 			baos.write(buffer, 0, len);
 		}
-		return parse(baos.toString());
+		parse(baos.toString());
 	}
 
-	private static Object3D parse(String data) {
+	private void parse(String data) {
 		ArrayList<Vector3D> vertices = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> normals = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> output = new ArrayList<Vector3D>();
@@ -215,7 +215,12 @@ public class Object3D implements Renderable3D, Cloneable {
 		output.toArray(verts);
 		Vector3D[] norms = new Vector3D[noutput.size()];
 		noutput.toArray(norms);
-		return new Object3D(verts, norms, null, null, Motion.gravity());
+		this.vertices = verts;
+		this.normals = norms;
+		this.motion = Motion.gravity();
+		rotation = new Quaternion(new Vector3D(0, 0, 1), 0);
+		realign();
+		computeBoundingBox();
 	}
 
 	public void setPosition(Vector3D vec) {
@@ -273,6 +278,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	public BoundingBox getBoundingBox() {
 		Vector3D position = motion.getPosition();
 		return new BoundingBox(new Vector3D(offset.x + position.x, offset.y
-				+ position.y, offset.z + position.z), size.x, size.y, size.z, rotation);
+				+ position.y, offset.z + position.z), size.x, size.y, size.z,
+				rotation);
 	}
 }

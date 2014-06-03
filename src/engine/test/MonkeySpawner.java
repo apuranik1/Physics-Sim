@@ -22,11 +22,11 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Object3D monkey = Object3D.load("/Users/16mcolavita/Desktop/monkey.obj");
+		Object3D monkey = new Object3D("/Users/16mcolavita/Desktop/monkey.obj");
 		//monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
 		//monkey.setRotation(new Quaternion(new Vector3D(0, 0, 1), 0));
-		Object3D floor = Object3D.load("/Users/16mcolavita/Desktop/floor.obj");
+		Object3D floor = new Object3D("/Users/16mcolavita/Desktop/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 5000));
 		manager.loadObject("monkey",monkey);

@@ -1,6 +1,7 @@
 package racing;
 
 import java.awt.Color;
+import java.io.IOException;
 
 import engine.BoundingBox;
 import engine.graphics.Object3D;
@@ -16,6 +17,17 @@ public class Cart extends Object3D {
 	public Cart(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
 		super(vertices, normals, textureCoords, colors, motion);
+		force = new Vector3D(0, 0, 0);
+	}
+
+	public Cart clone() {
+		Cart that = new Cart(vertices, normals, textureCoords, colors, motion);
+		that.force = force;
+		return that;
+	}
+
+	public Cart(String from) throws IOException {
+		super(from);
 		force = new Vector3D(0, 0, 0);
 	}
 
