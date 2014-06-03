@@ -54,9 +54,27 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.motion = motion;
 		rotation = new Vector3D(0, 0, 0);
 		this.spec = spec;
+		realign();
 		computeBoundingBox();
 	}
 
+	public void realign() {
+		double minx = Double.MAX_VALUE;
+		double miny = Double.MAX_VALUE;
+		double minz = Double.MAX_VALUE;
+		for(Vector3D vect : vertices) {
+			if(vect.x < minx)
+				minx = vect.x;
+			if(vect.y < miny)
+				miny = vect.y;
+			if(vect.z < minz)
+				minz = vect.z;
+		}
+		Vector3D shiftVector = new Vector3D(minx, miny, minz);
+		for(int i=0;i<vertices.length;i++)
+			vertices[i] = vertices[i].subtract(shiftVector);
+	}
+	
 	public Object3D clone() {
 		Object3D that = new Object3D(vertices, normals, textureCoords, colors,
 				motion.clone(), spec);
