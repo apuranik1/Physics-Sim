@@ -16,27 +16,28 @@ import engine.GameEngine;
 import engine.ResourceManager;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 import static javax.media.opengl.GL2.*;
 
 public class Object3D implements Renderable3D, Cloneable {
-	private Motion motion;
+	protected Motion motion;
 	private PhysicsSpec spec;
-	private Vector3D rotation;	// TODO: delete this ASAP
-	private Vector3D[] vertices;
-	private Vector3D[] normals;
-	private Color[] colors;
-	private Vector2D[] textureCoords;
+	private Quaternion rotation;
+	protected Vector3D[] vertices;
+	protected Vector3D[] normals;
+	protected Color[] colors;
+	protected Vector2D[] textureCoords;
 	private long frame = -1;
 	private Vector3D offset;
 	private Vector3D size;
 	private BoundingBox box;
-	
-	
+
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
-		this(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(false, false, false, 0.0));
+		this(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(
+				false, false, false, 0.0));
 	}
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
@@ -53,7 +54,7 @@ public class Object3D implements Renderable3D, Cloneable {
 			this.colors[i] = c;
 		this.normals = normals;
 		this.motion = motion;
-		rotation = new Vector3D(0, 0, 0);
+		rotation = new Quaternion(new Vector3D(0, 0, 1), 0);
 		this.spec = spec;
 		realign();
 		computeBoundingBox();
@@ -63,19 +64,19 @@ public class Object3D implements Renderable3D, Cloneable {
 		double minx = Double.MAX_VALUE;
 		double miny = Double.MAX_VALUE;
 		double minz = Double.MAX_VALUE;
-		for(Vector3D vect : vertices) {
-			if(vect.x < minx)
+		for (Vector3D vect : vertices) {
+			if (vect.x < minx)
 				minx = vect.x;
-			if(vect.y < miny)
+			if (vect.y < miny)
 				miny = vect.y;
-			if(vect.z < minz)
+			if (vect.z < minz)
 				minz = vect.z;
 		}
 		Vector3D shiftVector = new Vector3D(minx, miny, minz);
-		for(int i=0;i<vertices.length;i++)
+		for (int i = 0; i < vertices.length; i++)
 			vertices[i] = vertices[i].subtract(shiftVector);
 	}
-	
+
 	public Object3D clone() {
 		Object3D that = new Object3D(vertices, normals, textureCoords, colors,
 				motion.clone(), spec);
@@ -98,7 +99,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	/**
 	 * TODO: This method must burn (or at least change its return value)
 	 */
-	public Vector3D getRotation() {
+	public Quaternion getRotation() {
 		return rotation;
 	}
 
@@ -130,27 +131,31 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.frame = frame;
 	}
 
-	public void update(long nanos) {
+	public final void update(long nanos) {
 		GameEngine.getGameEngine().prepareUpdate(this);
-		motion.update(nanos);
+		updateImpl(nanos);
 		GameEngine.getGameEngine().completeUpdate(this);
 	}
 
-	public static Object3D load(String file) throws IOException {
-		return load(new FileInputStream(file));
+	protected void updateImpl(long nanos) {
+		motion.update(nanos);
 	}
 
-	public static Object3D load(InputStream is) throws IOException {
+	public Object3D(String file) throws IOException {
+		this(new FileInputStream(file));
+	}
+
+	public Object3D(InputStream is) throws IOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[4096];
 		int len = 0;
 		while ((len = is.read(buffer)) != -1) {
 			baos.write(buffer, 0, len);
 		}
-		return parse(baos.toString());
+		parse(baos.toString());
 	}
 
-	private static Object3D parse(String data) {
+	private void parse(String data) {
 		ArrayList<Vector3D> vertices = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> normals = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> output = new ArrayList<Vector3D>();
@@ -210,7 +215,12 @@ public class Object3D implements Renderable3D, Cloneable {
 		output.toArray(verts);
 		Vector3D[] norms = new Vector3D[noutput.size()];
 		noutput.toArray(norms);
-		return new Object3D(verts, norms, null, null, Motion.gravity());
+		this.vertices = verts;
+		this.normals = norms;
+		this.motion = Motion.gravity();
+		rotation = new Quaternion(new Vector3D(0, 0, 1), 0);
+		realign();
+		computeBoundingBox();
 	}
 
 	public void setPosition(Vector3D vec) {
@@ -231,7 +241,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	}
 
 	@Override
-	public void setRotation(Vector3D rotation) {
+	public void setRotation(Quaternion rotation) {
 		if (ResourceManager.getResourceManager().isInScene(this)) {
 			GameEngine.getGameEngine().prepareUpdate(this);
 			this.rotation = rotation;
@@ -239,7 +249,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		} else
 			this.rotation = rotation;
 	}
-	
+
 	public void setSpec(PhysicsSpec spec) {
 		this.spec = spec;
 	}
@@ -262,12 +272,13 @@ public class Object3D implements Renderable3D, Cloneable {
 				maxz = point.z;
 		}
 		offset = new Vector3D(minx, miny, minz);
-		size = new Vector3D(maxx - minx, maxy - miny, maxz - minz);	
+		size = new Vector3D(maxx - minx, maxy - miny, maxz - minz);
 	}
 
 	public BoundingBox getBoundingBox() {
 		Vector3D position = motion.getPosition();
 		return new BoundingBox(new Vector3D(offset.x + position.x, offset.y
-				+ position.y, offset.z + position.z), size.x, size.y, size.z);
+				+ position.y, offset.z + position.z), size.x, size.y, size.z,
+				rotation);
 	}
 }

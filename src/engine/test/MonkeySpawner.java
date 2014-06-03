@@ -12,6 +12,7 @@ import engine.ResourceManager;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 import static engine.physics.Vector3D.*;
 
@@ -20,11 +21,11 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 
-		Object3D monkey = Object3D.load("C:\\Users\\16apuranik\\Downloads\\objects\\monkey.obj");
+		Object3D monkey = new Object3D("C:\\Users\\16apuranik\\Downloads\\objects\\monkey.obj");
 		// monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
 		//monkey.setRotation(new Vector3D(90, 0, 0));
-		Object3D floor = Object3D.load("C:\\Users\\16apuranik\\Downloads\\objects\\floor.obj");
+		Object3D floor = new Object3D("C:\\Users\\16apuranik\\Downloads\\objects\\floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
 		manager.loadObject("monkey", monkey);

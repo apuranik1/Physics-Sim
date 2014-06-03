@@ -29,13 +29,14 @@ import javax.media.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import engine.GameEngine;
+import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
 public class RenderEngine implements GLEventListener {
 	private Frame window;
 	private int lastRendered;
 	private FPSAnimator anim;
-	
+
 	public RenderEngine(String title) {
 		configure();
 	}
@@ -51,7 +52,8 @@ public class RenderEngine implements GLEventListener {
 		window.setUndecorated(true);
 		GLCanvas canvas = new GLCanvas(capabilities);
 		canvas.addGLEventListener(this);
-		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
+				.getDefaultScreenDevice();
 		gd.setFullScreenWindow(window);
 		window.addKeyListener(GameEngine.getGameEngine());
 		canvas.addKeyListener(GameEngine.getGameEngine());
@@ -125,34 +127,34 @@ public class RenderEngine implements GLEventListener {
 		GameEngine engine = GameEngine.getGameEngine();
 		engine.setupCamera(gl, dt);
 		ArrayList<Object3D> frustalCull = engine.selectFrustum();
-		//System.out.println(frustalCull.size());
+		// System.out.println(frustalCull.size());
 		int distinct = 0;
 		for (Object3D object : frustalCull) {
 			if (object.getFrameUpdate() == frame)
 				continue;
-			distinct ++;
+			distinct++;
 			gl.glPushMatrix();
 			Vector3D pos = object.getPosition();
 			gl.glTranslated(pos.x, pos.y, pos.z);
-			Vector3D rot = object.getRotation();
-			gl.glRotated(rot.x, 1, 0, 0);
-			gl.glRotated(rot.y, 0, 1, 0);
-			gl.glRotated(rot.z, 0, 0, 1);
+			Quaternion rot = object.getRotation();
+			Vector3D axis = rot.getAxis();
+			System.out.println(rot.getAngle() + " on " + axis);
+			gl.glRotated(Math.toDegrees(rot.getAngle()), axis.x, axis.y, axis.z);
 			object.render(gl);
 			gl.glPopMatrix();
 			object.setFrame(frame);
 		}
 		lastRendered = distinct;
 	}
-	
+
 	public int lastRendered() {
 		return lastRendered;
 	}
-	
+
 	public int getFPS() {
 		return Math.round(anim.getLastFPS());
 	}
-	
+
 	public void stop() {
 		anim.stop();
 	}

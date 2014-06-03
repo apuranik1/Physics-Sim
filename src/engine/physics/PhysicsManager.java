@@ -109,7 +109,7 @@ public class PhysicsManager {
 		double dist = bb0.distance(bb1, axis);
 		//System.out.println("Distance: " + bb0.distance(bb1, axis));
 		Vector3D newPos0 = bb0.getLocation().add(axis.multiply(dist * 1.0 * obj0MoveProp));
-		Vector3D newPos1 = bb1.getLocation().add(axis.multiply(dist * 1.0 * (1-obj0MoveProp)));
+		Vector3D newPos1 = bb1.getLocation().add(axis.multiply(-dist * 1.0 * (1-obj0MoveProp)));
 		System.out.println("m0: " + obj0.getSpec().getMass());
 		System.out.println("m1: " + obj1.getSpec().getMass());
 		System.out.println("prop of obj0: " + obj0MoveProp);
