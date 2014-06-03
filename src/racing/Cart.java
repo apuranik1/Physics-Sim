@@ -21,13 +21,14 @@ public class Cart extends Object3D {
 	}
 
 	public Cart clone() {
-		Cart that = new Cart(vertices, normals, textureCoords, colors, motion);
+		Object3D that = super.clone();
 		that.force = force;
 		return that;
 	}
 
 	public Cart(String from) throws IOException {
 		super(from);
+		System.out.println(motion);
 		force = new Vector3D(0, 0, 0);
 	}
 

@@ -46,7 +46,6 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.vertices = vertices;
 		this.textureCoords = textureCoords;
 		this.colors = colors;
-
 		Color c = new Color((float) Math.random(), (float) Math.random(),
 				(float) Math.random());
 		this.colors = new Color[vertices.length];
@@ -110,7 +109,6 @@ public class Object3D implements Renderable3D, Cloneable {
 	public void render(GL2 gl) {
 		gl.glBegin(GL_TRIANGLES);
 		for (int i = 0; i < vertices.length; i++) {
-			// System.out.println(colors[i].getRed() / 255d);
 			if (colors != null)
 				gl.glColor3d(colors[i].getRed() / 255d,
 						colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);

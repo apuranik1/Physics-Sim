@@ -5,6 +5,8 @@ import engine.GameEngine;
 import engine.ResourceManager;
 import engine.animation.CameraFollow;
 import engine.graphics.Object3D;
+import engine.physics.PhysicsSpec;
+import engine.physics.Vector3D;
 
 public class CarDemo {
 	public static void main(String[] args) throws Exception {
@@ -12,6 +14,8 @@ public class CarDemo {
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
 		Cart cart = new Cart("C:\\Users\\16mcolavita\\Desktop\\monkey.obj");
+		cart.setAcceleration(Vector3D.origin);
+		cart.setSpec(new PhysicsSpec(false, false, false, 250));
 		manager.loadObject("cart0", cart);
 		Cart myCart = (Cart) manager.retrieveInstance(manager.insertInstance("cart0"));
 
