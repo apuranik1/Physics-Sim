@@ -5,4 +5,11 @@ public class Track{
 	public ArrayList<Item> getItems(){
 		return items;
 	}
+	public Track(){
+		items=new ArrayList<Item>();
+	}
+	public Track(Item item){
+		items=new ArrayList<Item>();
+		items.add(item);
+	}
 }

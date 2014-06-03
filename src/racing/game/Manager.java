@@ -20,6 +20,7 @@ public class Manager{
 	 * Create new singleplayer game
 	 */
 	public void newSingle(){
+		
 	}
 	/**
 	 * Create new multiplayer game server

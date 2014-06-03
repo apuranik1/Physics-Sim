@@ -43,4 +43,11 @@ public class NetData {
 	public ArrayList<Item> getItems(){
 		return items;
 	}
+	/**
+	 * Reset Carts and Items
+	 */
+	public void reset(){
+		carts.clear();
+		items.clear();
+	}
 }

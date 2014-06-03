@@ -81,11 +81,21 @@ public class NetServer {
 			} catch (IOException e) {
 				System.out.println("Send : "+e.getMessage());
 			}
+		data.reset();
+	}
+	private void sendReady(){
+		for(NetServerThread thread:clients)
+			try {
+				thread.getOutputStream().writeUTF("ready");
+			} catch (IOException e) {
+				System.out.println("Send : "+e.getMessage());
+			}
 	}
 	/**
 	 * Receive network data from all threads, and push back out to all threads
 	 */
 	public void update(){
+		sendReady();
 		receiveData();
 		sendData();
 	}
@@ -93,5 +103,7 @@ public class NetServer {
 		NetServer server=new NetServer(5555);
 		System.out.println(server.getIP());
 		server.connect();
+		server.connect();
+		server.update();
 	}
 }

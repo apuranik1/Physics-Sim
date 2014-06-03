@@ -2,6 +2,7 @@ package racing.networking;
 import java.io.*;
 import java.net.*;
 import racing.game.Cart;
+import racing.game.Item;
 import racing.game.Track;
 public class NetClient {
 	private Socket socket;
@@ -35,13 +36,16 @@ public class NetClient {
 	 */
 	public NetData update(){
 		try {
+			while(input.available()==0);
+			if(input.readUTF().equals("ready")){
 			output.writeObject(cart);//send cart data
 			output.writeObject(track.getItems());//send item data
 			return (NetData)input.readObject();//return server data
+			}
 		} catch (ClassNotFoundException e) {
-			System.out.println(e.getMessage());
+			System.out.println("Cast: "+e.getMessage());
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			System.out.println("IO :"+e.getMessage());
 		}
 		return null;
 	}
@@ -49,11 +53,11 @@ public class NetClient {
 		try {
 			BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("IP: ");
-			new NetClient(InetAddress.getByName(reader.readLine()),5555,new Cart(),new Track());
+			NetClient client=new NetClient(InetAddress.getByName(reader.readLine()),5555,new Cart(),new Track(new Item(reader.readLine())));
+			client.update();
 		} catch (UnknownHostException e) {
 			System.out.println("IP error: "+e.getMessage());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
