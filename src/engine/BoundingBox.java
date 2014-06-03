@@ -265,6 +265,8 @@ public class BoundingBox {
 	 * @return
 	 */
 	public BoundingBox simpleBound() {
+		if (rotation == null)
+			return this;
 		double min_x, max_x, min_y, max_y, min_z, max_z;
 		min_x = min_y = min_z = Double.POSITIVE_INFINITY;
 		max_x = max_y = max_z = Double.NEGATIVE_INFINITY;

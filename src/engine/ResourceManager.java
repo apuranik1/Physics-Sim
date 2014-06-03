@@ -2,7 +2,6 @@ package engine;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Set;
 
 import engine.graphics.Object3D;
 import engine.physics.Vector3D;

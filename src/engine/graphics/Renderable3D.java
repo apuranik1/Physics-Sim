@@ -1,12 +1,8 @@
 package engine.graphics;
 
-import java.awt.Image;
-
-import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 
 import engine.physics.Quaternion;
-import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public interface Renderable3D {

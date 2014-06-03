@@ -1,6 +1,5 @@
 package engine.animation;
 
-import engine.AnimationEvent;
 import engine.ContinuousAnimationEvent;
 import engine.GameEngine;
 import engine.graphics.Object3D;

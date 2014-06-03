@@ -3,7 +3,6 @@ package engine.test;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-import engine.AnimationEvent;
 import engine.Animator;
 import engine.ContinuousAnimationEvent;
 import engine.EventProcessor;
@@ -12,20 +11,18 @@ import engine.ResourceManager;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
-import engine.physics.Quaternion;
 import engine.physics.Vector3D;
-import static engine.physics.Vector3D.*;
 
 public class MonkeySpawner {
 	public static void main(String[] args) throws Exception {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 
-		Object3D monkey = new Object3D("C:\\Users\\16apuranik\\Downloads\\objects\\monkey.obj");
+		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
 		// monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
-		//monkey.setRotation(new Vector3D(90, 0, 0));
-		Object3D floor = new Object3D("C:\\Users\\16apuranik\\Downloads\\objects\\floor.obj");
+		//monkey.setRotation(new Quaternion(new Vector3D(1, 0, 0), Math.PI / 2));
+		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
 		manager.loadObject("monkey", monkey);
@@ -44,12 +41,10 @@ public class MonkeySpawner {
 				new ContinuousAnimationEvent(0, .5) {
 					@Override
 					public void animate() {
-						long id = ResourceManager.getResourceManager()
-								.insertInstance(
-										"monkey",
+						long id = ResourceManager.getResourceManager().insertInstance("monkey",
 										new Vector3D(Math.random() * 10 - 5,
-												Math.random() * 10 - 5, Math
-														.random() * 10 - 5));
+													 Math.random() * 10 - 5,
+													 Math.random() * 10 - 5));
 						// ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new
 						// Vector3D(Math.random() * 10 - 5, Math.random() * 10 -
 						// 5, Math.random() * 10 - 5));

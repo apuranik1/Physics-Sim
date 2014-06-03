@@ -1,7 +1,5 @@
 package engine;
 
-import java.util.Arrays;
-
 import engine.physics.Vector3D;
 
 class OctreeUtils {
