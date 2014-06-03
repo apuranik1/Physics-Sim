@@ -1,5 +1,7 @@
 package engine;
 
+import java.util.Arrays;
+
 import engine.physics.Matrix3D;
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
@@ -162,11 +164,14 @@ public class BoundingBox {
 		if (rotation == null && other.rotation == null)
 			return simpleIntersects(other);
 		
+		int axiscount = 0;
 		for (Vector3D axis : getIntersectAxes(other)) {
 			double[] range1 = project(axis);
 			double[] range2 = other.project(axis);
-			if (range1[0] > range2[1] || range2[0] > range1[1])
+			if (range1[0] > range2[1] || range2[0] > range1[1]) {
 				return false;
+			}
+			axiscount++;
 		}
 		return true;
 	}
@@ -178,12 +183,17 @@ public class BoundingBox {
 		// add in the axes
 		System.arraycopy(aList, 0, axes, 0, 3);
 		System.arraycopy(otherList, 0, axes, 3, 3);
+		int axisNum = 6;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				axes[3 * i + j + 6] = aList[i].cross(otherList[j]);
+				Vector3D axis = aList[i].cross(otherList[j]);
+				if (axis.x != 0 || axis.y != 0 || axis.z != 0)
+					axes[axisNum++] = axis;
 			}
 		}
-		return axes;
+		Vector3D[] axesCopy = new Vector3D[axisNum];
+		System.arraycopy(axes, 0, axesCopy, 0, axisNum);
+		return axesCopy;
 	}
 	
 	/**
@@ -303,5 +313,17 @@ public class BoundingBox {
 			new_z -= depth;
 		}
 		location = new Vector3D(new_x, new_y, new_z);
+	}
+	
+	public static void main(String[] args) {
+		BoundingBox bb = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10,
+				new Quaternion(new Vector3D(0,1,0),Math.PI / 10000));
+		BoundingBox bb1 = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10);
+//		System.out.println(Arrays.toString(bb.vertexList()));
+//		System.out.println(Arrays.toString(bb1.vertexList()));
+		System.out.println(bb.intersects(bb1));
+//		System.out.println(bb.simpleBound().location);
+//		System.out.println(bb.simpleBound().getWidth());
+		
 	}
 }

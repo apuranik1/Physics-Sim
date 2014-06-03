@@ -112,7 +112,9 @@ public class Octree<T> implements Iterable<T> {
 	public ArrayList<T> intersects(BoundingBox bb) {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
 		for (Pair<BoundingBox, T> entry : contents)
-			if (entry.first().simpleIntersects(bb))
+			// first check should cull many easily
+			if (entry.first.simpleBound().intersects(bb.simpleBound())
+					&& entry.first().intersects(bb))
 				intersections.add(entry.second());
 		if (!leaf) {
 			Octree<T> octant = octantsContaining(bb);
@@ -249,9 +251,10 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private Octree<T> octantsContaining(BoundingBox bb) {
 		assert !leaf;
-		Vector3D pos = bb.getLocation();
-		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
-				+ bb.getHeight(), pos.z + bb.getDepth());
+		BoundingBox simplebb = bb.simpleBound();
+		Vector3D pos = simplebb.getLocation();
+		Vector3D corner = new Vector3D(pos.x + simplebb.getWidth(), pos.y
+				+ simplebb.getHeight(), pos.z + simplebb.getDepth());
 		int tmp = octantContaining(pos);
 		int tmp2 = octantContaining(corner);
 		if (tmp == tmp2) {
@@ -310,8 +313,8 @@ public class Octree<T> implements Iterable<T> {
 		// assert !leaf;
 		// we're not going to talk about this method
 		return (vec.x >= splitPoint.x ? 4 : 0)
-				+ (vec.y >= splitPoint.y ? 2 : 0)
-				+ (vec.z >= splitPoint.z ? 1 : 0);
+				| (vec.y >= splitPoint.y ? 2 : 0)
+				| (vec.z >= splitPoint.z ? 1 : 0);
 	}
 
 	/**

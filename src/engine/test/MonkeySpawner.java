@@ -11,6 +11,7 @@ import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
 public class MonkeySpawner {
@@ -21,7 +22,7 @@ public class MonkeySpawner {
 		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
 		// monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
-		//monkey.setRotation(new Quaternion(new Vector3D(1, 0, 0), Math.PI / 2));
+		monkey.setRotation(new Quaternion(new Vector3D(1, 0, 0), Math.PI / 2));
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));

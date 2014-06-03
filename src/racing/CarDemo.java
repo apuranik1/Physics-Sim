@@ -14,14 +14,14 @@ public class CarDemo {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Cart cart = new Cart("/Users/michael/Desktop/monkey.obj");
+		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
 		cart.setAcceleration(Vector3D.origin);
 		cart.setRotation(new Quaternion(new Vector3D(0,1,0), Math.PI));
 		cart.setSpec(new PhysicsSpec(false, false, false, 250));
 		manager.loadObject("cart0", cart);
 		Cart myCart = (Cart) manager.retrieveInstance(manager.insertInstance("cart0", Vector3D.origin));
 		
-		Object3D floor = new Object3D("/Users/michael/Desktop/floor.obj");
+		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
 		manager.loadObject("floor", floor);
