@@ -48,6 +48,6 @@ public class CarForces {
 		//System.out.println(dragF+" "+frictionF);
 		Vector3D dA = force.add(dragF).add(frictionF).multiply(1 / mass).add(Vector3D.gravity);
 		m.setAccel(dA);
-		System.out.println(dA);
+		//System.out.println(dA);
 	}
 }

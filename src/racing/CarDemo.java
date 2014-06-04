@@ -25,6 +25,7 @@ public class CarDemo {
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, Double.POSITIVE_INFINITY));
+		floor.setRotation(new Quaternion(new Vector3D(1,0,0), Math.PI / 12));
 		manager.loadObject("floor", floor);
 		long l = manager.insertInstance("floor", new Vector3D(-5, -10, -5));
 		BoundingBox bb = manager.retrieveInstance(l).getBoundingBox().simpleBound();

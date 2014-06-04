@@ -29,8 +29,10 @@ public class CarController extends EventProcessor {
 		
 		boolean a_pressed = keys.contains(KeyEvent.VK_A);
 		boolean d_pressed = keys.contains(KeyEvent.VK_D);
-		if(a_pressed && !d_pressed)
+		if(a_pressed && !d_pressed) {
 			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() + .1));
+			System.out.println("Rotation: " + cart.getRotation().getAngle());
+		}
 		else if(d_pressed && !a_pressed)
 			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() - .1));
 		
