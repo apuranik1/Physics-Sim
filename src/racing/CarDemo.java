@@ -1,5 +1,6 @@
 package racing;
 
+import engine.BoundingBox;
 import engine.GameEngine;
 import engine.ResourceManager;
 import engine.animation.Animator;
@@ -23,9 +24,11 @@ public class CarDemo {
 		
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
-		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
+		floor.setSpec(new PhysicsSpec(false, false, false, Double.POSITIVE_INFINITY));
 		manager.loadObject("floor", floor);
-		manager.insertInstance("floor", new Vector3D(-5, -10, -5));
+		long l = manager.insertInstance("floor", new Vector3D(-5, -10, -5));
+		BoundingBox bb = manager.retrieveInstance(l).getBoundingBox().simpleBound();
+		System.out.println("Floor height = " + bb.getHeight());
 
 		engine.beginGame();
 		
