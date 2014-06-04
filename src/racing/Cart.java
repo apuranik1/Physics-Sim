@@ -31,17 +31,9 @@ public class Cart extends Object3D {
 		System.out.println(motion);
 		force = new Vector3D(0, 0, 0);
 	}
-
-	public void setForward() {
-		force = new Vector3D(0, 0, -1000);
-	}
-
-	public void setBackward() {
-		force = new Vector3D(0, 0, 1000);
-	}
-
-	public void setNeutral() {
-		force = new Vector3D(0, 0, 0);
+	
+	public void setForce(Vector3D force) {
+		this.force = force;
 	}
 
 	public void updateImpl(long nanos) {
