@@ -1,5 +1,4 @@
 package racing.game;
-import java.io.IOException;
 import java.net.InetAddress;
 import engine.GameEngine;
 import engine.ResourceManager;
@@ -11,22 +10,22 @@ import racing.CarController;
 import racing.Cart;
 import racing.networking.NetClient;
 import racing.networking.NetServer;
-public class Manager{
-	private static Manager manager;
+public class GameManager{
+	private static GameManager manager;
 	private Cart cart;
 	private Track track;
 	private NetClient client;
 	private NetServer server;
 	/**
-	 * 
+	 * Initialize game manager
 	 * @param cartType Type of cart to create
 	 * @return Game Manager
 	 */
-	public static Manager initGame(int cartType) throws Exception{
+	public static GameManager initGame(int cartType) throws Exception{
 		if(manager!=null)return manager;
 		switch(cartType){
 		case 0:
-			manager=new Manager("",200);
+			manager=new GameManager("",200);
 		}
 		return manager;
 	}
@@ -35,7 +34,7 @@ public class Manager{
 	 * @param cartOBJ Path to cart object
 	 * @param cartMass Mass of cart
 	 */
-	private Manager(String cartOBJ, double cartMass) throws Exception{
+	private GameManager(String cartOBJ, double cartMass) throws Exception{
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager rmanager = ResourceManager.getResourceManager();
 		cart=new Cart(cartOBJ);
@@ -83,7 +82,7 @@ public class Manager{
 	}
 	public static void main(String[] args){
 		try {
-			Manager.initGame(0);
+			GameManager.initGame(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
