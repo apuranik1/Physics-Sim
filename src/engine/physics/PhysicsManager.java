@@ -1,19 +1,14 @@
 package engine.physics;
 
-import java.util.ArrayList;
-
 import engine.BoundingBox;
 import engine.GameEngine;
-import engine.Octree;
 import engine.graphics.Object3D;
 
 public class PhysicsManager {
 
-	private ArrayList<Object3D> objects;
 	private long frame;
 
 	public PhysicsManager() {
-		this.objects = new ArrayList<Object3D>();
 		this.frame = 0;
 	}
 
@@ -24,8 +19,9 @@ public class PhysicsManager {
 			for (Object3D other : engine.intersects(obj.getBoundingBox()))
 				if(other != obj)
 					handleCollision(obj, other);
+		frame++;
 	}
-int i = 0;
+
 	/**
 	 * Handle a collision between two objects taking their relative masses into
 	 * account.
@@ -38,51 +34,134 @@ int i = 0;
 		// this algorithm ends up dividing by 0 and dying. so.
 		// also, Skynet will be born from this method
 		Vector3D velocDiff = obj0.getVelocity().subtract(obj1.getVelocity());
+		System.out.println("obj0 velocity: " + obj0.getVelocity());
 		BoundingBox bb0 = obj0.getBoundingBox().simpleBound();
 		BoundingBox bb1 = obj1.getBoundingBox().simpleBound();
 		Vector3D pos0 = bb0.getLocation();
 		Vector3D pos1 = bb1.getLocation();
+		Vector3D posDiff = pos0.subtract(pos1);
 		double minX0 = pos0.x,
 			   maxX0 = pos0.x + bb0.getWidth(),
 			   minX1 = pos1.x,
 			   maxX1 = pos1.x + bb1.getWidth(),
 			   minY0 = pos0.y,
-			   maxY0 = pos0.y + bb0.getWidth(),
+			   maxY0 = pos0.y + bb0.getHeight(),
 			   minY1 = pos1.y,
-			   maxY1 = pos1.y + bb1.getWidth(),
+			   maxY1 = pos1.y + bb1.getHeight(),
 			   minZ0 = pos0.z,
-			   maxZ0 = pos0.z + bb0.getWidth(),
+			   maxZ0 = pos0.z + bb0.getDepth(),
 			   minZ1 = pos1.z,
-			   maxZ1 = pos1.z + bb1.getWidth();
-		double overlapX = overlap(minX0, maxX0, minX1, maxX1); // points from obj0 toward obj1
-		double overlapY = overlap(minY0, maxY0, minY1, maxY1);
-		double overlapZ = overlap(minZ0, maxZ0, minZ1, maxZ1);
+			   maxZ1 = pos1.z + bb1.getDepth();
+//		double overlapX = overlap(minX0, maxX0, minX1, maxX1); // points from obj0 toward obj1
+//		double overlapY = overlap(minY0, maxY0, minY1, maxY1);
+//		double overlapZ = overlap(minZ0, maxZ0, minZ1, maxZ1);
 		
-		// dear god what have I done
-		Vector3D collisionVec = new Vector3D(
-				overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
-				overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
-				overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-		// collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
+//		Vector3D collisionVec = new Vector3D(
+//				overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
+//				overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
+//				overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
+		double collideX;
+		if (posDiff.x * velocDiff.x > 0) {
+			System.out.println("x slide");
+			collideX = 0;
+		}
+		else
+			collideX = velocDiff.x * Math.abs(collideDirection(minX0, maxX0, minX1, maxX1));
+		
+		double collideY;
+		if (posDiff.y * velocDiff.y > 0) {
+			System.out.println("y slide: " + posDiff.y + " " + velocDiff.y);
+			collideY = 0;
+		}
+		else
+			collideY = velocDiff.y * Math.abs(collideDirection(minY0, maxY0, minY1, maxY1));
+		
+		double collideZ;
+		if (posDiff.z * velocDiff.z > 0) {
+			System.out.println("z slide");
+			collideZ = 0;
+		}
+		else
+			collideZ = velocDiff.z * Math.abs(collideDirection(minZ0, maxZ0, minZ1, maxZ1));
+		
+		
+		Vector3D collisionVec = new Vector3D(collideX, collideY, collideZ);
+		
+//		System.out.println("y collide direction: " + collideDirection(minY0, maxY0, minY1, maxY1));
+//		System.out.println("y values: " + minY0 + " " + maxY0 + " " + minY1 + " " + maxY1);
+		
+		System.out.println("z collide direction: " + collideDirection(minZ0, maxZ0, minZ1, maxZ1));
+		//System.out.println("z values: " + minZ0 + " " + maxZ0 + " " + minZ1 + " " + maxZ1);
+		System.out.println("Preliminary collision vec: " + collisionVec);
+		
+		if (collisionVec.x == 0.0 && collisionVec.y == 0.0 && collisionVec.z == 0.0)
+			collisionVec = velocDiff;
+		double m0 = obj0.getSpec().getMass(),
+			   m1 = obj1.getSpec().getMass();
+//		if (collisionVec.x == 0 && collisionVec.z == 0)
+//			System.out.println("Gravity fix");
+//		else
+//			System.out.println("Ordinary handle" + collisionVec);
+//		if (collisionVec.x + collisionVec.y + collisionVec.z == 0) {
+//			System.out.println("We have a problem");
+//			if (m0 < m1)
+//				translateAway(obj0, obj1, obj0.getVelocity().multiply(-1));
+//			else
+//				translateAway(obj1, obj0, obj1.getVelocity().multiply(-1));
+//			return;
+//		}
+		//collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
+		//System.out.println(collisionVec);
 		// normalization may be needed
 		
-		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
-		double massRatio = obj0.getSpec().getMass() / obj1.getSpec().getMass();
-		//System.out.println(problemVeloc);
-		//System.out.println(massRatio);
-		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * Math.pow(0.5, massRatio))));
-		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * Math.pow(0.5, massRatio))));
+//		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
+//		System.out.println();
+		double refMass = 1.0 / (1/m0 + 1/m1);
+//		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-refMass / m0)));
+//		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(refMass / m1)));
+//		
+//		if (m0 < m1)
+//			translateAway(obj0, obj1, collisionVec.multiply(-1));
+//		else
+//			translateAway(obj1, obj0, collisionVec);
+//		System.out.println(frame);
+		translateAway(obj0, obj1, collisionVec.normalize(), refMass / m0);
+		obj0.setVelocity(obj0.getVelocity().add(collisionVec.multiply(-1.5 * refMass / m0)));
+		obj1.setVelocity(obj1.getVelocity().add(collisionVec.multiply(1.5 * refMass / m1)));
 	}
 
-	// hopefully unless the game's frame rate goes reeeeaaaally bad, we won't need this 
-	private void translateAway(BoundingBox toMove, BoundingBox away,
-			Vector3D axis) {
-		
+	/**
+	 * Translate a bounding box along the specified axis so it no longer
+	 * intersects the other.
+	 * 
+	 * @param obj0
+	 * 			The bounding box to translate
+	 * @param obj1
+	 * 			The bounding box to translate it away from
+	 * @param axis
+	 */
+	private static void translateAway(Object3D obj0, Object3D obj1,
+			Vector3D axis, double obj0MoveProp) {
+		// TODO: test to hopefully fix collision handling
+		BoundingBox bb0 = obj0.getBoundingBox(),
+					bb1 = obj1.getBoundingBox();
+		double dist = bb0.distance(bb1, axis);
+		//System.out.println("Distance: " + bb0.distance(bb1, axis));
+		Vector3D newPos0 = bb0.getLocation().add(axis.multiply(dist * 1.0000001 * obj0MoveProp));
+		Vector3D newPos1 = bb1.getLocation().add(axis.multiply(-dist * 1.0000001 * (1-obj0MoveProp)));
+//		System.out.println("m0: " + obj0.getSpec().getMass());
+//		System.out.println("m1: " + obj1.getSpec().getMass());
+//		System.out.println("prop of obj0: " + obj0MoveProp);
+//		System.out.println("bb pos: " + bb0.getLocation());
+//		System.out.println("obj pos: " + obj0.getPosition());
+		obj0.setPosition(newPos0);
+		obj1.setPosition(newPos1);
+//		System.out.println("dist: " + dist);
 	}
 
 	private static double overlap(double min0, double max0, double min1,
 			double max1) {
-		// this method exists just in case the implementation changes later
+		// this method exists just in case its implementation changes later
 		return Math.min(max0, max1) - Math.max(min0, min1);
 	}
 
@@ -115,5 +194,12 @@ int i = 0;
 			else
 				return -0.0;
 		}
+	}
+	
+	public static void main(String[] args) {
+//		translateAway(new BoundingBox(Vector3D.origin, 10,10,10),
+//				new BoundingBox(new Vector3D(-5,-7,-7), 10,10,10),
+//				new Vector3D(-1/Math.sqrt(2),-1/Math.sqrt(2),0));
+		// translates by 7.5 * sqrt(2) in x and y
 	}
 }

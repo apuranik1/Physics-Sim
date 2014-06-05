@@ -1,11 +1,7 @@
 package engine;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Deque;
-import java.util.ArrayDeque;
 
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
@@ -56,7 +52,6 @@ public class Octree<T> implements Iterable<T> {
 	 * The depth of this octant.
 	 */
 	private int depth;
-	private static final int mappings[] = new int[] { 0, 3, 4, 7, 1, 2, 5, 6 };
 	private static final int INTERSECTION_CALIBRATION = 0;
 
 	/**
@@ -117,7 +112,9 @@ public class Octree<T> implements Iterable<T> {
 	public ArrayList<T> intersects(BoundingBox bb) {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
 		for (Pair<BoundingBox, T> entry : contents)
-			if (entry.first().simpleIntersects(bb))
+			// first check should cull many easily
+			if (entry.first.simpleBound().intersects(bb.simpleBound())
+					&& entry.first().intersects(bb))
 				intersections.add(entry.second());
 		if (!leaf) {
 			Octree<T> octant = octantsContaining(bb);
@@ -187,7 +184,6 @@ public class Octree<T> implements Iterable<T> {
 		Vector3D horizAxis = direction.cross(upVec);
 		double vertAngle = fovy / 2;
 		double horizAngle = fovx / 2;
-		// TODO: confirm it is vertAngle, not -vertAngle
 		Quaternion upRotate = new Quaternion(horizAxis, vertAngle);
 		// save some clock cycles on recomputing the sines and cosines
 		Quaternion downRotate = new Quaternion(upRotate.w, -upRotate.x,
@@ -255,9 +251,10 @@ public class Octree<T> implements Iterable<T> {
 	 */
 	private Octree<T> octantsContaining(BoundingBox bb) {
 		assert !leaf;
-		Vector3D pos = bb.getLocation();
-		Vector3D corner = new Vector3D(pos.x + bb.getWidth(), pos.y
-				+ bb.getHeight(), pos.z + bb.getDepth());
+		BoundingBox simplebb = bb.simpleBound();
+		Vector3D pos = simplebb.getLocation();
+		Vector3D corner = new Vector3D(pos.x + simplebb.getWidth(), pos.y
+				+ simplebb.getHeight(), pos.z + simplebb.getDepth());
 		int tmp = octantContaining(pos);
 		int tmp2 = octantContaining(corner);
 		if (tmp == tmp2) {
@@ -316,8 +313,8 @@ public class Octree<T> implements Iterable<T> {
 		// assert !leaf;
 		// we're not going to talk about this method
 		return (vec.x >= splitPoint.x ? 4 : 0)
-				+ (vec.y >= splitPoint.y ? 2 : 0)
-				+ (vec.z >= splitPoint.z ? 1 : 0);
+				| (vec.y >= splitPoint.y ? 2 : 0)
+				| (vec.z >= splitPoint.z ? 1 : 0);
 	}
 
 	/**

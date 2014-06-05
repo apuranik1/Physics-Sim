@@ -1,70 +1,76 @@
 package engine.test;
 
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
-import com.jogamp.newt.event.KeyEvent;
-
-import engine.AnimationEvent;
-import engine.Animator;
 import engine.ContinuousAnimationEvent;
 import engine.EventProcessor;
 import engine.GameEngine;
 import engine.ResourceManager;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector3D;
-import static engine.physics.Vector3D.*;
 
 public class MonkeySpawner {
 	public static void main(String[] args) throws Exception {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
-		
-		Object3D monkey = Object3D.load("/Users/16mcolavita/Desktop/monkey.obj");
-		monkey.setAcceleration(new Vector3D(0,0,0));
-		monkey.setVelocity(new Vector3D(0,2,0));
+
+		Object3D monkey = new Object3D("/Users/michael/Desktop/monkey.obj");
+		// monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
-		manager.loadObject("monkey",monkey);
-		Object3D monkey2 = monkey.clone();
-		monkey2.setAcceleration(Vector3D.origin);
-		monkey2.setVelocity(new Vector3D(-1, -1, 1));
-		monkey2.setSpec(new PhysicsSpec(false, false, false, 25));
-		manager.loadObject("monkey2", monkey2);
-		manager.loadObject("sphere",Object3D.load("/Users/16mcolavita/Desktop/sphere.obj"));
-		
-		//engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
-		engine.cameraLookAt(new Vector3D(0,-5,10),new Vector3D(0,0,0));
-		
+		monkey.setRotation(new Quaternion(new Vector3D(1, 0, 0), Math.PI / 2));
+		Object3D floor = new Object3D("/Users/michael/Desktop/floor.obj");
+		floor.setAcceleration(Vector3D.origin);
+		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
+		manager.loadObject("monkey", monkey);
+		manager.loadObject("floor", floor);
+
+		// engine.cameraOrient(new Vector3D(0, 0, 10), new Vector3D(0, 0, 0));
+		engine.cameraLookAt(new Vector3D(0, -10, 30), new Vector3D(0, -10, 0));
+
 		engine.beginGame();
-		
-		manager.insertInstance("monkey", new Vector3D(0, -10, 0));
-		manager.insertInstance("monkey2", new Vector3D(5, 5, -5));
-		
-		/*
+
+		// manager.insertInstance("monkey", new Vector3D(0, -10, 0));
+		final long floorl = manager.insertInstance("floor", new Vector3D(-5,
+				-10, -5));
+
 		Animator.getAnimator().registerEvent(
-				new ContinuousAnimationEvent(0, .05) {
+				new ContinuousAnimationEvent(0, .5) {
 					@Override
 					public void animate() {
-						long id = ResourceManager.getResourceManager().insertInstance("monkey", new Vector3D(Math.random() * 10 - 5,  Math.random() * 10 - 5, Math.random() * 10 - 5));
-						ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new Vector3D(Math.random() * 10 - 5, Math.random() * 10 - 5, Math.random() * 10 - 5));
+						long id = ResourceManager.getResourceManager().insertInstance("monkey",
+										new Vector3D(Math.random() * 10 - 5,
+													 Math.random() * 10 - 5,
+													 Math.random() * 10 - 5));
+						// ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new
+						// Vector3D(Math.random() * 10 - 5, Math.random() * 10 -
+						// 5, Math.random() * 10 - 5));
+						// ResourceManager.getResourceManager().retrieveInstance(id).setRotation(new
+						// Vector3D(Math.random() * 360, Math.random() * 360,
+						// Math.random() * 360));
 					}
 				});
-		
+
 		Animator.getAnimator().registerEvent(
 				new ContinuousAnimationEvent(1, .02) {
 					@Override
 					public void animate() {
-						//ResourceManager.getResourceManager().insertInstance("sphere", new Vector3D(Math.random() * 10 - 5, 0 ,0));
+						// ResourceManager.getResourceManager().insertInstance("sphere",
+						// new Vector3D(Math.random() * 10 - 5, 0 ,0));
 					}
-				});*/
-		
+				});
+
 		engine.registerProcessor(new EventProcessor() {
-			public void keysPressed(Set<Short> keys) {
-				System.out.println(keys);
+			public void keysPressed(Set<Integer> keys) {
+				System.out.println(ResourceManager.getResourceManager()
+						.retrieveInstance(floorl).getPosition());
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
 				double x = 0, y = 0, z = 0;
-				for(Short keyCode : keys)
+				for (int keyCode : keys)
 					switch (keyCode) {
 					case KeyEvent.VK_A:
 						x = -15;

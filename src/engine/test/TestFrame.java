@@ -5,7 +5,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
 
 public class TestFrame extends JFrame {
 	public TestFrame() {

@@ -1,4 +1,4 @@
-package engine;
+package engine.animation;
 
 import java.util.ArrayList;
 import java.util.Collection;

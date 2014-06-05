@@ -1,5 +1,7 @@
 package engine;
 
+import engine.animation.AnimationEvent;
+
 public abstract class ContinuousAnimationEvent extends AnimationEvent implements
 		Cloneable {
 	private double period;

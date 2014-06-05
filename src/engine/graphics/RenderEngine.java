@@ -12,27 +12,32 @@ import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
-import javax.media.nativewindow.WindowClosingProtocol.WindowClosingMode;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLCapabilities;
 import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
+import javax.media.opengl.awt.GLCanvas;
 
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.util.FPSAnimator;
 
 import engine.GameEngine;
+import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
 public class RenderEngine implements GLEventListener {
-	private GLWindow window;
+	private Frame window;
 	private int lastRendered;
 	private FPSAnimator anim;
-	
+
 	public RenderEngine(String title) {
 		configure();
 	}
@@ -44,12 +49,21 @@ public class RenderEngine implements GLEventListener {
 		capabilities.setDoubleBuffered(true);
 		capabilities.setSampleBuffers(true);
 		capabilities.setNumSamples(8);
-		window = GLWindow.create(capabilities);
-		window.addGLEventListener(this);
-		window.setFullscreen(true);
-		window.setDefaultCloseOperation(WindowClosingMode.DISPOSE_ON_CLOSE);
+		window = new Frame("Game");
+		window.setUndecorated(true);
+		GLCanvas canvas = new GLCanvas(capabilities);
+		canvas.addGLEventListener(this);
+		// GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
+		// .getDefaultScreenDevice();
+		// gd.setFullScreenWindow(window);
+		// <hackery>
+		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+		window.setSize(d);
+		// </hackery>
 		window.addKeyListener(GameEngine.getGameEngine());
-		anim = new FPSAnimator(window, 60);
+		canvas.addKeyListener(GameEngine.getGameEngine());
+		window.add(canvas);
+		anim = new FPSAnimator(canvas, 60);
 		anim.start();
 		window.setVisible(true);
 	}
@@ -118,34 +132,34 @@ public class RenderEngine implements GLEventListener {
 		GameEngine engine = GameEngine.getGameEngine();
 		engine.setupCamera(gl, dt);
 		ArrayList<Object3D> frustalCull = engine.selectFrustum();
-		//System.out.println(frustalCull.size());
+		// System.out.println(frustalCull.size());
 		int distinct = 0;
 		for (Object3D object : frustalCull) {
 			if (object.getFrameUpdate() == frame)
 				continue;
-			distinct ++;
+			distinct++;
 			gl.glPushMatrix();
-			Vector3D rot = object.getRotation();
-			gl.glRotated(rot.x, 1, 0, 0);
-			gl.glRotated(rot.y, 0, 1, 0);
-			gl.glRotated(rot.z, 0, 0, 1);
 			Vector3D pos = object.getPosition();
 			gl.glTranslated(pos.x, pos.y, pos.z);
+			Quaternion rot = object.getRotation();
+			Vector3D axis = rot.getAxis();
+			System.out.println(rot.getAngle() + " on " + axis);
+			gl.glRotated(Math.toDegrees(rot.getAngle()), axis.x, axis.y, axis.z);
 			object.render(gl);
 			gl.glPopMatrix();
 			object.setFrame(frame);
 		}
 		lastRendered = distinct;
 	}
-	
+
 	public int lastRendered() {
 		return lastRendered;
 	}
-	
+
 	public int getFPS() {
 		return Math.round(anim.getLastFPS());
 	}
-	
+
 	public void stop() {
 		anim.stop();
 	}
