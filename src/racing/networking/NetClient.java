@@ -1,7 +1,7 @@
 package racing.networking;
 import java.io.*;
 import java.net.*;
-import racing.game.Cart;
+import racing.Cart;
 import racing.game.Item;
 import racing.game.Track;
 public class NetClient {
@@ -36,14 +36,7 @@ public class NetClient {
 	 */
 	public NetData update(){
 		try {
-			int b;
-			do{
-				input.mark(1);
-				b=input.read(new byte[1]);
-				System.out.print(b+" - ");
-				if(b==-1)System.out.println("empty");
-				input.reset();
-			}while(b==-1);
+			while(input.available()==0);
 			if(input.readUTF().equals("ready")){
 				System.out.println("ready");
 				output.writeObject(cart);//send cart data
@@ -62,7 +55,7 @@ public class NetClient {
 		try {
 			BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
 			System.out.println("IP: ");
-			NetClient client=new NetClient(InetAddress.getByName(reader.readLine()),5555,new Cart(),new Track(new Item(reader.readLine())));
+			NetClient client=new NetClient(InetAddress.getByName(reader.readLine()),5555,new Cart(""),new Track(new Item(reader.readLine())));
 			System.out.println("created");
 			client.update().getItems().toString();
 		} catch (UnknownHostException e) {

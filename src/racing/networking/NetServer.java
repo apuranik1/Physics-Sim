@@ -2,7 +2,7 @@ package racing.networking;
 import java.util.ArrayList;
 import java.io.IOException;
 import java.net.*;
-import racing.game.Cart;
+import racing.Cart;
 import racing.game.Item;
 public class NetServer {
 	/**

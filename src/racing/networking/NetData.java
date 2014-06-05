@@ -1,6 +1,6 @@
 package racing.networking;
 import java.util.ArrayList;
-import racing.game.Cart;
+import racing.Cart;
 import racing.game.Item;
 public class NetData {
 	private ArrayList<Cart> carts;
