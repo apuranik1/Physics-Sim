@@ -41,7 +41,7 @@ public class GameManager{
 		cart.setAcceleration(Vector3D.origin);
 		cart.setSpec(new PhysicsSpec(false,false,true,cartMass));
 		rmanager.loadObject("cart0", cart);
-		cart=(Cart) rmanager.retrieveInstance(rmanager.insertInstance("cart0"));
+		cart=(Cart)rmanager.retrieveInstance(rmanager.insertInstance("cart0"));
 		
 		track=new Track();
 		
@@ -56,7 +56,7 @@ public class GameManager{
 	 */
 	public InetAddress setupServer(int port){
 		server=new NetServer(port);
-		client=new NetClient(server.getIP(), port,cart,track);//local client
+		client=new NetClient(server.getIP(),port,cart,track);//local client
 		server.connect();//connect local client
 		return server.getIP();
 	}
