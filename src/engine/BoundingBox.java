@@ -24,7 +24,7 @@ public class BoundingBox {
 	 * Orientation matrix of the box, with respect to <code>location</code>,
 	 * or null if not rotated.
 	 */
-	private Matrix3D rotation;
+	public Matrix3D rotation;
 	/**
 	 * The width of the box
 	 */
@@ -164,14 +164,12 @@ public class BoundingBox {
 		if (rotation == null && other.rotation == null)
 			return simpleIntersects(other);
 		
-		int axiscount = 0;
 		for (Vector3D axis : getIntersectAxes(other)) {
 			double[] range1 = project(axis);
 			double[] range2 = other.project(axis);
 			if (range1[0] > range2[1] || range2[0] > range1[1]) {
 				return false;
 			}
-			axiscount++;
 		}
 		return true;
 	}
@@ -202,18 +200,34 @@ public class BoundingBox {
 	 * In other words, returns the distance to translate this along axis to
 	 * make it exactly adjacent to other and farther along axis.
 	 * 
-	 * Precondition: axis is a unit vector.
+	 * Precondition: axis is a unit vector and points away from other
 	 * 
 	 * @param other
 	 * @param axis
 	 */
 	public double distance(BoundingBox other, Vector3D axis) {
+		//TODO: fix this method and figure out what I am doing
 		double minDist = Double.POSITIVE_INFINITY;
 		for (Vector3D intersectAxis : getIntersectAxes(other)) {
+			// intersectAxis now points in vaguely the same direction as axis
+			intersectAxis = axis.vecProject(intersectAxis);
+			if (Math.abs(intersectAxis.dot(axis)) < 1e-10) {
+				//System.out.println("Oops, normal vec");
+				continue;
+			}
 			double[] r0 = project(intersectAxis);
 			double[] r1 = other.project(intersectAxis);
-			double dist = (r1[1] - r0[0]) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
-			if (Math.abs(dist) < Math.abs(minDist))
+			// find difference in directions, assuming that
+			double dist1 = r1[1] - r0[0];
+			//double dist2 = r1[0] - r1[1];
+			// tempDist is the smaller distance, which hopefully is the right one :/
+			//double tempDist = Math.abs(dist1) < Math.abs(dist2) ? dist1 : dist2;
+			double dist = (dist1) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
+			if (dist < 0) {
+				System.out.println("MAJOR SCREWUP");
+				System.out.println("LIKE, REALLY BIG");
+			}
+			if (dist < minDist)
 				minDist = dist;
 		}
 		return minDist;
@@ -263,7 +277,7 @@ public class BoundingBox {
 			double pos = vertex.project(axis);
 			if (pos < min)
 				min = pos;
-			else if (pos > max)
+			if (pos > max)
 				max = pos;
 		}
 		return new double[] { min, max };
@@ -316,12 +330,17 @@ public class BoundingBox {
 	}
 	
 	public static void main(String[] args) {
-		BoundingBox bb = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10,
-				new Quaternion(new Vector3D(0,1,0),Math.PI / 10000));
-		BoundingBox bb1 = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10);
+		BoundingBox fail = new BoundingBox(new Vector3D(0,0,0), 5,5,5,
+				new Quaternion(new Vector3D(0,1,0), 3.041592653589793));
+		//Object 1 rotation: 3.241592653589793
+		//Rotation: 3.141592653589793
+		// bad things are happening
+		BoundingBox bb = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10);
+				//new Quaternion(new Vector3D(0,1,0),Math.PI / 10000));
+		BoundingBox bb1 = new BoundingBox(new Vector3D(10,0,14), 10, 10, 10);
 //		System.out.println(Arrays.toString(bb.vertexList()));
 //		System.out.println(Arrays.toString(bb1.vertexList()));
-		System.out.println(bb.intersects(bb1));
+		System.out.println(bb.distance(bb1, new Vector3D(1,0,0)));
 //		System.out.println(bb.simpleBound().location);
 //		System.out.println(bb.simpleBound().getWidth());
 		
