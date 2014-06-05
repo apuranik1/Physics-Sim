@@ -223,10 +223,6 @@ public class BoundingBox {
 			// tempDist is the smaller distance, which hopefully is the right one :/
 			//double tempDist = Math.abs(dist1) < Math.abs(dist2) ? dist1 : dist2;
 			double dist = (dist1) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
-			if (dist < 0) {
-				System.out.println("MAJOR SCREWUP");
-				System.out.println("LIKE, REALLY BIG");
-			}
 			if (dist < minDist)
 				minDist = dist;
 		}

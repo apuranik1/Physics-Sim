@@ -31,68 +31,17 @@ public class PhysicsManager {
 	 */
 	private void handleCollision(Object3D obj0, Object3D obj1) {
 		System.out.println("Collide!");
-//		System.out.println("Object 0 rotation: " + obj0.getRotation().getAngle());
-//		System.out.println("Object 1 rotation: " + obj1.getRotation().getAngle());
 		// if one is inside the other, I honestly have no clue what to do
 		// this algorithm ends up dividing by 0 and dying. so.
 		// also, Skynet will be born from this method
 		Vector3D velocDiff = obj0.getVelocity().subtract(obj1.getVelocity());
-		//System.out.println("obj0 velocity: " + obj0.getVelocity());
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
 		BoundingBox bb0 = obj0.getBoundingBox();
 		BoundingBox bb1 = obj1.getBoundingBox();
-//		BoundingBox simplebb0 = bb0.simpleBound();
-//		BoundingBox simplebb1 = bb1.simpleBound();
-		Vector3D pos0 = bb0.getLocation();
-		Vector3D pos1 = bb1.getLocation();
+		Vector3D pos0 = bb0.simpleBound().getLocation();
+		Vector3D pos1 = bb1.simpleBound().getLocation();
 		Vector3D posDiff = pos0.subtract(pos1);
-//		double minX0 = pos0.x,
-//			   maxX0 = pos0.x + simplebb0.getWidth(),
-//			   minX1 = pos1.x,
-//			   maxX1 = pos1.x + simplebb1.getWidth(),
-//			   minY0 = pos0.y,
-//			   maxY0 = pos0.y + simplebb0.getHeight(),
-//			   minY1 = pos1.y,
-//			   maxY1 = pos1.y + simplebb1.getHeight(),
-//			   minZ0 = pos0.z,
-//			   maxZ0 = pos0.z + simplebb0.getDepth(),
-//			   minZ1 = pos1.z,
-//			   maxZ1 = pos1.z + simplebb1.getDepth();
-//		double overlapX = overlap(minX0, maxX0, minX1, maxX1); // points from obj0 toward obj1
-//		double overlapY = overlap(minY0, maxY0, minY1, maxY1);
-//		double overlapZ = overlap(minZ0, maxZ0, minZ1, maxZ1);
-		
-		//Vector3D collisionVec = new Vector3D(
-		//		overlapY * overlapZ * collideDirection(minX0, maxX0, minX1, maxX1),
-		//		overlapX * overlapZ * collideDirection(minY0, maxY0, minY1, maxY1),
-		//		overlapX * overlapY * collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-//		double collideX;
-//		if (posDiff.x * velocDiff.x > 0) {
-//			System.out.println("x slide");
-//			collideX = 0;
-//		}
-//		else
-//			collideX = velocDiff.x * Math.abs(collideDirection(minX0, maxX0, minX1, maxX1));
-//		
-//		double collideY;
-//		if (posDiff.y * velocDiff.y > 0) {
-//			System.out.println("y slide: " + posDiff.y + " " + velocDiff.y);
-//			collideY = 0;
-//		}
-//		else
-//			collideY = velocDiff.y * Math.abs(collideDirection(minY0, maxY0, minY1, maxY1));
-//		
-//		double collideZ;
-//		if (posDiff.z * velocDiff.z > 0) {
-//			System.out.println("z slide");
-//			collideZ = 0;
-//		}
-//		else
-//			collideZ = velocDiff.z * Math.abs(collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-//		
-//		
-//		Vector3D collisionVec = new Vector3D(collideX, collideY, collideZ);
 		
 		Vector3D[] axes = m0 > m1 ? bb0.axisList() : bb1.axisList();
 		Vector3D handle = axes[0];
@@ -116,44 +65,7 @@ public class PhysicsManager {
 			}
 		}
 		
-		System.out.println("handle vector: " + handle);
-		
-//		System.out.println("y collide direction: " + collideDirection(minY0, maxY0, minY1, maxY1));
-//		System.out.println("y values: " + minY0 + " " + maxY0 + " " + minY1 + " " + maxY1);
-		
-//		System.out.println("z collide direction: " + collideDirection(minZ0, maxZ0, minZ1, maxZ1));
-//		System.out.println("z values: " + minZ0 + " " + maxZ0 + " " + minZ1 + " " + maxZ1);
-//		System.out.println("Preliminary collision vec: " + collisionVec);
-//		
-//		if (collisionVec.x == 0.0 && collisionVec.y == 0.0 && collisionVec.z == 0.0)
-//			collisionVec = velocDiff;
-//		if (collisionVec.x == 0 && collisionVec.z == 0)
-//			System.out.println("Gravity fix");
-//		else
-//			System.out.println("Ordinary handle" + collisionVec);
-//		if (collisionVec.x + collisionVec.y + collisionVec.z == 0) {
-//			System.out.println("We have a problem");
-//			if (m0 < m1)
-//				translateAway(obj0, obj1, obj0.getVelocity().multiply(-1));
-//			else
-//				translateAway(obj1, obj0, obj1.getVelocity().multiply(-1));
-//			return;
-//		}
-		//collisionVec = collisionVec.multiply(1 / collisionVec.magnitude());
-		//System.out.println(collisionVec);
-		// normalization may be needed
-		
-//		Vector3D problemVeloc = velocDiff.vecProject(collisionVec);
-//		System.out.println();
 		double refMass = 1.0 / (1/m0 + 1/m1);
-//		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-refMass / m0)));
-//		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(refMass / m1)));
-//		
-//		if (m0 < m1)
-//			translateAway(obj0, obj1, collisionVec.multiply(-1));
-//		else
-//			translateAway(obj1, obj0, collisionVec);
-//		System.out.println(frame);
 		Vector3D problemVeloc = velocDiff.vecProject(handle);
 		translateAway(obj0, obj1, dist0, handle, refMass / m0);
 		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * refMass / m0)));
@@ -176,7 +88,6 @@ public class PhysicsManager {
 		BoundingBox bb0 = obj0.getBoundingBox(),
 					bb1 = obj1.getBoundingBox();
 		//double dist = bb0.distance(bb1, axis);
-		System.out.println("translate total by " + dist);
 		Vector3D newPos0 = bb0.getLocation().add(axis.multiply(dist * 1.0000001 * obj0MoveProp));
 		Vector3D newPos1 = bb1.getLocation().add(axis.multiply(-dist * 1.0000001 * (1-obj0MoveProp)));
 		obj0.setPosition(newPos0);
