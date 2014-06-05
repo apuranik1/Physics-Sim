@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.media.opengl.GL2;
 
@@ -165,6 +166,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		ArrayList<Vector3D> normals = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> output = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> noutput = new ArrayList<Vector3D>();
+		HashMap<String, Material> materials = new HashMap<String, Material>();
 		String[] lines = data.split("\n");
 		for (String line : lines) {
 			if (line.startsWith("#")) {
