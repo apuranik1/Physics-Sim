@@ -93,4 +93,20 @@ public class Matrix3D {
 							0, 0, 1
 		);
 	}
+	
+	public boolean equals(Object other) {
+		if (other instanceof Matrix3D) {
+			Matrix3D mat = (Matrix3D) other;
+			return n_00 == mat.n_00
+					&& n_01 == mat.n_01
+					&& n_02 == mat.n_02
+					&& n_10 == mat.n_10
+					&& n_11 == mat.n_11
+					&& n_12 == mat.n_12
+					&& n_20 == mat.n_20
+					&& n_21 == mat.n_21
+					&& n_22 == mat.n_22;
+		}
+		return false;
+	}
 }
