@@ -15,20 +15,19 @@ public class CarDemo {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 		
-		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
+		Cart cart = new Cart("/Users/michael/Desktop/monkey.obj");
 		cart.setAcceleration(Vector3D.origin);
 		cart.setRotation(new Quaternion(new Vector3D(0,1,0), Math.PI));
 		cart.setSpec(new PhysicsSpec(false, false, false, 250));
 		manager.loadObject("cart0", cart);
 		Cart myCart = (Cart) manager.retrieveInstance(manager.insertInstance("cart0", Vector3D.origin));
 		
-		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
+		Object3D floor = new Object3D("/Users/michael/Desktop/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, Double.POSITIVE_INFINITY));
 		manager.loadObject("floor", floor);
 		long l = manager.insertInstance("floor", new Vector3D(-5, -10, -5));
 		BoundingBox bb = manager.retrieveInstance(l).getBoundingBox().simpleBound();
-		System.out.println("Floor height = " + bb.getHeight());
 
 		engine.beginGame();
 		

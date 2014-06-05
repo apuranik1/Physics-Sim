@@ -252,9 +252,8 @@ public class Octree<T> implements Iterable<T> {
 	private Octree<T> octantsContaining(BoundingBox bb) {
 		assert !leaf;
 		BoundingBox simplebb = bb.simpleBound();
-		Vector3D pos = simplebb.getLocation();
-		Vector3D corner = new Vector3D(pos.x + simplebb.getWidth(), pos.y
-				+ simplebb.getHeight(), pos.z + simplebb.getDepth());
+		Vector3D pos = simplebb.getLowCoordinate();
+		Vector3D corner = simplebb.getHighCoordinate();
 		int tmp = octantContaining(pos);
 		int tmp2 = octantContaining(corner);
 		if (tmp == tmp2) {
