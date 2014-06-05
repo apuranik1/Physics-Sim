@@ -3,17 +3,8 @@ import java.net.InetAddress;
 import racing.networking.NetClient;
 import racing.networking.NetServer;
 public class Manager{
-	/**
-	 * Local player cart
-	 */
-	private Cart cart;
-	/**
-	 * Local player track
-	 */
-	private Track track;
-	public Manager(){
-		cart=new Cart();
-		track=new Track();
+	public void initGame(){
+		
 	}
 	/**
 	 * Create new singleplayer game
