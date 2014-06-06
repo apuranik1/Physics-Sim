@@ -120,10 +120,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	public void fireFrameUpdate(long frame, long dt) {
 		//System.out.println("frame!");
-		physics.checkCollisions();
 		animationRefresh();
 		physicsRefresh(frame, dt);
 		updateKeys();
+		physics.checkCollisions();
 	}
 
 	private void animationRefresh() {
