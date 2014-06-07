@@ -3,6 +3,7 @@ package engine;
 import java.io.IOException;
 import java.util.Arrays;
 
+import racing.Cart;
 import engine.graphics.Object3D;
 import engine.physics.Matrix3D;
 import engine.physics.PhysicsSpec;
@@ -201,38 +202,33 @@ public class BoundingBox {
 	 * returns the distance to translate this along axis to make it exactly
 	 * adjacent to other and farther along axis.
 	 * 
-	 * Precondition: axis is a unit vector and points away from other
+	 * Precondition: axis [is a unit vector and]? points away from other
 	 * 
 	 * @param other
 	 * @param axis
 	 */
 	public double distance(BoundingBox other, Vector3D axis) {
-		//TODO: fix this method and figure out what I am doing
 		double minDist = Double.POSITIVE_INFINITY;
 		for (Vector3D intersectAxis : getIntersectAxes(other)) {
-			// intersectAxis now points in vaguely the same direction as axis
-			intersectAxis = axis.vecProject(intersectAxis);
-			if (Math.abs(intersectAxis.dot(axis)) < 1e-10) {
-				//System.out.println("Oops, normal vec");
+			if (Math.abs(intersectAxis.dot(axis)) < 1e-10)
 				continue;
-			}
-			double[] r0 = project(intersectAxis);
-			double[] r1 = other.project(intersectAxis);
-			// find difference in directions, assuming that
-			double dist1 = r1[1] - r0[0];
-			//double dist2 = r1[0] - r1[1];
-			// tempDist is the smaller distance, which hopefully is the right one :/
-			//double tempDist = Math.abs(dist1) < Math.abs(dist2) ? dist1 : dist2;
-			double dist = (dist1) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
+			
+			intersectAxis = axis.vecProject(intersectAxis);
+			double dot = axis.dot(intersectAxis);
+
+			// somehow these next lines are actually slower than a vecProject
+			//if (dot < 0) {
+			//	intersectAxis = new Vector3D(-intersectAxis.x, -intersectAxis.y, -intersectAxis.z);
+			//	dot = -dot;
+			//}
+			final double r0 = minDist(intersectAxis);
+			final double r1 = other.maxDist(intersectAxis);
+			final double dist = (r1 - r0) * intersectAxis.magnitude() / dot;
+
 			if (dist < minDist)
 				minDist = dist;
 		}
 		return minDist;
-		// reverse scalar projection
-		/*
-		 * (k*this) * axis) / (axis magnitude) = x k * (this * axis) = x * (axis
-		 * magnitude) k = x * (axis magnitude) / (this * axis)
-		 */
 	}
 
 	/**
@@ -271,13 +267,36 @@ public class BoundingBox {
 	private double[] project(Vector3D axis) {
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (Vector3D vertex : vertexList()) {
-			double pos = vertex.project(axis);
+			double pos = vertex.dot(axis);
 			if (pos < min)
 				min = pos;
 			if (pos > max)
 				max = pos;
 		}
-		return new double[] { min, max };
+		double magnitude = axis.magnitude();
+		return new double[] { min / magnitude, max / axis.magnitude() };
+	}
+	
+	private double minDist(Vector3D axis) {
+		double min = Double.POSITIVE_INFINITY;
+		for (Vector3D vertex : vertexList()) {
+			// major optimization: eliminates a lot of square roots
+			//double pos = vertex.project(axis);
+			double pos = vertex.dot(axis);
+			if (pos < min)
+				min = pos;
+		}
+		return min / axis.magnitude();
+	}
+	
+	private double maxDist(Vector3D axis) {
+		double max = Double.NEGATIVE_INFINITY;
+		for (Vector3D vertex : vertexList()) {
+			double pos = vertex.dot(axis);
+			if (pos > max)
+				max = pos;
+		}
+		return max / axis.magnitude();
 	}
 
 	/**
@@ -314,21 +333,26 @@ public class BoundingBox {
 	}
 	
 	public static void main(String[] args) throws IOException {
+		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
+		cart.setAcceleration(Vector3D.origin);
+		cart.setRotation(new Quaternion(new Vector3D(0,1,0), 3.041592653589793)); // this screws everything up
+		cart.setSpec(new PhysicsSpec(false, false, true, 25));
+		
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
-		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
-		floor.setRotation(new Quaternion(new Vector3D(0,0,1), Math.PI / 4));
-//		System.out.println(floor.getBoundingBox());
-		System.out.println(floor.getBoundingBox().simpleBound());
-		floor.setPosition(new Vector3D(0, -10, 0));
-
-		System.out.println("floorbox: " + floor.getBoundingBox());
-		System.out.println("floor simple: " + floor.getBoundingBox().simpleBound());
+		floor.setSpec(new PhysicsSpec(false, false, true, Double.POSITIVE_INFINITY));
+		//floor.setRotation(new Quaternion(new Vector3D(1,0,0), Math.PI / 12));
 		
-		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
-		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
-		monkey.setPosition(new Vector3D(0, 0, 0));
-		//System.out.println("monkeybox: " + monkey.getBoundingBox());
-		//System.out.println(monkey.getBoundingBox().simpleIntersects(floor.getBoundingBox().simpleBound()));
+		BoundingBox bb0 = floor.getBoundingBox();
+		BoundingBox bb1 = cart.getBoundingBox();
+		Vector3D axis = bb1.axisList()[0];
+		for (int k = 0; k < 5; k++) {
+			long start = System.nanoTime();
+			for (int i = 0; i < 1000000; i++) {
+				bb0.distance(bb1, axis);
+			}
+			long end = System.nanoTime();
+			System.out.println(end - start);
+		}
 	}
 }

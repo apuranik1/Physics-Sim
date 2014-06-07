@@ -265,4 +265,6 @@ public class Object3D implements Renderable3D, Cloneable {
 //		System.out.println("mincoord: " + mincoord);
 		return new BoundingBox(position, mincoord.add(position), maxcoord.add(position), rotation);
 	}
+	
+	public void specialCollide(Object3D other) {}
 }

@@ -6,20 +6,38 @@ import engine.graphics.Object3D;
 
 public class PhysicsManager {
 
-	private long frame;
-
 	public PhysicsManager() {
-		this.frame = 0;
+		// yeah... I don't really know
 	}
 
 	public void checkCollisions() {
+		long start = System.nanoTime();
 		// so beautiful... it won't last
+		// aaaaand not so beautiful anymore
 		GameEngine engine = GameEngine.getGameEngine();
-		for (Object3D obj : engine)
-			for (Object3D other : engine.intersects(obj.getBoundingBox()))
-				if(other != obj)
-					handleCollision(obj, other);
-		frame++;
+		for (Object3D obj : engine) {
+			PhysicsSpec objSpec = obj.getSpec();
+			boolean collides = objSpec.isCollidable();
+			boolean specialCollides = objSpec.specialCollides();
+			if (objSpec.isCollidable() || specialCollides)
+				for (Object3D other : engine.intersects(obj.getBoundingBox()))
+					if (other != obj) {
+						PhysicsSpec otherSpec = other.getSpec();
+						if (otherSpec.isCollidable() && collides) {
+							handleCollision(obj, other);
+							// handle both special collisions, since they will be moved apart
+							if (specialCollides)
+								obj.specialCollide(other);
+							if (otherSpec.specialCollides())
+								other.specialCollide(obj);
+						}
+						if (specialCollides)
+							// they won't be moved, so handle only one
+							obj.specialCollide(other);
+					}
+		}
+		long end = System.nanoTime();
+		System.out.println("Physics time: " + (end - start));
 	}
 
 	/**
@@ -30,36 +48,30 @@ public class PhysicsManager {
 	 * @param obj1
 	 */
 	private void handleCollision(Object3D obj0, Object3D obj1) {
-		System.out.println("Collide!");
-		// if one is inside the other, I honestly have no clue what to do
-		// this algorithm ends up dividing by 0 and dying. so.
 		// also, Skynet will be born from this method
 		Vector3D velocDiff = obj0.getVelocity().subtract(obj1.getVelocity());
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
 		BoundingBox bb0 = obj0.getBoundingBox();
 		BoundingBox bb1 = obj1.getBoundingBox();
-		Vector3D pos0 = bb0.simpleBound().getLocation();
-		Vector3D pos1 = bb1.simpleBound().getLocation();
+		Vector3D pos0 = bb0.getLocation();
+		Vector3D pos1 = bb1.getLocation();
 		Vector3D posDiff = pos0.subtract(pos1);
 		
 		Vector3D[] axes = m0 > m1 ? bb0.axisList() : bb1.axisList();
-		Vector3D handle = axes[0];
-		double dist0 = bb0.distance(bb1, handle.normalize());
-		for (int i = 1; i < axes.length; i++) {
-			//Vector3D currAxis = axes[i].normalize();
-			// make currAxis point from obj0 AWAY from obj1
-			// this should make currAxis point in the opposite general direction of posDiff (YUP, should work)
+		
+		Vector3D handle = null;
+		double dist0 = Double.POSITIVE_INFINITY;
+		
+		for (int i = 0; i < axes.length; i++) {
+			// I actually don't know why this works
 			Vector3D currAxis = posDiff.vecProject(axes[i]);
 			if (Math.abs(currAxis.dot(posDiff)) < 1e-10) {
-				System.out.println("Normal vector");
 				continue;
 			}
 			currAxis = currAxis.normalize();
-			System.out.println("Trying out axis " + currAxis);
 			double d = bb0.distance(bb1, currAxis);
-			System.out.println("d = "+ d);
-			if (Math.abs(d) < Math.abs(dist0)) {
+			if (d < dist0) {
 				handle = currAxis;
 				dist0 = d;
 			}
@@ -92,43 +104,6 @@ public class PhysicsManager {
 		Vector3D newPos1 = bb1.getLocation().add(axis.multiply(-dist * 1.0000001 * (1-obj0MoveProp)));
 		obj0.setPosition(newPos0);
 		obj1.setPosition(newPos1);
-	}
-
-	private static double overlap(double min0, double max0, double min1,
-			double max1) {
-		// this method exists just in case its implementation changes later
-		return Math.min(max0, max1) - Math.max(min0, min1);
-	}
-
-	/**
-	 * Returns a value indicating the relative positions of two objects.
-	 * 
-	 * @param min0
-	 *            The minimum coordinate of the first object
-	 * @param max0
-	 * 			  The maximum coordinate of the first object
-	 * @param min1
-	 * 			  The minimum coordinate of the second object
-	 * @param max1
-	 * 			  The maximum coordinate of the second object
-	 * @return 1.0 if the first is generally greater than the second, -1.0 if
-	 *         the second is generally greater than the first, +0.0 if the
-	 *         second is within the first, and -0.0 if the first is within the
-	 *         second.
-	 */
-	private static double collideDirection(double min0, double max0,
-			double min1, double max1) {
-		if (max0 > max1) {
-			if (min0 > min1)
-				return 1.0;
-			else
-				return +0.0;
-		} else {
-			if (min0 < min1)
-				return -1.0;
-			else
-				return -0.0;
-		}
 	}
 	
 }

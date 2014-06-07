@@ -33,7 +33,7 @@ public class CarController extends EventProcessor {
 			// the singularity is screwing this up maybe
 //			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() + .1));
 			cart.setRotation(cart.getRotation().multiply(new Quaternion(new Vector3D(0,1,0), 0.1)));
-			System.out.println("Rotation: " + cart.getRotation().getAngle());
+			//System.out.println("Rotation: " + cart.getRotation().getAngle());
 		}
 		else if(d_pressed && !a_pressed)
 //			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() - .1));
