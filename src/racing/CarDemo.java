@@ -28,7 +28,7 @@ public class CarDemo {
 		manager.loadObject("floor", floor);
 		long l = manager.insertInstance("floor", new Vector3D(-5, -10, -5));
 		floor.setRotation(new Quaternion(new Vector3D(1,0,0), -Math.PI / 12));
-		manager.insertInstance("floor", new Vector3D(-5, -15, -30));
+		manager.insertInstance("floor", new Vector3D(-5, -10, -30));
 		
 		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
 		monkey.setAcceleration(Vector3D.origin);

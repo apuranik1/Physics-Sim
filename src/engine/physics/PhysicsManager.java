@@ -39,8 +39,8 @@ public class PhysicsManager {
 			   m1 = obj1.getSpec().getMass();
 		BoundingBox bb0 = obj0.getBoundingBox();
 		BoundingBox bb1 = obj1.getBoundingBox();
-		Vector3D pos0 = bb0.simpleBound().midpoint();
-		Vector3D pos1 = bb1.simpleBound().midpoint();
+		Vector3D pos0 = bb0.simpleBound().getLocation();
+		Vector3D pos1 = bb1.simpleBound().getLocation();
 		Vector3D posDiff = pos0.subtract(pos1);
 		
 		Vector3D[] axes = m0 > m1 ? bb0.axisList() : bb1.axisList();

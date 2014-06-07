@@ -56,6 +56,10 @@ public class Quaternion {
 		return Math.abs(temp.squareMagnitude() - 1) > 1e-9 ? temp.normalize() : temp;
 	}
 	
+	public Quaternion inverse() {
+		return new Quaternion(w, -x, -y, -z);
+	}
+	
 	private double squareMagnitude() {
 		return w*w + x*x + y*y + z*z;
 	}

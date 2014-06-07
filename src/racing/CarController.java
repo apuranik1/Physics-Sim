@@ -10,10 +10,10 @@ import engine.physics.Vector3D;
 public class CarController extends EventProcessor {
 	private Cart cart;
 	private double thrust;
-	private double offset;
+//	private Quaternion offset;
 
 	public CarController(Cart cart) {
-		this.offset = cart.getRotation().getAngle();
+//		this.offset = cart.getRotation().inverse();
 		this.cart = cart;
 	}
 
@@ -43,7 +43,9 @@ public class CarController extends EventProcessor {
 	}
 	
 	private void applyForce() {
-		double theta = cart.getRotation().getAngle() - offset;
-		cart.setForce(new Vector3D(- Math.sin(theta) * thrust, 0, - Math.cos(theta) * thrust));
+		//stop using angles to manipulate; only use quaternion operations
+//		double theta = cart.getRotation().getAngle() - offset;
+//		cart.setForce(new Vector3D(- Math.sin(theta) * thrust, 0, - Math.cos(theta) * thrust));
+		cart.setForce(cart.getRotation().toMatrix().multiply(new Vector3D(0,0,thrust)));
 	}
 }
