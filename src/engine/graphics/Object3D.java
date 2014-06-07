@@ -262,6 +262,7 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public BoundingBox getBoundingBox() {
 		Vector3D position = motion.getPosition();
+//		System.out.println("mincoord: " + mincoord);
 		return new BoundingBox(position, mincoord.add(position), maxcoord.add(position), rotation);
 	}
 }

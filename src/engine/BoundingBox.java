@@ -1,8 +1,11 @@
 package engine;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import engine.graphics.Object3D;
 import engine.physics.Matrix3D;
+import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
@@ -16,8 +19,7 @@ public class BoundingBox {
 	private static final int NUM_AXES = 15;
 
 	/**
-	 * The position of the front-bottom-left corner of the box. Also the fixed
-	 * point of rotation.
+	 * The position of the box. Also the fixed point of rotation.
 	 */
 	private Vector3D location;
 	/**
@@ -25,15 +27,21 @@ public class BoundingBox {
 	 * null if not rotated.
 	 */
 	private Matrix3D rotation;
+	/**
+	 * Position of the high corner of the box, relative to location.
+	 */
 	private Vector3D hicorner;
+	/**
+	 * Position of the low corner of the box, relative to location.
+	 */
 	private Vector3D locorner;
 
 	/**
-	 * Cache of vertex list
+	 * Cache of vertex list, created lazily.
 	 */
 	private Vector3D[] vertexList;
 	/**
-	 * Flag for whether or not the vertex list cache is still valid
+	 * Flag for whether or not the vertex list cache is valid
 	 */
 	private boolean vertexCacheValid;
 
@@ -137,11 +145,14 @@ public class BoundingBox {
 	 * Determine whether this BoundingBox intersects <code>other</code>,
 	 * assuming both boxes have no orientation.
 	 * 
+	 * Precondition: Both boxes have no orientation
+	 * 
 	 * @param other
 	 *            The other Bounding box with which to check for intersections
 	 * @return Whether <code>this</code> intersects <code>other</code>
 	 */
 	boolean simpleIntersects(BoundingBox other) {
+		assert rotation == null && other.rotation == null;
 		// check every direction for whether they are too far apart
 		return (hicorner.x + location.x >= other.locorner.x + other.location.x 
 				&& locorner.x + location.x <= other.hicorner.x + other.location.x 
@@ -304,5 +315,24 @@ public class BoundingBox {
 	
 	public String toString() {
 		return locorner+" "+location+" "+hicorner;
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
+		floor.setAcceleration(Vector3D.origin);
+		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
+		floor.setRotation(new Quaternion(new Vector3D(0,0,1), Math.PI / 4));
+//		System.out.println(floor.getBoundingBox());
+		System.out.println(floor.getBoundingBox().simpleBound());
+		floor.setPosition(new Vector3D(0, -10, 0));
+
+		System.out.println("floorbox: " + floor.getBoundingBox());
+		System.out.println("floor simple: " + floor.getBoundingBox().simpleBound());
+		
+		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
+		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
+		monkey.setPosition(new Vector3D(0, 0, 0));
+		//System.out.println("monkeybox: " + monkey.getBoundingBox());
+		//System.out.println(monkey.getBoundingBox().simpleIntersects(floor.getBoundingBox().simpleBound()));
 	}
 }

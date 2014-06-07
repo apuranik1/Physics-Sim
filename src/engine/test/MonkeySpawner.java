@@ -19,11 +19,11 @@ public class MonkeySpawner {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
 
-		Object3D monkey = new Object3D("/Users/michael/Desktop/monkey.obj");
+		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
 		// monkey.setAcceleration(new Vector3D(0,0,0));
 		monkey.setSpec(new PhysicsSpec(false, false, false, 25));
 		//monkey.setRotation(new Quaternion(new Vector3D(1, 0, 0), Math.PI / 2));
-		Object3D floor = new Object3D("/Users/michael/Desktop/floor.obj");
+		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
 		floor.setRotation(new Quaternion(new Vector3D(0,0,1), Math.PI / 4));
@@ -40,12 +40,12 @@ public class MonkeySpawner {
 				-10, 0));
 
 		Animator.getAnimator().registerEvent(
-				new ContinuousAnimationEvent(0, .5) {
+				new ContinuousAnimationEvent(0, 1) {
 					@Override
 					public void animate() {
 						long id = ResourceManager.getResourceManager().insertInstance("monkey",
-										new Vector3D(Math.random() * 10 - 5,
-													 Math.random() * 10 - 5,
+										new Vector3D(Math.random() * 5 - 8,
+													 0,//Math.random() * 10 - 5,
 													 Math.random() * 10 - 5));
 						// ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new
 						// Vector3D(Math.random() * 10 - 5, Math.random() * 10 -

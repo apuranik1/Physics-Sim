@@ -113,8 +113,8 @@ public class Octree<T> implements Iterable<T> {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
 		for (Pair<BoundingBox, T> entry : contents)
 			// first check should cull many easily
-			if (entry.first.simpleBound().intersects(bb.simpleBound())
-					&& entry.first().intersects(bb))
+			if (//entry.first.simpleBound().intersects(bb.simpleBound())
+					entry.first().intersects(bb))
 				intersections.add(entry.second());
 		if (!leaf) {
 			Octree<T> octant = octantsContaining(bb);
