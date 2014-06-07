@@ -142,9 +142,10 @@ public class RenderEngine implements GLEventListener {
 			Vector3D pos = object.getPosition();
 			gl.glTranslated(pos.x, pos.y, pos.z);
 			Quaternion rot = object.getRotation();
-			Vector3D axis = rot.getAxis();
-			//System.out.println(rot.getAngle() + " on " + axis);
-			gl.glRotated(Math.toDegrees(rot.getAngle()), axis.x, axis.y, axis.z);
+			if(rot != null) {
+				Vector3D axis = rot.getAxis();
+				gl.glRotated(Math.toDegrees(rot.getAngle()), axis.x, axis.y, axis.z);
+			}
 			object.render(gl);
 			gl.glPopMatrix();
 			object.setFrame(frame);

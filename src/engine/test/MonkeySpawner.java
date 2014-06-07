@@ -26,6 +26,7 @@ public class MonkeySpawner {
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
 		floor.setSpec(new PhysicsSpec(false, false, false, 1000000000000.0));
+		floor.setRotation(new Quaternion(new Vector3D(0,0,1), Math.PI / 4));
 		manager.loadObject("monkey", monkey);
 		manager.loadObject("floor", floor);
 
@@ -35,16 +36,16 @@ public class MonkeySpawner {
 		engine.beginGame();
 
 		// manager.insertInstance("monkey", new Vector3D(0, -10, 0));
-		final long floorl = manager.insertInstance("floor", new Vector3D(-5,
-				-20, -5));
+		final long floorl = manager.insertInstance("floor", new Vector3D(0,
+				-10, 0));
 
 		Animator.getAnimator().registerEvent(
-				new ContinuousAnimationEvent(0, .5) {
+				new ContinuousAnimationEvent(0, 1) {
 					@Override
 					public void animate() {
 						long id = ResourceManager.getResourceManager().insertInstance("monkey",
-										new Vector3D(Math.random() * 10 - 5,
-													 Math.random() * 10 - 5,
+										new Vector3D(Math.random() * 5 - 8,
+													 0,//Math.random() * 10 - 5,
 													 Math.random() * 10 - 5));
 						// ResourceManager.getResourceManager().retrieveInstance(id).setVelocity(new
 						// Vector3D(Math.random() * 10 - 5, Math.random() * 10 -
@@ -66,8 +67,8 @@ public class MonkeySpawner {
 
 		engine.registerProcessor(new EventProcessor() {
 			public void keysPressed(Set<Integer> keys) {
-				System.out.println(ResourceManager.getResourceManager()
-						.retrieveInstance(floorl).getPosition());
+				//System.out.println(ResourceManager.getResourceManager()
+				//		.retrieveInstance(floorl).getPosition());
 				Motion motion = GameEngine.getGameEngine().getCameraMotion();
 				double x = 0, y = 0, z = 0;
 				for (int keyCode : keys)

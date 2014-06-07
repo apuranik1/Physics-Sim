@@ -14,7 +14,6 @@ public class CarDemo {
 	public static void main(String[] args) throws Exception {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();
-		
 		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
 		cart.setAcceleration(Vector3D.origin);
 		cart.setRotation(new Quaternion(new Vector3D(0,1,0), 3.041592653589793)); // this screws everything up
