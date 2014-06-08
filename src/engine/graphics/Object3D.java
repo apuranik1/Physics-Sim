@@ -158,6 +158,7 @@ public class Object3D implements Renderable3D, Cloneable {
 
 			} else if (line.startsWith("o")) {
 
+			} else if (line.startsWith("vt")) {
 			} else if (line.startsWith("vn")) {
 				String[] dats = line.split("\\s+");
 				Vector3D point = new Vector3D(Double.parseDouble(dats[1]),
@@ -193,9 +194,11 @@ public class Object3D implements Renderable3D, Cloneable {
 					noutput.add(normals.get(Integer.parseInt(dats[4].split("/")[2]) - 1));
 					noutput.add(normals.get(Integer.parseInt(dats[1].split("/")[2]) - 1));
 				}
-			} else
-				throw new IllegalArgumentException(
-						"Invalid format for .obj file on: " + line);
+			} else {
+				System.out.println("Unrecognized: " + line);
+				// throw new IllegalArgumentException(
+				// "Invalid format for .obj file on: " + line);
+			}
 		}
 		Vector3D[] verts = new Vector3D[output.size()];
 		output.toArray(verts);
@@ -262,9 +265,18 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public BoundingBox getBoundingBox() {
 		Vector3D position = motion.getPosition();
-//		System.out.println("mincoord: " + mincoord);
-		return new BoundingBox(position, mincoord.add(position), maxcoord.add(position), rotation);
+		// System.out.println("mincoord: " + mincoord);
+		return new BoundingBox(position, mincoord.add(position),
+				maxcoord.add(position), rotation);
 	}
-	
-	public void specialCollide(Object3D other) {}
+
+	public void specialCollide(Object3D other) {
+	}
+
+	public void scale(Vector3D that) {
+		for (int i = 0; i < vertices.length; i++)
+			vertices[i] = vertices[i].subtract(getPosition()).scale(that)
+					.add(getPosition());
+		computeBoundingBox();
+	}
 }

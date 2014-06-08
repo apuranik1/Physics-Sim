@@ -6,6 +6,8 @@ import java.io.IOException;
 import engine.BoundingBox;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
+import engine.physics.PhysicsSpec;
+import engine.physics.Quaternion;
 import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
@@ -30,6 +32,9 @@ public class Cart extends Object3D {
 		super(from);
 		System.out.println(motion);
 		force = new Vector3D(0, 0, 0);
+		setRotation(new Quaternion(new Vector3D(0,0,1),0));
+		setSpec(new PhysicsSpec(false, false, true, false, 50));
+		setAcceleration(Vector3D.gravity);
 	}
 	
 	public void setForce(Vector3D force) {

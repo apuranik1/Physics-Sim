@@ -30,6 +30,10 @@ public class Vector3D {
 		return new Vector3D(x * scalar, y * scalar, z * scalar);
 	}
 
+	public Vector3D scale(Vector3D scalar) {
+		return new Vector3D(x * scalar.x, y * scalar.y, z * scalar.z);
+	}
+
 	public double dot(Vector3D other) {
 		return x * other.x + y * other.y + z * other.z;
 	}

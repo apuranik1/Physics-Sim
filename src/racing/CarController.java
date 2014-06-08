@@ -46,6 +46,9 @@ public class CarController extends EventProcessor {
 		//stop using angles to manipulate; only use quaternion operations
 //		double theta = cart.getRotation().getAngle() - offset;
 //		cart.setForce(new Vector3D(- Math.sin(theta) * thrust, 0, - Math.cos(theta) * thrust));
-		cart.setForce(cart.getRotation().toMatrix().multiply(new Vector3D(0,0,thrust)));
+		if(cart.getRotation() != null)
+			cart.setForce(cart.getRotation().toMatrix().multiply(new Vector3D(0,0,thrust)));
+		else
+			cart.setForce(new Vector3D(0,0,thrust));
 	}
 }

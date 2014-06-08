@@ -5,11 +5,10 @@ import engine.GameEngine;
 import engine.graphics.Object3D;
 import engine.physics.Vector3D;
 
-public class CameraFollow extends ContinuousAnimationEvent {
+public class CameraFollow extends FrameEvent {
 	private Object3D target;
 
 	public CameraFollow(Object3D target) {
-		super(0, 1 / 60d);
 		this.target = target;
 	}
 
