@@ -60,7 +60,12 @@ public class Motion implements Cloneable {
 	}
 
 	public Motion clone() {
-		return new Motion(position, velocity, accel);
+		try {
+			return (Motion)super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public String toString() {

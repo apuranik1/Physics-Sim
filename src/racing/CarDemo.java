@@ -13,8 +13,6 @@ import engine.physics.Vector3D;
 
 public class CarDemo {
 	
-	public static double noCache;
-	
 	public static void main(String[] args) throws Exception {
 		GameEngine engine = GameEngine.getGameEngine();
 		ResourceManager manager = ResourceManager.getResourceManager();

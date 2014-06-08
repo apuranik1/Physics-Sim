@@ -237,6 +237,10 @@ public class Object3D implements Renderable3D, Cloneable {
 		} else
 			this.rotation = rotation;
 	}
+	
+	protected void uncheckedSetRotation(Quaternion rotation) {
+		this.rotation = rotation;
+	}
 
 	public void setSpec(PhysicsSpec spec) {
 		this.spec = spec;

@@ -12,17 +12,17 @@ public class PhysicsManager {
 
 	public void checkCollisions() {
 		long start = System.nanoTime();
-		// so beautiful... it won't last
-		// aaaaand not so beautiful anymore
 		GameEngine engine = GameEngine.getGameEngine();
 		for (Object3D obj : engine) {
 			PhysicsSpec objSpec = obj.getSpec();
 			boolean collides = objSpec.isCollidable();
 			boolean specialCollides = objSpec.specialCollides();
+			// either one is cause to check collisions
 			if (objSpec.isCollidable() || specialCollides)
 				for (Object3D other : engine.intersects(obj.getBoundingBox()))
 					if (other != obj) {
 						PhysicsSpec otherSpec = other.getSpec();
+						// both must have collisions to justify handling
 						if (otherSpec.isCollidable() && collides) {
 							handleCollision(obj, other);
 							// handle both special collisions, since they will be moved apart
