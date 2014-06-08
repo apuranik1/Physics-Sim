@@ -336,11 +336,11 @@ public class BoundingBox {
 		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
 		cart.setAcceleration(Vector3D.origin);
 		cart.setRotation(new Quaternion(new Vector3D(0,1,0), 3.041592653589793)); // this screws everything up
-		cart.setSpec(new PhysicsSpec(false, false, true, 25));
+		cart.setSpec(new PhysicsSpec(false, false, true, false, 25));
 		
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
-		floor.setSpec(new PhysicsSpec(false, false, true, Double.POSITIVE_INFINITY));
+		floor.setSpec(new PhysicsSpec(false, false, true, false, Double.POSITIVE_INFINITY));
 		//floor.setRotation(new Quaternion(new Vector3D(1,0,0), Math.PI / 12));
 		
 		BoundingBox bb0 = floor.getBoundingBox();

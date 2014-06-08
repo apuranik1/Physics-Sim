@@ -9,10 +9,11 @@ public class PhysicsSpec {
 	private double mass;
 	
 	public PhysicsSpec(boolean hasGravity, boolean hasFriction,
-			boolean collidable, double mass) {
+			boolean collidable, boolean specialCollides, double mass) {
 		this.hasGravity = hasGravity;
 		this.hasFriction = hasFriction;
 		this.collidable = collidable;
+		this.specialCollides = specialCollides;
 		this.mass = mass;
 	}
 	

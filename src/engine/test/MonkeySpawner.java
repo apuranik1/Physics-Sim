@@ -23,11 +23,11 @@ public class MonkeySpawner {
 
 		Object3D monkey = new Object3D("/run/media/root/Data/Downloads/monkey.obj");
 		// monkey.setAcceleration(new Vector3D(0,0,0));
-		monkey.setSpec(new PhysicsSpec(false, false, true, 25));
+		monkey.setSpec(new PhysicsSpec(false, false, true, false, 25));
 		monkey.setRotation(new Quaternion(new Vector3D(1, 0, 0), Math.PI / 2));
 		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
 		floor.setAcceleration(Vector3D.origin);
-		floor.setSpec(new PhysicsSpec(false, false, true, 1000000000000.0));
+		floor.setSpec(new PhysicsSpec(false, false, true, false, 1000000000000.0));
 		floor.setRotation(new Quaternion(new Vector3D(0,0,1), Math.PI / 10));
 		manager.loadObject("monkey", monkey);
 		manager.loadObject("floor", floor);

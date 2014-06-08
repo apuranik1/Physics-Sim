@@ -36,7 +36,7 @@ public class Object3D implements Renderable3D, Cloneable {
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
 		this(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(
-				false, false, false, 0.0));
+				false, false, false, false, 0.0));
 	}
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
