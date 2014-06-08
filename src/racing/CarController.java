@@ -10,10 +10,10 @@ import engine.physics.Vector3D;
 public class CarController extends EventProcessor {
 	private Cart cart;
 	private double thrust;
-	private double offset;
+//	private Quaternion offset;
 
 	public CarController(Cart cart) {
-		this.offset = cart.getRotation().getAngle();
+//		this.offset = cart.getRotation().inverse();
 		this.cart = cart;
 	}
 
@@ -33,7 +33,7 @@ public class CarController extends EventProcessor {
 			// the singularity is screwing this up maybe
 //			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() + .1));
 			cart.setRotation(cart.getRotation().multiply(new Quaternion(new Vector3D(0,1,0), 0.1)));
-			System.out.println("Rotation: " + cart.getRotation().getAngle());
+			//System.out.println("Rotation: " + cart.getRotation().getAngle());
 		}
 		else if(d_pressed && !a_pressed)
 //			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() - .1));
@@ -43,7 +43,9 @@ public class CarController extends EventProcessor {
 	}
 	
 	private void applyForce() {
-		double theta = cart.getRotation().getAngle() - offset;
-		cart.setForce(new Vector3D(- Math.sin(theta) * thrust, 0, - Math.cos(theta) * thrust));
+		//stop using angles to manipulate; only use quaternion operations
+//		double theta = cart.getRotation().getAngle() - offset;
+//		cart.setForce(new Vector3D(- Math.sin(theta) * thrust, 0, - Math.cos(theta) * thrust));
+		cart.setForce(cart.getRotation().toMatrix().multiply(new Vector3D(0,0,thrust)));
 	}
 }

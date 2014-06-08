@@ -34,7 +34,6 @@ public class Quaternion {
 			return new Vector3D(0, 0, 1);
 		// half could also be the negative of the correct angle
 		double half = Math.acos(w);
-		System.out.println("half: " + half);
 		//not very efficient
 		//double sin = Math.sin(half);
 		return new Vector3D(x, y, z).normalize();
@@ -54,6 +53,10 @@ public class Quaternion {
 				* other.x, w * other.z + x * other.y - y * other.x + z
 				* other.w);
 		return Math.abs(temp.squareMagnitude() - 1) > 1e-9 ? temp.normalize() : temp;
+	}
+	
+	public Quaternion inverse() {
+		return new Quaternion(w, -x, -y, -z);
 	}
 	
 	private double squareMagnitude() {
