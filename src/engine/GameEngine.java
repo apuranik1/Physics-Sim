@@ -119,10 +119,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
+		long time = System.nanoTime();
 		physicsRefresh(frame, dt);
+		long delta = System.nanoTime() - time;
+		System.out.println("Movement time:  "+delta);
+		time = System.nanoTime();
 		updateKeys();
+		delta = System.nanoTime() - time;
+		System.out.println("Input time:     "+delta);
 		physics.checkCollisions();
+		time = System.nanoTime();
 		animationRefresh();
+		delta = System.nanoTime() - time;
+		System.out.println("Animation time: "+delta);
 	}
 
 	private void animationRefresh() {
@@ -136,17 +145,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	private void physicsRefresh(long frame, long dt) {
-		ArrayList<Object3D> proc = new ArrayList<Object3D>();
 		for (Object3D object : this)
-			proc.add(object);
-		for (Object3D object : proc) {
-			if (object.getFrameUpdate() == frame)
-				continue;
 			object.update(dt);
-			object.setFrame(frame);
-		}
-		for (Object3D object : this)
-			object.setFrame(frame - 1);
 	}
 
 	public void prepareUpdate(Object3D object) {

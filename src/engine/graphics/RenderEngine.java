@@ -116,7 +116,11 @@ public class RenderEngine implements GLEventListener {
 		dt = nlast - last;
 		last = nlast;
 		updateSpace();
+		long time = System.nanoTime();
 		render(drawable);
+		long delta = System.nanoTime() - time;
+		System.out.println("Render time:    "+delta);
+		System.out.println();
 	}
 
 	@Override
