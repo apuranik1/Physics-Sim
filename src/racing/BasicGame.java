@@ -6,6 +6,7 @@ import engine.GameEngine;
 import engine.ResourceManager;
 import engine.animation.Animator;
 import engine.animation.CameraFollow;
+import engine.physics.CatcherInTheRye;
 import engine.physics.Vector3D;
 
 public class BasicGame {
@@ -28,6 +29,11 @@ public class BasicGame {
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("tc_1", TrackBuilder.trackSquare(10, 1, 100, 0, 0));
 		rm.insertInstance("tc_1", Vector3D.origin);
+		rm.loadObject("bd_1", TrackBuilder.trackSquare(1, 1, 100, 0, 0));
+		rm.insertInstance("bd_1", new Vector3D(-9.5, 1, 0));
+		rm.insertInstance("bd_1", new Vector3D(9.5, 1, 0));
+		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
+		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		return new Vector3D(0,5, -45);
 	}
 	

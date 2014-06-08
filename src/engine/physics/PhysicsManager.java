@@ -52,6 +52,8 @@ public class PhysicsManager {
 		Vector3D velocDiff = obj0.getVelocity().subtract(obj1.getVelocity());
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
+		if(m0 == m1 && m1 == Double.POSITIVE_INFINITY)
+			return;
 		BoundingBox bb0 = obj0.getBoundingBox();
 		BoundingBox bb1 = obj1.getBoundingBox();
 		Vector3D pos0 = bb0.getLocation();

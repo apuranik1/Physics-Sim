@@ -18,11 +18,14 @@ public class CatcherInTheRye extends Object3D {
 	
 	public void specialCollide(Object3D other) {
 		System.out.println("Collision");
-		if(!(other instanceof CatcherInTheRye))
+		if(!(other instanceof CatcherInTheRye)) {
 			if(delta)
 				other.setPosition(other.getPosition().add(target));
 			else
 				other.setPosition(target);
+			other.setVelocity(Vector3D.origin);
+			other.setAcceleration(Vector3D.origin);
+		}
 	}
 	
 	public BoundingBox getBoundingBox() {

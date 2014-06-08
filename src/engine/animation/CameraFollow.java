@@ -15,8 +15,10 @@ public class CameraFollow extends FrameEvent {
 	@Override
 	public void animate() {
 		Vector3D targPos = target.getPosition();
-		Vector3D cameraPos = new Vector3D(targPos.x - 10, targPos.y + 10,
-				targPos.z - 10);
+		double rot = target.getRotation().getAngle();
+		System.out.println(rot);
+		Vector3D cameraPos = new Vector3D(targPos.x - 10 * Math.sin(rot),
+				targPos.y + 4, targPos.z - 10 * Math.cos(rot));
 		GameEngine.getGameEngine().cameraLookAt(cameraPos, targPos);
 	}
 

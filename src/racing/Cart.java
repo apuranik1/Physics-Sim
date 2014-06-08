@@ -33,7 +33,7 @@ public class Cart extends Object3D {
 		System.out.println(motion);
 		force = new Vector3D(0, 0, 0);
 		setRotation(new Quaternion(new Vector3D(0,0,1),0));
-		setSpec(new PhysicsSpec(false, false, true, false, 50));
+		setSpec(new PhysicsSpec(false, false, true, false, 500));
 		setAcceleration(Vector3D.gravity);
 	}
 	
