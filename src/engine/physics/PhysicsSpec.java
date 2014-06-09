@@ -5,6 +5,7 @@ public class PhysicsSpec {
 	private boolean hasGravity;
 	private boolean hasFriction;
 	private boolean collidable;
+	private boolean specialCollides;
 	private double mass;
 	
 	public PhysicsSpec(boolean hasGravity, boolean hasFriction,
@@ -27,6 +28,10 @@ public class PhysicsSpec {
 		return collidable;
 	}
 	
+	public boolean specialCollides() {
+		return specialCollides;
+	}
+
 	public double getMass() {
 		return mass;
 	}

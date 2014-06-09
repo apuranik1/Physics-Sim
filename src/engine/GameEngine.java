@@ -119,10 +119,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
-		physics.checkCollisions();
+		//System.out.println("frame!");
 		animationRefresh();
 		physicsRefresh(frame, dt);
 		updateKeys();
+		physics.checkCollisions();
 	}
 
 	private void animationRefresh() {

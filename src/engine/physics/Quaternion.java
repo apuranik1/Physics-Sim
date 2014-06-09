@@ -30,29 +30,48 @@ public class Quaternion {
 	}
 
 	public Vector3D getAxis() {
-		if (w == 1)
+		if (Math.abs(w - 1) < 1e-8)
 			return new Vector3D(0, 0, 1);
+		// half could also be the negative of the correct angle
 		double half = Math.acos(w);
-		double sin = Math.sin(half);
-		return new Vector3D(x, y, z).multiply(1 / sin);
+		//not very efficient
+		//double sin = Math.sin(half);
+		return new Vector3D(x, y, z).normalize();
 	}
 
 	public double getAngle() {
+		// always returns a positive...
+		// oscillating angles sum to 0.05, idky
 		double half = Math.acos(w);
 		return half * 2;
 	}
 
 	public Quaternion multiply(Quaternion other) {
-		return new Quaternion(w * other.w - x * other.x - y * other.y - z
+		Quaternion temp = new Quaternion(w * other.w - x * other.x - y * other.y - z
 				* other.z, w * other.x + x * other.w + y * other.z - z
 				* other.y, w * other.y - x * other.z + y * other.w + z
 				* other.x, w * other.z + x * other.y - y * other.x + z
 				* other.w);
+		return Math.abs(temp.squareMagnitude() - 1) > 1e-9 ? temp.normalize() : temp;
+	}
+	
+	public Quaternion inverse() {
+		return new Quaternion(w, -x, -y, -z);
+	}
+	
+	private double squareMagnitude() {
+		return w*w + x*x + y*y + z*z;
+	}
+	
+	private Quaternion normalize() {
+		// worst case scenario, fast inverse sqrt
+		double normFactor = 1 / Math.sqrt(squareMagnitude());
+		return new Quaternion(w * normFactor, x * normFactor, y * normFactor, z * normFactor);
 	}
 
 	/**
 	 * Converts the Quaternion to a rotation matrix so it can be applied to a
-	 * Vector. Client should cache the returned matrix for repeated use
+	 * Vector. Client should cache the returned matrix for repeated use.
 	 * 
 	 * @return
 	 */

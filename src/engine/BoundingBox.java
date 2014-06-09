@@ -1,8 +1,12 @@
 package engine;
 
+import java.io.IOException;
 import java.util.Arrays;
 
+import racing.Cart;
+import engine.graphics.Object3D;
 import engine.physics.Matrix3D;
+import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
@@ -12,38 +16,33 @@ import engine.physics.Vector3D;
  * @author Michael Colavita and Alok Puranik
  */
 public class BoundingBox {
-	
+
 	private static final int NUM_AXES = 15;
-	
+
 	/**
-	 * The position of the front-bottom-left corner of the box. Also the fixed
-	 * point of rotation.
+	 * The position of the box. Also the fixed point of rotation.
 	 */
 	private Vector3D location;
 	/**
-	 * Orientation matrix of the box, with respect to <code>location</code>,
-	 * or null if not rotated.
+	 * Orientation matrix of the box, with respect to <code>location</code>, or
+	 * null if not rotated.
 	 */
 	private Matrix3D rotation;
 	/**
-	 * The width of the box
+	 * Position of the high corner of the box, relative to location.
 	 */
-	private double width;
+	private Vector3D hicorner;
 	/**
-	 * The height of the box
+	 * Position of the low corner of the box, relative to location.
 	 */
-	private double height;
+	private Vector3D locorner;
+
 	/**
-	 * The depth of the box
-	 */
-	private double depth;
-	
-	/**
-	 * Cache of vertex list
+	 * Cache of vertex list, created lazily.
 	 */
 	private Vector3D[] vertexList;
 	/**
-	 * Flag for whether or not the vertex list cache is still valid
+	 * Flag for whether or not the vertex list cache is valid
 	 */
 	private boolean vertexCacheValid;
 
@@ -55,11 +54,16 @@ public class BoundingBox {
 	 * @param height
 	 * @param depth
 	 */
+	public BoundingBox(Vector3D location, Vector3D locorner, Vector3D hicorner) {
+		this(location, locorner, hicorner, null);
+	}
+
 	public BoundingBox(Vector3D location, double width, double height,
 			double depth) {
-		this(location, width, height, depth, null);
+		this(location, location, location
+				.add(new Vector3D(width, height, depth)));
 	}
-	
+
 	/**
 	 * Constructs bounding box with the given dimensions, oriented about
 	 * <code>location</code> as defined by <code>rotation</code>.
@@ -70,56 +74,54 @@ public class BoundingBox {
 	 * @param depth
 	 * @param rotation
 	 */
-	public BoundingBox(Vector3D location, double width, double height,
-			double depth, Quaternion rotation) {
+	public BoundingBox(Vector3D location, Vector3D locorner, Vector3D hicorner,
+			Quaternion rotation) {
 		this.location = location;
-		this.width = width;
-		this.height = height;
-		this.depth = depth;
+		this.locorner = locorner.subtract(location);
+		this.hicorner = hicorner.subtract(location);
 		this.rotation = rotation == null ? null : rotation.toMatrix();
-		positify();
 		vertexList = new Vector3D[8];
 		vertexCacheValid = false;
+		positify();
 	}
 
-	public double getWidth() {
-		return width;
+	public void positify() {
+		Vector3D newHi = new Vector3D(Math.max(locorner.x, hicorner.x),
+				Math.max(locorner.y, hicorner.y), Math.max(locorner.z,
+						hicorner.z));
+		Vector3D newLo = new Vector3D(Math.min(locorner.x, hicorner.x),
+				Math.min(locorner.y, hicorner.y), Math.min(locorner.z,
+						hicorner.z));
+		locorner = newLo;
+		hicorner = newHi;
 	}
 
-	public double getHeight() {
-		return height;
+	public Vector3D getLowCoordinate() {
+		return locorner.add(location);
 	}
 
-	public double getDepth() {
-		return depth;
+	public Vector3D getHighCoordinate() {
+		return hicorner.add(location);
 	}
 
 	public Vector3D getLocation() {
 		return location;
 	}
 
-	public Vector3D midpoint() {
-		if (rotation == null)
-			return new Vector3D(location.x + width / 2, location.y + height / 2,
-				location.z + depth / 2);
-		else
-			return location.add(rotation.multiply(new Vector3D(location.x + width / 2, location.y + height / 2,
-				location.z + depth / 2)));
-	}
-
 	public Vector3D[] vertexList() {
 		if (!vertexCacheValid) {
-			vertexList[0] = new Vector3D(0, 0, 0);
-			vertexList[1] = new Vector3D(width, 0, 0);
-			vertexList[2] = new Vector3D(0, height, 0);
-			vertexList[3] = new Vector3D(width, height, 0);
-			vertexList[4] = new Vector3D(0, 0, depth);
-			vertexList[5] = new Vector3D(width, 0, depth);
-			vertexList[6] = new Vector3D(0, height, depth);
-			vertexList[7] = new Vector3D(width, height, depth);
+			vertexList[0] = new Vector3D(locorner.x, locorner.y, locorner.z);
+			vertexList[1] = new Vector3D(hicorner.x, locorner.y, locorner.z);
+			vertexList[2] = new Vector3D(locorner.x, hicorner.y, locorner.z);
+			vertexList[3] = new Vector3D(hicorner.x, hicorner.y, locorner.z);
+			vertexList[4] = new Vector3D(locorner.x, locorner.y, hicorner.z);
+			vertexList[5] = new Vector3D(hicorner.x, locorner.y, hicorner.z);
+			vertexList[6] = new Vector3D(locorner.x, hicorner.y, hicorner.z);
+			vertexList[7] = new Vector3D(hicorner.x, hicorner.y, hicorner.z);
 			if (rotation != null)
 				for (int i = 0; i < 8; i++)
-					vertexList[i] = rotation.multiply(vertexList[i]).add(location);
+					vertexList[i] = rotation.multiply(vertexList[i]).add(
+							location);
 			else
 				for (int i = 0; i < 8; i++)
 					vertexList[i] = vertexList[i].add(location);
@@ -129,53 +131,51 @@ public class BoundingBox {
 	}
 
 	public Vector3D[] axisList() {
-		return rotation == null ?
-				new Vector3D[] {
-						new Vector3D(width, 0, 0),
-						new Vector3D(0, height, 0),
-						new Vector3D(0, 0, depth)
-				}
+		double width = hicorner.x - locorner.x;
+		double height = hicorner.y - locorner.y;
+		double depth = hicorner.z - locorner.z;
+		return rotation == null ? new Vector3D[] { new Vector3D(width, 0, 0),
+				new Vector3D(0, height, 0), new Vector3D(0, 0, depth) }
 				: new Vector3D[] {
 						rotation.multiply(new Vector3D(width, 0, 0)),
 						rotation.multiply(new Vector3D(0, height, 0)),
-						rotation.multiply(new Vector3D(0, 0, depth))
-				};
+						rotation.multiply(new Vector3D(0, 0, depth)) };
 	}
 
 	/**
 	 * Determine whether this BoundingBox intersects <code>other</code>,
 	 * assuming both boxes have no orientation.
 	 * 
+	 * Precondition: Both boxes have no orientation
+	 * 
 	 * @param other
 	 *            The other Bounding box with which to check for intersections
 	 * @return Whether <code>this</code> intersects <code>other</code>
 	 */
 	boolean simpleIntersects(BoundingBox other) {
+		assert rotation == null && other.rotation == null;
 		// check every direction for whether they are too far apart
-		return (location.x + width >= other.location.x
-				&& location.x <= other.location.x + other.width
-				&& location.y + height >= other.location.y
-				&& location.y <= other.location.y + other.height
-				&& location.z + depth >= other.location.z && location.z <= other.location.z
-				+ other.depth);
+		return (hicorner.x + location.x >= other.locorner.x + other.location.x 
+				&& locorner.x + location.x <= other.hicorner.x + other.location.x 
+				&& hicorner.y + location.y >= other.locorner.y + other.location.y
+				&& locorner.y + location.y <= other.hicorner.y + other.location.y
+				&& hicorner.z + location.z >= other.locorner.z + other.location.z 
+				&& locorner.z + location.z <= other.hicorner.z + other.location.z);
 	}
 
 	public boolean intersects(BoundingBox other) {
-		if (rotation == null && other.rotation == null)
+		if (rotation == null && other.rotation == null) {
 			return simpleIntersects(other);
-		
-		int axiscount = 0;
+		}
 		for (Vector3D axis : getIntersectAxes(other)) {
 			double[] range1 = project(axis);
 			double[] range2 = other.project(axis);
-			if (range1[0] > range2[1] || range2[0] > range1[1]) {
+			if (range1[0] > range2[1] || range2[0] > range1[1])
 				return false;
-			}
-			axiscount++;
 		}
 		return true;
 	}
-	
+
 	private Vector3D[] getIntersectAxes(BoundingBox other) {
 		Vector3D[] axes = new Vector3D[NUM_AXES];
 		Vector3D[] aList = axisList();
@@ -195,14 +195,14 @@ public class BoundingBox {
 		System.arraycopy(axes, 0, axesCopy, 0, axisNum);
 		return axesCopy;
 	}
-	
+
 	/**
 	 * Find the signed distance from <code>this</code> to <code>other</code>
-	 * along <code>axis</code>. Axis must be a unit vector.
-	 * In other words, returns the distance to translate this along axis to
-	 * make it exactly adjacent to other and farther along axis.
+	 * along <code>axis</code>. Axis must be a unit vector. In other words,
+	 * returns the distance to translate this along axis to make it exactly
+	 * adjacent to other and farther along axis.
 	 * 
-	 * Precondition: axis is a unit vector.
+	 * Precondition: axis [is a unit vector and]? points away from other
 	 * 
 	 * @param other
 	 * @param axis
@@ -210,19 +210,25 @@ public class BoundingBox {
 	public double distance(BoundingBox other, Vector3D axis) {
 		double minDist = Double.POSITIVE_INFINITY;
 		for (Vector3D intersectAxis : getIntersectAxes(other)) {
-			double[] r0 = project(intersectAxis);
-			double[] r1 = other.project(intersectAxis);
-			double dist = (r1[1] - r0[0]) * intersectAxis.magnitude() / (axis.dot(intersectAxis));
-			if (Math.abs(dist) < Math.abs(minDist))
+			if (Math.abs(intersectAxis.dot(axis)) < 1e-10)
+				continue;
+			
+			intersectAxis = axis.vecProject(intersectAxis);
+			double dot = axis.dot(intersectAxis);
+
+			// somehow these next lines are actually slower than a vecProject
+			//if (dot < 0) {
+			//	intersectAxis = new Vector3D(-intersectAxis.x, -intersectAxis.y, -intersectAxis.z);
+			//	dot = -dot;
+			//}
+			final double r0 = minDist(intersectAxis);
+			final double r1 = other.maxDist(intersectAxis);
+			final double dist = (r1 - r0) * intersectAxis.magnitude() / dot;
+
+			if (dist < minDist)
 				minDist = dist;
 		}
 		return minDist;
-		// reverse scalar projection
-		/*
-		 * (k*this) * axis) / (axis magnitude) = x
-		 * k * (this * axis) = x * (axis magnitude)
-		 * k = x * (axis magnitude) / (this * axis)
-		 */
 	}
 
 	/**
@@ -241,32 +247,56 @@ public class BoundingBox {
 	public int intersectsPlane(Vector3D normal, double d) {
 		double[] range = project(normal);
 		double planeDist = d / normal.magnitude();
-		//System.out.println(planeDist + ", (" + range[0] + ", " + range[1] + ")");
+		// System.out.println(planeDist + ", (" + range[0] + ", " + range[1] +
+		// ")");
 		if (planeDist < range[0])
 			return 1;
 		if (planeDist > range[1])
 			return -1;
 		return 0;
 	}
-	
+
 	boolean withinRegion(Vector3D[] normals, double[] constants) {
 		for (int i = 0; i < normals.length; i++) {
-			if(intersectsPlane(normals[i], constants[i]) == 1)
+			if (intersectsPlane(normals[i], constants[i]) == 1)
 				return false;
 		}
 		return true;
 	}
-	
+
 	private double[] project(Vector3D axis) {
 		double min = Double.POSITIVE_INFINITY, max = Double.NEGATIVE_INFINITY;
 		for (Vector3D vertex : vertexList()) {
-			double pos = vertex.project(axis);
+			double pos = vertex.dot(axis);
 			if (pos < min)
 				min = pos;
-			else if (pos > max)
+			if (pos > max)
 				max = pos;
 		}
-		return new double[] { min, max };
+		double magnitude = axis.magnitude();
+		return new double[] { min / magnitude, max / axis.magnitude() };
+	}
+	
+	private double minDist(Vector3D axis) {
+		double min = Double.POSITIVE_INFINITY;
+		for (Vector3D vertex : vertexList()) {
+			// major optimization: eliminates a lot of square roots
+			//double pos = vertex.project(axis);
+			double pos = vertex.dot(axis);
+			if (pos < min)
+				min = pos;
+		}
+		return min / axis.magnitude();
+	}
+	
+	private double maxDist(Vector3D axis) {
+		double max = Double.NEGATIVE_INFINITY;
+		for (Vector3D vertex : vertexList()) {
+			double pos = vertex.dot(axis);
+			if (pos > max)
+				max = pos;
+		}
+		return max / axis.magnitude();
 	}
 
 	/**
@@ -294,36 +324,35 @@ public class BoundingBox {
 			else if (vertex.z > max_z)
 				max_z = vertex.z;
 		}
-		return new BoundingBox(new Vector3D(min_x, min_y, min_z),
-				max_x - min_x, max_y - min_y, max_z - min_z);
-	}
-
-	private void positify() {
-		double new_x = location.x, new_y = location.y, new_z = location.z;
-		if (width < 0) {
-			width *= -1;
-			new_x -= width;
-		}
-		if (height < 0) {
-			height *= -1;
-			new_y -= height;
-		}
-		if (depth < 0) {
-			depth *= -1;
-			new_z -= depth;
-		}
-		location = new Vector3D(new_x, new_y, new_z);
+		return new BoundingBox(location, new Vector3D(min_x, min_y, min_z).subtract(location),
+				new Vector3D(max_x, max_y, max_z).subtract(location));
 	}
 	
-	public static void main(String[] args) {
-		BoundingBox bb = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10,
-				new Quaternion(new Vector3D(0,1,0),Math.PI / 10000));
-		BoundingBox bb1 = new BoundingBox(new Vector3D(9,9,9), 10, 10, 10);
-//		System.out.println(Arrays.toString(bb.vertexList()));
-//		System.out.println(Arrays.toString(bb1.vertexList()));
-		System.out.println(bb.intersects(bb1));
-//		System.out.println(bb.simpleBound().location);
-//		System.out.println(bb.simpleBound().getWidth());
+	public String toString() {
+		return locorner+" "+location+" "+hicorner;
+	}
+	
+	public static void main(String[] args) throws IOException {
+		Cart cart = new Cart("/run/media/root/Data/Downloads/monkey.obj");
+		cart.setAcceleration(Vector3D.origin);
+		cart.setRotation(new Quaternion(new Vector3D(0,1,0), 3.041592653589793)); // this screws everything up
+		cart.setSpec(new PhysicsSpec(false, false, true, 25));
 		
+		Object3D floor = new Object3D("/run/media/root/Data/Downloads/floor.obj");
+		floor.setAcceleration(Vector3D.origin);
+		floor.setSpec(new PhysicsSpec(false, false, true, Double.POSITIVE_INFINITY));
+		//floor.setRotation(new Quaternion(new Vector3D(1,0,0), Math.PI / 12));
+		
+		BoundingBox bb0 = floor.getBoundingBox();
+		BoundingBox bb1 = cart.getBoundingBox();
+		Vector3D axis = bb1.axisList()[0];
+		for (int k = 0; k < 5; k++) {
+			long start = System.nanoTime();
+			for (int i = 0; i < 1000000; i++) {
+				bb0.distance(bb1, axis);
+			}
+			long end = System.nanoTime();
+			System.out.println(end - start);
+		}
 	}
 }

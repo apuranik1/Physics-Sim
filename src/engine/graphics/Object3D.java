@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.media.opengl.GL2;
 
@@ -29,9 +30,8 @@ public class Object3D implements Renderable3D, Cloneable {
 	protected Color[] colors;
 	protected Vector2D[] textureCoords;
 	private long frame = -1;
-	private Vector3D offset;
-	private Vector3D size;
-	private BoundingBox box;
+	private Vector3D mincoord;
+	private Vector3D maxcoord;
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
@@ -54,25 +54,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.motion = motion;
 		rotation = new Quaternion(new Vector3D(0, 0, 1), 0);
 		this.spec = spec;
-		realign();
 		computeBoundingBox();
-	}
-
-	public void realign() {
-		double minx = Double.MAX_VALUE;
-		double miny = Double.MAX_VALUE;
-		double minz = Double.MAX_VALUE;
-		for (Vector3D vect : vertices) {
-			if (vect.x < minx)
-				minx = vect.x;
-			if (vect.y < miny)
-				miny = vect.y;
-			if (vect.z < minz)
-				minz = vect.z;
-		}
-		Vector3D shiftVector = new Vector3D(minx, miny, minz);
-		for (int i = 0; i < vertices.length; i++)
-			vertices[i] = vertices[i].subtract(shiftVector);
 	}
 
 	public Object3D clone() {
@@ -80,8 +62,6 @@ public class Object3D implements Renderable3D, Cloneable {
 			Object3D clone;
 			clone = (Object3D) super.clone();
 			clone.motion = motion.clone();
-//			Object3D that = new Object3D(vertices, normals, textureCoords,
-//								colors, motion.clone(), spec);
 			clone.setRotation(this.getRotation());
 			return clone;
 		} catch (CloneNotSupportedException e) {
@@ -165,6 +145,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		ArrayList<Vector3D> normals = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> output = new ArrayList<Vector3D>();
 		ArrayList<Vector3D> noutput = new ArrayList<Vector3D>();
+		HashMap<String, Material> materials = new HashMap<String, Material>();
 		String[] lines = data.split("\n");
 		for (String line : lines) {
 			if (line.startsWith("#")) {
@@ -223,8 +204,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.vertices = verts;
 		this.normals = norms;
 		this.motion = Motion.gravity();
-		rotation = new Quaternion(new Vector3D(0, 0, 1), 0);
-		realign();
+		rotation = null;
 		computeBoundingBox();
 	}
 
@@ -276,14 +256,15 @@ public class Object3D implements Renderable3D, Cloneable {
 			if (point.z > maxz)
 				maxz = point.z;
 		}
-		offset = new Vector3D(minx, miny, minz);
-		size = new Vector3D(maxx - minx, maxy - miny, maxz - minz);
+		mincoord = new Vector3D(minx, miny, minz);
+		maxcoord = new Vector3D(maxx, maxy, maxz);
 	}
 
 	public BoundingBox getBoundingBox() {
 		Vector3D position = motion.getPosition();
-		return new BoundingBox(new Vector3D(offset.x + position.x, offset.y
-				+ position.y, offset.z + position.z), size.x, size.y, size.z,
-				rotation);
+//		System.out.println("mincoord: " + mincoord);
+		return new BoundingBox(position, mincoord.add(position), maxcoord.add(position), rotation);
 	}
+	
+	public void specialCollide(Object3D other) {}
 }

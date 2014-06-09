@@ -10,7 +10,7 @@ import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class Cart extends Object3D {
-	private static final CarForces CAR_FORCES = new CarForces(.03, .03);
+	private static final CarForces CAR_FORCES = new CarForces(20, 1);
 
 	private Vector3D force;
 
