@@ -78,7 +78,8 @@ public class PhysicsManager {
 				dist0 = d;
 			}
 		}
-		
+		if(handle == null)
+			return;
 		double refMass = 1.0 / (1/m0 + 1/m1);
 		Vector3D problemVeloc = velocDiff.vecProject(handle);
 		translateAway(obj0, obj1, dist0, handle, refMass / m0);

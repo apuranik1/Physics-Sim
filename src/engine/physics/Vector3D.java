@@ -7,6 +7,8 @@ public class Vector3D {
 	public final double z;
 	public final static Vector3D origin = new Vector3D(0, 0, 0);
 	public final static Vector3D gravity = new Vector3D(0, -9.8, 0);
+	public final static Vector3D up = new Vector3D(0, 1, 0);
+	public final static Vector3D down = new Vector3D(0, -1, 0);
 
 	public Vector3D(double x, double y, double z) {
 		this.x = x;
@@ -21,7 +23,7 @@ public class Vector3D {
 	public Vector3D add(Vector3D other) {
 		return new Vector3D(x + other.x, y + other.y, z + other.z);
 	}
-	
+
 	public Vector3D subtract(Vector3D other) {
 		return new Vector3D(x - other.x, y - other.y, z - other.z);
 	}
@@ -63,9 +65,13 @@ public class Vector3D {
 		Vector3D v = (Vector3D) other;
 		return v.x == x && v.y == y && v.z == z;
 	}
-	
+
 	public Vector3D normalize() {
 		double magnitude = magnitude();
-		return new Vector3D(x / magnitude, y / magnitude, z/magnitude);
+		return new Vector3D(x / magnitude, y / magnitude, z / magnitude);
+	}
+	
+	public static Vector3D rand() {
+		return new Vector3D(Math.random(), Math.random(), Math.random());
 	}
 }

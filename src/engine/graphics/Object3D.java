@@ -208,6 +208,7 @@ public class Object3D implements Renderable3D, Cloneable {
 		this.normals = norms;
 		this.motion = Motion.gravity();
 		rotation = null;
+		this.spec = new PhysicsSpec(false, false, true, false, 10);
 		computeBoundingBox();
 	}
 
@@ -279,8 +280,8 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public void scale(Vector3D that) {
 		for (int i = 0; i < vertices.length; i++)
-			vertices[i] = vertices[i].subtract(getPosition()).scale(that)
-					.add(getPosition());
+			vertices[i] = vertices[i].scale(that);
 		computeBoundingBox();
+		System.out.println(mincoord+" "+maxcoord);
 	}
 }

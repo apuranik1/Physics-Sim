@@ -4,8 +4,10 @@ import java.io.IOException;
 
 import engine.ResourceManager;
 import engine.graphics.Object3D;
+import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
+import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class TrackBuilder {
@@ -24,19 +26,29 @@ public class TrackBuilder {
 
 	public static Object3D trackRun(Vector3D from, Vector3D to, double width)
 			throws IOException {
-		Object3D obj = new Object3D("cube.obj");
-		obj.scale(new Vector3D(width, 1, Math.sqrt(Math.pow(from.x - to.x, 2)
-				+ Math.pow(from.z - to.z, 2))));
-		System.out.println("Scale: "
-				+ Math.sqrt(Math.pow(from.x - to.x, 2)
-						+ Math.pow(from.z - to.z, 2)));
-		System.out.println("Rot: " +(to.z - from.z)+ " "+( to.x - from.x)+ " "+ Math.atan2(to.z - from.z, to.x - from.x));
-		obj.setRotation(new Quaternion(new Vector3D(0, 1, 0), Math.PI / 2 + Math.atan2(from.z
-				- to.z, from.x - to.x)).multiply(new Quaternion(new Vector3D(
-				1, 0, 0), 0)));
-		obj.setSpec(new PhysicsSpec(false, false, true, false,
-				Double.POSITIVE_INFINITY));
-		obj.setAcceleration(Vector3D.origin);
+		Vector3D[] vertices = new Vector3D[] {
+				new Vector3D(from.x, from.y, from.z),
+				new Vector3D(to.x, to.y, to.z),
+				new Vector3D(to.x + width, to.y, to.z),
+
+				new Vector3D(to.x + width, to.y, to.z),
+				new Vector3D(from.x + width, from.y, from.z),
+				new Vector3D(from.x, from.y, from.z),
+
+				new Vector3D(from.x, from.y - 1, from.z),
+				new Vector3D(to.x, to.y - 1, to.z),
+				new Vector3D(to.x, to.y - 1, to.z + width),
+
+				new Vector3D(to.x, to.y - 1, to.z + width),
+				new Vector3D(from.x, from.y - 1, from.z + width),
+				new Vector3D(from.x, from.y - 1, from.z) };
+		Object3D obj = new Object3D(vertices, new Vector3D[] { Vector3D.rand(),
+				Vector3D.rand(), Vector3D.rand(), Vector3D.rand(),
+				Vector3D.rand(), Vector3D.rand(), Vector3D.rand(),
+				Vector3D.rand(), Vector3D.rand(), Vector3D.rand(),
+				Vector3D.rand(), Vector3D.rand() }, null, null, Motion.still(),
+				new PhysicsSpec(false, false, true, false,
+						Double.POSITIVE_INFINITY));
 		return obj;
 	}
 

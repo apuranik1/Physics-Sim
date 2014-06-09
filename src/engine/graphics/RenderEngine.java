@@ -86,7 +86,7 @@ public class RenderEngine implements GLEventListener {
 		gl.glEnable(GL_CULL_FACE);
 		gl.glDepthFunc(GL_LESS);
 		// gl.glEnable(GL_NORMALIZE);
-		gl.glCullFace(GL_BACK);
+		//gl.glCullFace(GL_BACK);
 		gl.glEnable(GL_LIGHTING);
 		// gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[] { 1, 0, 0, 1 }, 0);
 		// gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[] { 1, 0, 0, 1 }, 0);
