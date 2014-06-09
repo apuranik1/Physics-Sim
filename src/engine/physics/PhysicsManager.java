@@ -59,6 +59,8 @@ public class PhysicsManager {
 		Vector3D pos0 = bb0.getLocation();
 		Vector3D pos1 = bb1.getLocation();
 		Vector3D posDiff = pos0.subtract(pos1);
+		if (posDiff.x == 0 && posDiff.y == 0 && posDiff.z == 0)
+			return;
 		
 		Vector3D[] axes = m0 > m1 ? bb0.axisList() : bb1.axisList();
 		
