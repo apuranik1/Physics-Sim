@@ -70,8 +70,12 @@ public class Vector3D {
 		double magnitude = magnitude();
 		return new Vector3D(x / magnitude, y / magnitude, z / magnitude);
 	}
-	
+
 	public static Vector3D rand() {
 		return new Vector3D(Math.random(), Math.random(), Math.random());
+	}
+
+	public float[] toFloat() {
+		return new float[] { (float)x, (float)y, (float)z, 1 };
 	}
 }

@@ -26,6 +26,7 @@ import javax.media.opengl.GLContext;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -86,11 +87,11 @@ public class RenderEngine implements GLEventListener {
 		gl.glEnable(GL_CULL_FACE);
 		gl.glDepthFunc(GL_LESS);
 		// gl.glEnable(GL_NORMALIZE);
-		//gl.glCullFace(GL_BACK);
+		gl.glCullFace(GL_BACK);
 		gl.glEnable(GL_LIGHTING);
-		// gl.glLightfv(GL_LIGHT0, GL_AMBIENT, new float[] { 1, 0, 0, 1 }, 0);
-		// gl.glLightfv(GL_LIGHT0, GL_DIFFUSE, new float[] { 1, 0, 0, 1 }, 0);
-		// gl.glLightfv(GL_LIGHT0, GL_SPECULAR, new float[] { 1, 1, 1, 1 }, 0);
+		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_AMBIENT, new float[] { .3f, .3f, .3f, .3f }, 0);
+		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_DIFFUSE, new float[] { .1f, .1f, .1f, 1 }, 0);
+		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_SPECULAR, new float[] { .2f, .2f, .2f, .2f }, 0);
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 2, 0 }, 0);
 		gl.glEnable(GL_LIGHT0);
 		// gl.glMatrixMode(GL_PROJECTION);
