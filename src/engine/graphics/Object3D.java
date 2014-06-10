@@ -35,6 +35,13 @@ public class Object3D implements Renderable3D, Cloneable {
 	private Vector3D mincoord;
 	private Vector3D maxcoord;
 	private Material[] materials;
+	private static final Material defaultMaterial = new Material();
+	{
+		defaultMaterial.ambient = new Vector3D(0.2f, 0.2f, 0.2f);
+		defaultMaterial.diffuse = new Vector3D(0.8f, 0.8f, 0.8f);
+		defaultMaterial.specular = new Vector3D(0.0f, 0.0f, 0.0f);
+		
+	}
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
@@ -98,23 +105,34 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public void render(GL2 gl) {
 		gl.glBegin(GL_TRIANGLES);
+		if(materials == null) {
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT, defaultMaterial.ambient.toFloat(), 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE, defaultMaterial.diffuse.toFloat(), 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, defaultMaterial.specular.toFloat(), 0);
+		}
 		for (int i = 0; i < vertices.length; i++) {
-			if (colors != null)
-				gl.glColor3d(colors[i].getRed() / 255d,
-						colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
-			if (textureCoords != null)
-				gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
+			//if (colors != null)
+			//	gl.glColor3d(colors[i].getRed() / 255d,
+			//			colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
+			//if (textureCoords != null)
+			//	gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
 			if (normals != null)
 				gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
 			if (materials != null) {
 				Material on = materials[i];
 				if(on.ambient != null)
 					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT, on.ambient.toFloat(), 0);
+				else
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT, defaultMaterial.ambient.toFloat(), 0);
 				if(on.diffuse != null)
 					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE, on.diffuse.toFloat(), 0);
+				else
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE, defaultMaterial.diffuse.toFloat(), 0);
 				if(on.specular != null)
 					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, on.specular.toFloat(), 0);
-			}
+				else
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, defaultMaterial.specular.toFloat(), 0);
+			} 
 			gl.glVertex3d(vertices[i].x, vertices[i].y, vertices[i].z);
 		}
 		gl.glEnd();
