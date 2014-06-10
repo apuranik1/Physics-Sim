@@ -70,6 +70,10 @@ public class Vector3D {
 		double magnitude = magnitude();
 		return new Vector3D(x / magnitude, y / magnitude, z / magnitude);
 	}
+	
+	public boolean isZero(double tolerance) {
+		return (Math.abs(x) < tolerance && Math.abs(y) < tolerance && Math.abs(z) < tolerance);
+	}
 
 	public static Vector3D rand() {
 		return new Vector3D(Math.random(), Math.random(), Math.random());

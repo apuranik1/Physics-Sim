@@ -36,7 +36,8 @@ public class CarController extends EventProcessor {
 //				theta += Math.PI * 2;
 //			theta %= Math.PI * 2;
 //			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
-			cart.setTurnVeloc(0.03);
+//			cart.setTurnVeloc(0.03);
+			cart.turnLeft();
 		}
 		else if(d_pressed && !a_pressed) {
 			//cart.setRotation(new Quaternion(new Vector3D(0,1,0), -0.1).multiply(cart.getRotation()));
@@ -45,7 +46,8 @@ public class CarController extends EventProcessor {
 //				theta += Math.PI * 2;
 //			theta %= Math.PI * 2;
 //			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
-			cart.setTurnVeloc(-0.03);
+//			cart.setTurnVeloc(-0.03);
+			cart.turnRight();
 		}
 		else {
 			cart.setTurnVeloc(0);
