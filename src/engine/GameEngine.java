@@ -1,5 +1,7 @@
 package engine;
 
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static javax.media.opengl.GL.*;
@@ -122,6 +124,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		gl.glPopAttrib();
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
+		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 10, 0, 1 }, 0);
 		if (targetedCamera)
 			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
 					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
