@@ -75,7 +75,7 @@ public class PhysicsManager {
 			}
 			currAxis = currAxis.normalize();
 			double d = bb0.distance(bb1, currAxis);
-			if (d < dist0) {
+			if (d <= dist0) {
 				handle = currAxis;
 				dist0 = d;
 			}

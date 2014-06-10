@@ -21,9 +21,9 @@ public class CarController extends EventProcessor {
 		boolean w_pressed = keys.contains(KeyEvent.VK_W);
 		boolean s_pressed = keys.contains(KeyEvent.VK_S);
 		if (w_pressed && !s_pressed)
-			thrust = 2500;
+			thrust = 4000;
 		else if (s_pressed && !w_pressed)
-			thrust = -2500;
+			thrust = -2000;
 		else
 			thrust = 0;
 		
@@ -36,7 +36,7 @@ public class CarController extends EventProcessor {
 //				theta += Math.PI * 2;
 //			theta %= Math.PI * 2;
 //			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
-			cart.setTurnVeloc(0.05);
+			cart.setTurnVeloc(0.03);
 		}
 		else if(d_pressed && !a_pressed) {
 			//cart.setRotation(new Quaternion(new Vector3D(0,1,0), -0.1).multiply(cart.getRotation()));
@@ -45,7 +45,7 @@ public class CarController extends EventProcessor {
 //				theta += Math.PI * 2;
 //			theta %= Math.PI * 2;
 //			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
-			cart.setTurnVeloc(-0.05);
+			cart.setTurnVeloc(-0.03);
 		}
 		else {
 			cart.setTurnVeloc(0);

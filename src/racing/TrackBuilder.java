@@ -26,16 +26,20 @@ public class TrackBuilder {
 
 	public static Object3D trackRun(Vector3D from, Vector3D to, double width)
 			throws IOException {
+		Vector3D diff = to.subtract(from);
 		Object3D obj = new Object3D("cube.obj");
-		obj.scale(new Vector3D(width, 1, Math.sqrt(Math.pow(from.x - to.x, 2)
-				+ Math.pow(from.z - to.z, 2))));
-		System.out.println("Scale: "
-				+ Math.sqrt(Math.pow(from.x - to.x, 2)
-						+ Math.pow(from.z - to.z, 2)));
+		obj.scale(new Vector3D(width, 1, to.subtract(from).magnitude()));
+//		System.out.println("Scale: "
+//				+ Math.sqrt(Math.pow(from.x - to.x, 2)
+//						+ Math.pow(from.z - to.z, 2)));
 		System.out.println("Rot: " +(to.z - from.z)+ " "+( to.x - from.x)+ " "+ Math.atan2(to.z - from.z, to.x - from.x));
-		obj.setRotation(new Quaternion(new Vector3D(0, 1, 0), Math.PI / 2 + Math.atan2(from.z
-				- to.z, from.x - to.x)).multiply(new Quaternion(new Vector3D(
-				1, 0, 0), 0)));
+		double theta = Math.atan2(diff.x, diff.z);
+		double phi = -Math.asin(diff.y / diff.magnitude());
+//		obj.setRotation(new Quaternion(new Vector3D(0, 1, 0), Math.PI / 2 + Math.atan2(from.z
+//				- to.z, from.x - to.x)).multiply(new Quaternion(new Vector3D(
+//				1, 0, 0), 0)));
+		obj.setRotation(new Quaternion(new Vector3D(0, 1, 0), theta)
+				.multiply(new Quaternion(new Vector3D(1, 0, 0), phi)));
 		obj.setSpec(new PhysicsSpec(false, false, true, false,
 				Double.POSITIVE_INFINITY));
 		obj.setAcceleration(Vector3D.origin);
