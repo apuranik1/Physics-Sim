@@ -21,9 +21,9 @@ public class CarController extends EventProcessor {
 		boolean w_pressed = keys.contains(KeyEvent.VK_W);
 		boolean s_pressed = keys.contains(KeyEvent.VK_S);
 		if (w_pressed && !s_pressed)
-			thrust = 4000;
+			thrust = 3000;
 		else if (s_pressed && !w_pressed)
-			thrust = -2000;
+			thrust = -1500;
 		else
 			thrust = 0;
 		

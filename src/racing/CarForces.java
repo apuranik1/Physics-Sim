@@ -40,14 +40,15 @@ public class CarForces {
 	 * @param mass
 	 *            mass of object
 	 */
-	public void updateAccel(Motion m, Vector3D force, double mass) {
+	public void updateAccel(Motion m, Vector3D force, double mass, boolean applyFriction,
+			boolean applyDrag, boolean applyGravity) {
 		Vector3D velocity = m.getVelocity();
 		double velocMagnitude = velocity.magnitude();
-		Vector3D dragF = velocity.multiply(-drag * velocMagnitude);
-		Vector3D frictionF = velocity.multiply(-mu);
-		//System.out.println(dragF+" "+frictionF);
-		Vector3D dA = force.add(dragF).add(frictionF).multiply(1 / mass).add(Vector3D.gravity);
+		Vector3D dragF = applyDrag ? velocity.multiply(-drag * velocMagnitude) : Vector3D.origin;
+		Vector3D frictionF = applyFriction ? velocity.multiply(-mu) : Vector3D.origin;
+		Vector3D dA = force.add(dragF).add(frictionF).multiply(1 / mass);
+		if (applyGravity)
+			dA = dA.add(Vector3D.gravity);
 		m.setAccel(dA);
-		//System.out.println(dA);
 	}
 }
