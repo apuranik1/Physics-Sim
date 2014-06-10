@@ -59,6 +59,8 @@ public class PhysicsManager {
 		Vector3D pos0 = bb0.getLocation();
 		Vector3D pos1 = bb1.getLocation();
 		Vector3D posDiff = pos0.subtract(pos1);
+		if (posDiff.x == 0 && posDiff.y == 0 && posDiff.z == 0)
+			return;
 		
 		Vector3D[] axes = m0 > m1 ? bb0.axisList() : bb1.axisList();
 		
@@ -73,7 +75,7 @@ public class PhysicsManager {
 			}
 			currAxis = currAxis.normalize();
 			double d = bb0.distance(bb1, currAxis);
-			if (d < dist0) {
+			if (d <= dist0) {
 				handle = currAxis;
 				dist0 = d;
 			}
@@ -83,8 +85,8 @@ public class PhysicsManager {
 		double refMass = 1.0 / (1/m0 + 1/m1);
 		Vector3D problemVeloc = velocDiff.vecProject(handle);
 		translateAway(obj0, obj1, dist0, handle, refMass / m0);
-		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * refMass / m0)));
-		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * refMass / m1)));
+		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.3 * refMass / m0)));
+		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.3 * refMass / m1)));
 	}
 
 	/**

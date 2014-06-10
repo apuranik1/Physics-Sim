@@ -33,9 +33,10 @@ public class BasicGame {
 	
 	public Vector3D buildTrack1() throws IOException {
 		Vector3D next = Vector3D.origin;
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, 40)), 20).add(new Vector3D(0, 0, 50));
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 50)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(50, 0, 50)), 20);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(-50, 0, 50)), 20);
+		
 		/*
 		rm.loadObject("tc_1", TrackBuilder.trackSquare(10, 1, 100, 0, 0));
 		rm.insertInstance("tc_1", Vector3D.origin);
@@ -48,7 +49,9 @@ public class BasicGame {
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
-		return new Vector3D(0,5, 5);
+		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 40), null));
+		rm.insertInstance("launchpad", Vector3D.origin);
+		return new Vector3D(0,5, 0);
 	}
 	
 	public static void main(String[] args) throws IOException {
