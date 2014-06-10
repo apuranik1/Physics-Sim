@@ -1,12 +1,12 @@
 package engine.graphics;
 
-import static javax.media.opengl.GL.GL_BACK;
+import static javax.media.opengl.GL.*;
 import static javax.media.opengl.GL.GL_COLOR_BUFFER_BIT;
 import static javax.media.opengl.GL.GL_CULL_FACE;
 import static javax.media.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static javax.media.opengl.GL.GL_DEPTH_TEST;
 import static javax.media.opengl.GL.GL_LESS;
-import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_COLOR_MATERIAL;
+import static javax.media.opengl.fixedfunc.GLLightingFunc.*;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHT0;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_LIGHTING;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_POSITION;
@@ -81,17 +81,17 @@ public class RenderEngine implements GLEventListener {
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
-		gl.glEnable(GL_COLOR_MATERIAL);
+		//gl.glEnable(GL_COLOR_MATERIAL);
 		gl.glShadeModel(GL_SMOOTH);
 		// gl.glMatrixMode(GL_PROJECTION);
 		gl.glEnable(GL_CULL_FACE);
-		gl.glDepthFunc(GL_LESS);
-		// gl.glEnable(GL_NORMALIZE);
+		gl.glDepthFunc(GL_LEQUAL);
+		//gl.glEnable(GL_NORMALIZE);
 		gl.glCullFace(GL_BACK);
 		gl.glEnable(GL_LIGHTING);
-		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_AMBIENT, new float[] { .3f, .3f, .3f, .3f }, 0);
+		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_AMBIENT, new float[] { .5f, .5f, .5f, 1f }, 0);
 		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_DIFFUSE, new float[] { .1f, .1f, .1f, 1 }, 0);
-		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_SPECULAR, new float[] { .2f, .2f, .2f, .2f }, 0);
+		 gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_SPECULAR, new float[] { .5f, .5f, .5f, 1f }, 0);
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 2, 0 }, 0);
 		gl.glEnable(GL_LIGHT0);
 		// gl.glMatrixMode(GL_PROJECTION);
