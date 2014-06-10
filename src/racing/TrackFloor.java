@@ -25,10 +25,10 @@ public class TrackFloor extends Object3D {
 	}
 	
 	public void specialCollide(Object3D other) {
-		System.out.println("Track collision");
+//		System.out.println("Track collision");
 		if (other instanceof Cart) {
 			((Cart)other).align(getRotation().toMatrix().multiply(new Vector3D(0,1,0)));
-			System.out.println("realigning");
+//			System.out.println("realigning");
 		}
 	}
 }

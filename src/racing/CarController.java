@@ -29,29 +29,12 @@ public class CarController extends EventProcessor {
 		
 		boolean a_pressed = keys.contains(KeyEvent.VK_A);
 		boolean d_pressed = keys.contains(KeyEvent.VK_D);
-		if(a_pressed && !d_pressed) {
-			//cart.setRotation(new Quaternion(new Vector3D(0,1,0), 0.1).multiply(cart.getRotation()));
-//			theta += .04;
-//			while(theta < 0)
-//				theta += Math.PI * 2;
-//			theta %= Math.PI * 2;
-//			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
-//			cart.setTurnVeloc(0.03);
+		if(a_pressed && !d_pressed)
 			cart.turnLeft();
-		}
-		else if(d_pressed && !a_pressed) {
-			//cart.setRotation(new Quaternion(new Vector3D(0,1,0), -0.1).multiply(cart.getRotation()));
-//			theta -= .04;
-//			while(theta < 0)
-//				theta += Math.PI * 2;
-//			theta %= Math.PI * 2;
-//			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
-//			cart.setTurnVeloc(-0.03);
+		else if(d_pressed && !a_pressed)
 			cart.turnRight();
-		}
-		else {
+		else
 			cart.setTurnVeloc(0);
-		}
 		
 		applyForce();
 	}

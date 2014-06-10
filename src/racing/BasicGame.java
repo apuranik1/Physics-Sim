@@ -35,7 +35,15 @@ public class BasicGame {
 		Vector3D next = Vector3D.origin;
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, 40)), 20).add(new Vector3D(0, 0, 50));
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 50)), 20);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(50, 0, 50)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 100)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(30, -5, 30)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(50, -10, 20)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(40, 0, 16)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(10, 0, -2)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(9, 0, -4)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(5, 0, -5)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(6, 0, -16)), 20);
+//		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, -30)), 20);
 		
 		/*
 		rm.loadObject("tc_1", TrackBuilder.trackSquare(10, 1, 100, 0, 0));
