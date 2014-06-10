@@ -3,6 +3,8 @@ package racing;
 import java.awt.Color;
 import java.io.IOException;
 
+import engine.animation.AnimationEvent;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
@@ -17,7 +19,9 @@ public class Cart extends Object3D {
 	private double thrustBoost;
 	private int framesSinceCollide;
 	private int framesSinceBoost;
+	private boolean aligning;
 	
+	private double handling = 0.035;
 	private double turnVeloc;
 
 	public Cart(Vector3D[] vertices, Vector3D[] normals,
@@ -25,6 +29,7 @@ public class Cart extends Object3D {
 		super(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(false, false, true, true, 50));
 		force = new Vector3D(0, 0, 0);
 		thrustBoost = 1;
+		aligning = false;
 	}
 
 	public Cart clone() {
@@ -40,10 +45,19 @@ public class Cart extends Object3D {
 		setRotation(new Quaternion(new Vector3D(0,0,1),0));
 		setSpec(new PhysicsSpec(false, false, true, true, 50));
 		setAcceleration(Vector3D.gravity);
+		aligning = false;
 	}
 	
 	public void setForce(Vector3D force) {
 		this.force = force;
+	}
+	
+	public void turnLeft() {
+		turnVeloc = handling;
+	}
+	
+	public void turnRight() {
+		turnVeloc = -handling;
 	}
 	
 	public void setTurnVeloc(double veloc) {
@@ -53,6 +67,39 @@ public class Cart extends Object3D {
 	public void boost(double thrustProportion) {
 		thrustBoost = thrustProportion;
 		framesSinceBoost = 0;
+	}
+	
+	public void align(Vector3D upVec) {
+		if (aligning) {
+			System.out.println("Can't do that now");
+			return;
+		}
+		Quaternion rot = getRotation();
+		Vector3D currUp = rot.toMatrix().multiply(new Vector3D(0,1,0));
+		Vector3D axis = currUp.cross(upVec);
+		if (axis.isZero(1e-8))
+			return;
+		aligning = true;
+		double angle = 0.1 * Math.atan2(axis.magnitude(), currUp.dot(upVec));
+		System.out.println("align angle: " + angle);
+		final Quaternion change = new Quaternion(axis, angle);
+		for (int i = 0; i < 10; i++) {
+			Animator.getAnimator().registerEvent(new AnimationEvent(0.02 * i) {
+				@Override
+				public void animate() {
+					Cart.this.uncheckedSetRotation(change.multiply(Cart.this
+							.getRotation()));
+
+				}
+			});
+		}
+		Animator.getAnimator().registerEvent(new AnimationEvent(0.25) {
+			public void animate() {
+				Cart.this.aligning = false;
+				System.out.println("Releasing align lock");
+			}
+		});
+		uncheckedSetRotation(new Quaternion(axis, angle).multiply(rot));
 	}
 
 	public void updateImpl(long nanos) {

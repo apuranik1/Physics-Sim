@@ -48,7 +48,8 @@ public class TrackBuilder {
 
 	public static Vector3D addTrackRun(Vector3D from, Vector3D to, double width)
 			throws IOException {
-		Object3D next = trackRun(from, to, width);
+//		Object3D next = trackRun(from, to, width);
+		Object3D next = new TrackFloor(from, to, width);
 		String name = "track" + (int) (Math.random() * Integer.MAX_VALUE);
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject(name, next);

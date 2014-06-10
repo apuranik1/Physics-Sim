@@ -28,10 +28,8 @@ public class LaunchPad extends Object3D {
 	}
 	
 	public void specialCollide(Object3D other) {
-		if (other instanceof Cart) {
-			Cart c = (Cart) other;
-			c.boost(3);
-		}
+		if (other instanceof Cart)
+			((Cart)other).boost(3);
 	}
 
 }
