@@ -11,7 +11,7 @@ public class CatcherInTheRye extends Object3D {
 	
 	public CatcherInTheRye(Vector3D target, boolean delta) {
 		super(new Vector3D[0], new Vector3D[0], new Vector2D[0], new Color[0],
-				Motion.still(), new PhysicsSpec(false, false, false, true, 1000000));
+				Motion.still(), new PhysicsSpec(false, false, false, true, Double.POSITIVE_INFINITY));
 		this.delta = delta;
 		this.target = target;
 	}

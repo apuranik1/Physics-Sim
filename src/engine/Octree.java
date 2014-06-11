@@ -112,14 +112,15 @@ public class Octree<T> implements Iterable<T> {
 	public ArrayList<T> intersects(BoundingBox bb) {
 		ArrayList<T> intersections = new ArrayList<T>(INTERSECTION_CALIBRATION);
 		for (Pair<BoundingBox, T> entry : contents)
-			// first check should cull many easily
-			if (//entry.first.simpleBound().simpleIntersects(bb.simpleBound())
-					entry.first().intersects(bb))
+			if (entry.first().intersects(bb))
 				intersections.add(entry.second());
 		if (!leaf) {
 			Octree<T> octant = octantsContaining(bb);
-			if(octant != null)
+			if (octant != null)
 				intersections.addAll(octant.intersects(bb));
+			else
+				for (int i = 0; i < 8; i++)
+					intersections.addAll(octants[i].intersects(bb));
 		}
 		return intersections;
 	}
@@ -156,20 +157,19 @@ public class Octree<T> implements Iterable<T> {
 	public boolean remove(BoundingBox bb, T match) {
 		boolean found = false;
 		Octree<T> octant;
-		if(!leaf)
+		if (!leaf)
 			octant = octantsContaining(bb);
 		else
 			octant = null;
-		if(octant == null) {
+		if (octant == null) {
 			for (int i = contents.size() - 1; i >= 0; i--)
 				if (contents.get(i).second() == match) {
 					contents.remove(i);
 					found = true;
 					break;
 				}
-		}
-		else if (!leaf && !found) {
-			if(octant != null)
+		} else if (!leaf && !found) {
+			if (octant != null)
 				found |= octant.remove(bb, match);
 		}
 		if (found)
@@ -252,53 +252,14 @@ public class Octree<T> implements Iterable<T> {
 	private Octree<T> octantsContaining(BoundingBox bb) {
 		assert !leaf;
 		BoundingBox simplebb = bb.simpleBound();
-		Vector3D pos = simplebb.simpleBound().getLowCoordinate();
-		Vector3D corner = simplebb.simpleBound().getHighCoordinate();
+		Vector3D pos = simplebb.getLowCoordinate();
+		Vector3D corner = simplebb.getHighCoordinate();
 		int tmp = octantContaining(pos);
 		int tmp2 = octantContaining(corner);
-		if (tmp == tmp2) {
+		if (tmp == tmp2)
 			return octants[tmp];
-		}
-		int found = -1;
-		if (tmp == 0) {
-			found = 0;
-		}
-		if (octantContaining(new Vector3D(pos.x, corner.y, corner.z)) == 3) {
-			if(found != -1)
-				return null;
-			found = 3;
-		}
-		if (octantContaining(new Vector3D(pos.x, corner.y, pos.z)) == 2) {
-			if(found != -1)
-				return null;
-			found = 2;
-		}
-		if (octantContaining(new Vector3D(corner.x, corner.y, pos.z)) == 6) {
-			if(found != -1)
-				return null;
-			found = 6;
-		}
-		if (octantContaining(new Vector3D(corner.x, pos.y, corner.z)) == 5) {
-			if(found != -1)
-				return null;
-			found = 5;
-		}
-		if (octantContaining(new Vector3D(pos.x, pos.y, corner.z)) == 1) {
-			if(found != -1)
-				return null;
-			found = 1;
-		}
-		if (octantContaining(new Vector3D(corner.x, pos.y, pos.z)) == 4) {
-			if(found != -1)
-				return null;
-			found = 4;
-		}
-		if (tmp2 == 7) {
-			if(found != -1)
-				return null;
-			found = 7;
-		}
-		return octants[found];
+		else
+			return null;
 	}
 
 	/**
@@ -309,8 +270,6 @@ public class Octree<T> implements Iterable<T> {
 	 * @return the octant that contains that point
 	 */
 	private int octantContaining(Vector3D vec) {
-		// assert !leaf;
-		// we're not going to talk about this method
 		return (vec.x >= splitPoint.x ? 4 : 0)
 				| (vec.y >= splitPoint.y ? 2 : 0)
 				| (vec.z >= splitPoint.z ? 1 : 0);

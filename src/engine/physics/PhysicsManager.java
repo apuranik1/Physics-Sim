@@ -14,7 +14,6 @@ public class PhysicsManager {
 		long start = System.nanoTime();
 		GameEngine engine = GameEngine.getGameEngine();
 		for (Object3D obj : engine) {
-			System.out.println(obj.getClass());
 			PhysicsSpec objSpec = obj.getSpec();
 			boolean collides = objSpec.isCollidable();
 			boolean specialCollides = objSpec.specialCollides();
@@ -22,7 +21,6 @@ public class PhysicsManager {
 			if (collides || specialCollides)
 				for (Object3D other : engine.intersects(obj.getBoundingBox()))
 					if (other != obj) {
-						System.out.println("    "+other.getClass());
 						double m0 = other.getSpec().getMass();
 						double m1 = obj.getSpec().getMass();
 						if (m0 == m1 && m1 == Double.POSITIVE_INFINITY)
