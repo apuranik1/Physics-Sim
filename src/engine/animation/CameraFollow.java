@@ -5,19 +5,20 @@ import engine.GameEngine;
 import engine.graphics.Object3D;
 import engine.physics.Vector3D;
 
-public class CameraFollow extends ContinuousAnimationEvent {
+public class CameraFollow extends FrameEvent {
 	private Object3D target;
 
 	public CameraFollow(Object3D target) {
-		super(0, 1 / 60d);
 		this.target = target;
 	}
 
 	@Override
 	public void animate() {
 		Vector3D targPos = target.getPosition();
-		Vector3D cameraPos = new Vector3D(targPos.x - 10, targPos.y + 10,
-				targPos.z - 10);
+//		double rot = target.getRotation().getAngle();
+//		Vector3D cameraPos = new Vector3D(targPos.x - 10 * Math.sin(rot),
+//				targPos.y + 4, targPos.z - 10 * Math.cos(rot));
+		Vector3D cameraPos = target.getRotation().toMatrix().multiply(new Vector3D(0, 4, -10)).add(targPos);
 		GameEngine.getGameEngine().cameraLookAt(cameraPos, targPos);
 	}
 

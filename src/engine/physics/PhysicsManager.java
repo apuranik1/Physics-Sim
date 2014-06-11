@@ -12,17 +12,17 @@ public class PhysicsManager {
 
 	public void checkCollisions() {
 		long start = System.nanoTime();
-		// so beautiful... it won't last
-		// aaaaand not so beautiful anymore
 		GameEngine engine = GameEngine.getGameEngine();
 		for (Object3D obj : engine) {
 			PhysicsSpec objSpec = obj.getSpec();
 			boolean collides = objSpec.isCollidable();
 			boolean specialCollides = objSpec.specialCollides();
+			// either one is cause to check collisions
 			if (objSpec.isCollidable() || specialCollides)
 				for (Object3D other : engine.intersects(obj.getBoundingBox()))
 					if (other != obj) {
 						PhysicsSpec otherSpec = other.getSpec();
+						// both must have collisions to justify handling
 						if (otherSpec.isCollidable() && collides) {
 							handleCollision(obj, other);
 							// handle both special collisions, since they will be moved apart
@@ -37,7 +37,7 @@ public class PhysicsManager {
 					}
 		}
 		long end = System.nanoTime();
-		System.out.println("Physics time: " + (end - start));
+		System.out.println("Physics time:   " + (end - start));
 	}
 
 	/**
@@ -52,11 +52,15 @@ public class PhysicsManager {
 		Vector3D velocDiff = obj0.getVelocity().subtract(obj1.getVelocity());
 		double m0 = obj0.getSpec().getMass(),
 			   m1 = obj1.getSpec().getMass();
+		if(m0 == m1 && m1 == Double.POSITIVE_INFINITY)
+			return;
 		BoundingBox bb0 = obj0.getBoundingBox();
 		BoundingBox bb1 = obj1.getBoundingBox();
 		Vector3D pos0 = bb0.getLocation();
 		Vector3D pos1 = bb1.getLocation();
 		Vector3D posDiff = pos0.subtract(pos1);
+		if (posDiff.x == 0 && posDiff.y == 0 && posDiff.z == 0)
+			return;
 		
 		Vector3D[] axes = m0 > m1 ? bb0.axisList() : bb1.axisList();
 		
@@ -71,17 +75,18 @@ public class PhysicsManager {
 			}
 			currAxis = currAxis.normalize();
 			double d = bb0.distance(bb1, currAxis);
-			if (d < dist0) {
+			if (d <= dist0) {
 				handle = currAxis;
 				dist0 = d;
 			}
 		}
-		
+		if(handle == null)
+			return;
 		double refMass = 1.0 / (1/m0 + 1/m1);
 		Vector3D problemVeloc = velocDiff.vecProject(handle);
 		translateAway(obj0, obj1, dist0, handle, refMass / m0);
-		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.5 * refMass / m0)));
-		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.5 * refMass / m1)));
+		obj0.setVelocity(obj0.getVelocity().add(problemVeloc.multiply(-1.3 * refMass / m0)));
+		obj1.setVelocity(obj1.getVelocity().add(problemVeloc.multiply(1.3 * refMass / m1)));
 	}
 
 	/**

@@ -10,42 +10,53 @@ import engine.physics.Vector3D;
 public class CarController extends EventProcessor {
 	private Cart cart;
 	private double thrust;
-//	private Quaternion offset;
+	private double theta;
 
 	public CarController(Cart cart) {
-//		this.offset = cart.getRotation().inverse();
 		this.cart = cart;
+		theta = 0;
 	}
 
 	public void keysPressed(Set<Integer> keys) {
 		boolean w_pressed = keys.contains(KeyEvent.VK_W);
 		boolean s_pressed = keys.contains(KeyEvent.VK_S);
 		if (w_pressed && !s_pressed)
-			thrust = 500;
+			thrust = 3000;
 		else if (s_pressed && !w_pressed)
-			thrust = -500;
+			thrust = -1500;
 		else
 			thrust = 0;
 		
 		boolean a_pressed = keys.contains(KeyEvent.VK_A);
 		boolean d_pressed = keys.contains(KeyEvent.VK_D);
 		if(a_pressed && !d_pressed) {
-			// the singularity is screwing this up maybe
-//			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() + .1));
-			cart.setRotation(cart.getRotation().multiply(new Quaternion(new Vector3D(0,1,0), 0.1)));
-			//System.out.println("Rotation: " + cart.getRotation().getAngle());
+			//cart.setRotation(new Quaternion(new Vector3D(0,1,0), 0.1).multiply(cart.getRotation()));
+//			theta += .04;
+//			while(theta < 0)
+//				theta += Math.PI * 2;
+//			theta %= Math.PI * 2;
+//			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
+//			cart.setTurnVeloc(0.03);
+			cart.turnLeft();
 		}
-		else if(d_pressed && !a_pressed)
-//			cart.setRotation(new Quaternion(cart.getRotation().getAxis(),cart.getRotation().getAngle() - .1));
-			cart.setRotation(cart.getRotation().multiply(new Quaternion(new Vector3D(0,1,0), -0.1)));
+		else if(d_pressed && !a_pressed) {
+			//cart.setRotation(new Quaternion(new Vector3D(0,1,0), -0.1).multiply(cart.getRotation()));
+//			theta -= .04;
+//			while(theta < 0)
+//				theta += Math.PI * 2;
+//			theta %= Math.PI * 2;
+//			cart.setRotation(new Quaternion(new Vector3D(0,1,0), theta));
+//			cart.setTurnVeloc(-0.03);
+			cart.turnRight();
+		}
+		else {
+			cart.setTurnVeloc(0);
+		}
 		
 		applyForce();
 	}
 	
 	private void applyForce() {
-		//stop using angles to manipulate; only use quaternion operations
-//		double theta = cart.getRotation().getAngle() - offset;
-//		cart.setForce(new Vector3D(- Math.sin(theta) * thrust, 0, - Math.cos(theta) * thrust));
-		cart.setForce(cart.getRotation().toMatrix().multiply(new Vector3D(0,0,thrust)));
+		cart.setForce(cart.getRotation().toMatrix().multiply(new Vector3D(0, 0, thrust)));
 	}
 }

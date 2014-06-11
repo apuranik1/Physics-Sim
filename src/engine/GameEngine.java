@@ -2,11 +2,13 @@ package engine;
 
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-
+import static javax.media.opengl.GL.*;
+import static javax.media.opengl.GL2.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,6 +18,10 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureData;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 import engine.animation.AnimationEvent;
 import engine.animation.Animator;
@@ -55,7 +61,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		processors = new Stack<EventProcessor>();
 		registerProcessor(new DefaultExitProcessor());
 		new HealthMonitor();
-		fovy = Math.PI / 4;
+		fovy = Math.toRadians(60);
 		keysPressed = new HashSet<Integer>();
 		physics = new PhysicsManager();
 	}
@@ -98,14 +104,24 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		return cameraMotion;
 	}
 
-	public void setupCamera(GL2 gl, long dt) {
+	public void setupCamera(GL2 gl, long dt, RenderEngine callback) {
 		cameraMotion.update(dt);
+		Vector3D cameraPos = cameraMotion.getPosition();
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluPerspective(45, width / height, 1, 1000);
+		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height, 1, 10000);
+		gl.glPushAttrib(GL_ENABLE_BIT);
+		gl.glDisable(GL_DEPTH_TEST);
+		gl.glDisable(GL_LIGHTING);
+		gl.glDisable(GL_BLEND);
+		gl.glDisable(GL_CULL_FACE);
+		gl.glEnable(GL_TEXTURE_2D);
+		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		callback.skybox(gl);
+		gl.glPopAttrib();
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
-		Vector3D cameraPos = cameraMotion.getPosition();
 		if (targetedCamera)
 			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
 					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
@@ -119,11 +135,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
-		//System.out.println("frame!");
-		animationRefresh();
+		long time = System.nanoTime();
 		physicsRefresh(frame, dt);
+		long delta = System.nanoTime() - time;
+		System.out.println("Movement time:  "+delta);
+		time = System.nanoTime();
 		updateKeys();
+		delta = System.nanoTime() - time;
+		System.out.println("Input time:     "+delta);
 		physics.checkCollisions();
+		time = System.nanoTime();
+		animationRefresh();
+		delta = System.nanoTime() - time;
+		System.out.println("Animation time: "+delta);
 	}
 
 	private void animationRefresh() {
@@ -137,17 +161,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	private void physicsRefresh(long frame, long dt) {
-		ArrayList<Object3D> proc = new ArrayList<Object3D>();
 		for (Object3D object : this)
-			proc.add(object);
-		for (Object3D object : proc) {
-			if (object.getFrameUpdate() == frame)
-				continue;
 			object.update(dt);
-			object.setFrame(frame);
-		}
-		for (Object3D object : this)
-			object.setFrame(frame - 1);
 	}
 
 	public void prepareUpdate(Object3D object) {
@@ -198,8 +213,6 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

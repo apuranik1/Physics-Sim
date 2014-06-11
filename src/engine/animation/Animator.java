@@ -7,13 +7,18 @@ import java.util.PriorityQueue;
 public class Animator {
 	private static Animator animator;
 	private PriorityQueue<AnimationEvent> animationQueue;
+	private ArrayList<FrameEvent> frameQueue;
 
 	private Animator() {
 		animationQueue = new PriorityQueue<AnimationEvent>();
+		frameQueue = new ArrayList<FrameEvent>();
 	}
 
 	public void registerEvent(AnimationEvent event) {
-		animationQueue.offer(event);
+		if(event instanceof FrameEvent)
+			frameQueue.add((FrameEvent) event);
+		else
+			animationQueue.offer(event);
 	}
 
 	public void registerEvents(AnimationEvent[] events) {
@@ -34,6 +39,8 @@ public class Animator {
 			if(event.prepareNext())
 				animationQueue.offer(event);
 		}
+		for(FrameEvent fe : frameQueue)
+			events.add(fe);
 		return events;
 	}
 
