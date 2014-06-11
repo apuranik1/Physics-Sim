@@ -5,15 +5,15 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.Label;
 import java.awt.TextArea;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.JLabel;
+import com.sun.awt.AWTUtilities;
 import racing.BasicGame;
 import engine.GameEngine;
 public class FrontEnd {
@@ -62,10 +62,12 @@ public class FrontEnd {
 		showPopup("Test Popup");
 	}
 	public void showPopup(String msg){
-		final Window window=new Window(new Frame());
-		Label label=new Label(msg);
+		final Frame pframe=new Frame();
+		pframe.setUndecorated(true);
+		JLabel label=new JLabel(msg);
 		label.setFont(new Font("sansserif",Font.PLAIN,25));
-		window.add(label);
+		AWTUtilities.setWindowOpaque(pframe, false);
+		pframe.add(label);
 		label.addMouseListener(new MouseListener(){
 			public void mouseClicked(MouseEvent arg0) {
 			}
@@ -74,14 +76,14 @@ public class FrontEnd {
 			public void mouseExited(MouseEvent arg0) {
 			}
 			public void mousePressed(MouseEvent e) {
-				if(e.getButton()==MouseEvent.BUTTON1)window.setVisible(false);
+				if(e.getButton()==MouseEvent.BUTTON1)pframe.setVisible(false);
 			}
 			public void mouseReleased(MouseEvent arg0) {
 			}
 		});
-		window.pack();
-		window.setLocation(window.getToolkit().getScreenSize().width/2-window.getWidth()/2, window.getToolkit().getScreenSize().height/2-window.getHeight()/2);
-		window.setVisible(true);
+		pframe.pack();
+		pframe.setLocation(pframe.getToolkit().getScreenSize().width/2-pframe.getWidth()/2, pframe.getToolkit().getScreenSize().height/2-pframe.getHeight()/2);
+		pframe.setVisible(true);
 	}
 	private void showInstructions(){
 		final Frame iframe=new Frame("Instructions");
