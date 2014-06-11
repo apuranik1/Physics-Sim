@@ -265,6 +265,8 @@ public class Object3D implements Renderable3D, Cloneable {
 		String[] lines = mtl.split("\n");
 		Material current = new Material();
 		for (String line : lines) {
+			if(line.trim().isEmpty())
+				continue;
 			String[] entries = line.split("\\s+");
 			if (entries[0].equals("newmtl")) {
 				current = new Material();
