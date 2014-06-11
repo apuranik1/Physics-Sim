@@ -18,7 +18,7 @@ public class PhysicsManager {
 			boolean collides = objSpec.isCollidable();
 			boolean specialCollides = objSpec.specialCollides();
 			// either one is cause to check collisions
-			if (objSpec.isCollidable() || specialCollides)
+			if (collides || specialCollides)
 				for (Object3D other : engine.intersects(obj.getBoundingBox()))
 					if (other != obj) {
 						double m0 = other.getSpec().getMass();
