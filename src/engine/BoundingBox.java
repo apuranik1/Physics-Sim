@@ -155,6 +155,12 @@ public class BoundingBox {
 	boolean simpleIntersects(BoundingBox other) {
 		assert rotation == null && other.rotation == null;
 		// check every direction for whether they are too far apart
+		Vector3D hicorner = this.hicorner; 
+		Vector3D locorner = this.locorner;
+		if(rotation != null) {
+			hicorner = rotation.multiply(hicorner);
+			locorner = rotation.multiply(locorner);
+		}
 		return (hicorner.x + location.x >= other.locorner.x + other.location.x 
 				&& locorner.x + location.x <= other.hicorner.x + other.location.x 
 				&& hicorner.y + location.y >= other.locorner.y + other.location.y
@@ -324,8 +330,8 @@ public class BoundingBox {
 			else if (vertex.z > max_z)
 				max_z = vertex.z;
 		}
-		return new BoundingBox(location, new Vector3D(min_x, min_y, min_z).subtract(location),
-				new Vector3D(max_x, max_y, max_z).subtract(location));
+		return new BoundingBox(location, new Vector3D(min_x, min_y, min_z),
+				new Vector3D(max_x, max_y, max_z));
 	}
 	
 	public String toString() {

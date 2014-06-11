@@ -2,6 +2,7 @@ package racing;
 
 import java.io.IOException;
 
+import engine.ContinuousAnimationEvent;
 import engine.GameEngine;
 import engine.ResourceManager;
 import engine.animation.Animator;
@@ -13,7 +14,7 @@ import engine.physics.Vector3D;
 public class BasicGame {
 	public BasicGame() throws IOException {
 		Vector3D startPos = buildTrack1();
-		ResourceManager rm = ResourceManager.getResourceManager();
+		final ResourceManager rm = ResourceManager.getResourceManager();
 		
 		Cart cart = new Cart("cart1.obj");
 		rm.loadObject("kart_1", cart);
@@ -24,10 +25,13 @@ public class BasicGame {
 		
 		Animator anim = Animator.getAnimator();
 		anim.registerEvent(new CameraFollow(myCart));
-		rm.insertInstance("monkey", Vector3D.origin);
-		rm.insertInstance("monkey", new Vector3D(0,10,50));
-		rm.insertInstance("monkey", new Vector3D(50,10,100));
-		rm.insertInstance("monkey", new Vector3D(0,10,150));
+		anim.registerEvent(new ContinuousAnimationEvent(0d, 1d) {
+			
+			@Override
+			public void animate() {
+				rm.insertInstance("monkey", Vector3D.rand().multiply(100));
+			}
+		});
 		
 	}
 	
@@ -43,7 +47,7 @@ public class BasicGame {
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(9, 0, -4)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(5, 0, -5)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(6, 0, -16)), 20);
-//		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, -30)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, -30)), 20);
 		
 		/*
 		rm.loadObject("tc_1", TrackBuilder.trackSquare(10, 1, 100, 0, 0));

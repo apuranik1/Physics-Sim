@@ -22,6 +22,7 @@ public class TrackFloor extends Object3D {
 		setSpec(new PhysicsSpec(false, false, true, true,
 				Double.POSITIVE_INFINITY));
 		setAcceleration(Vector3D.origin);
+		System.out.println(getBoundingBox());
 	}
 	
 	public void specialCollide(Object3D other) {
