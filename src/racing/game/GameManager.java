@@ -25,7 +25,7 @@ public class GameManager{
 		if(manager!=null)return manager;
 		switch(cartType){
 		case 0:
-			manager=new GameManager("",200);
+			manager=new GameManager("cart1.obj",200);
 		}
 		return manager;
 	}

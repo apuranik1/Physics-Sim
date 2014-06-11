@@ -2,13 +2,18 @@ package racing.game;
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.TextArea;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import racing.BasicGame;
+import engine.GameEngine;
 public class FrontEnd {
 	private Frame frame;
 	private static final String INSTRUCTIONS="";
@@ -21,7 +26,8 @@ public class FrontEnd {
 		newGame.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					GameManager.initGame(0);
+					new BasicGame();
+					GameEngine.getGameEngine().beginGame();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -45,6 +51,23 @@ public class FrontEnd {
 		//Center frame
 		frame.setLocation(frame.getToolkit().getScreenSize().width/2-frame.getWidth()/2, frame.getToolkit().getScreenSize().height/2-frame.getHeight()/2);
 		frame.setVisible(true);
+	}
+	private void showPopup(String msg){
+		final Window window=new Window(frame);
+		window.setLayout(new GridLayout(2,0));
+		Label label=new Label(msg);
+		label.setFont(new Font("sansserif",Font.PLAIN,20));
+		window.add(label);
+		Button close=new Button("Close");
+		close.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				window.setVisible(false);
+			}
+		});
+		window.add(close);
+		window.pack();
+		window.setLocation(window.getToolkit().getScreenSize().width/2-window.getWidth()/2, window.getToolkit().getScreenSize().height/2-window.getHeight()/2);
+		window.setVisible(true);
 	}
 	private void showInstructions(){
 		final Frame iframe=new Frame("Instructions");
@@ -70,6 +93,7 @@ public class FrontEnd {
 		//center frame
 		iframe.setLocation(iframe.getToolkit().getScreenSize().width/2-iframe.getWidth()/2, iframe.getToolkit().getScreenSize().height/2-iframe.getHeight()/2);
 		iframe.setVisible(true);
+		showPopup("Test Popup");
 	}
 	public static void main(String[] args){
 		new FrontEnd();
