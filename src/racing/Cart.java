@@ -99,7 +99,6 @@ public class Cart extends Object3D {
 				System.out.println("Releasing align lock");
 			}
 		});
-		uncheckedSetRotation(new Quaternion(axis, angle).multiply(rot));
 	}
 
 	public void updateImpl(long nanos) {
