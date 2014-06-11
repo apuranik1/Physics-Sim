@@ -37,6 +37,7 @@ public class BasicGame {
 	
 	public Vector3D buildTrack1() throws IOException {
 		Vector3D next = new Vector3D(-10,0,0);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 50)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, 40)), 20).add(new Vector3D(0, 0, 50));
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 50)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 100)), 20);
@@ -48,10 +49,12 @@ public class BasicGame {
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(5, 0, -5)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(6, 0, -16)), 20);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, -30)), 20);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 30)), 40);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 50)), 40);
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
-		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 40), null));
+		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
 		rm.insertInstance("launchpad", Vector3D.origin);
 		return new Vector3D(0,5, 0);
 	}
