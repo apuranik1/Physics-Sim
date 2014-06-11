@@ -18,6 +18,7 @@ public class CatcherInTheRye extends Object3D {
 	
 	public void specialCollide(Object3D other) {
 		if(!(other instanceof CatcherInTheRye)) {
+			System.out.println("Request move");
 			if(delta)
 				other.setPosition(other.getPosition().add(target));
 			else

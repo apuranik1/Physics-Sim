@@ -87,7 +87,7 @@ public class Cart extends Object3D {
 			Animator.getAnimator().registerEvent(new AnimationEvent(0.02 * i) {
 				@Override
 				public void animate() {
-					Cart.this.uncheckedSetRotation(change.multiply(Cart.this
+					Cart.this.setRotation(change.multiply(Cart.this
 							.getRotation()));
 
 				}
