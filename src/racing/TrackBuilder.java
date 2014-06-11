@@ -54,7 +54,6 @@ public class TrackBuilder {
 
 	public static Vector3D addTrackRun(Vector3D from, Vector3D to, double width)
 			throws IOException {
-//		Object3D next = trackRun(from, to, width);
 		Object3D next = new TrackFloor(from, to, width);
 		setupTrack(next, from);
 		return to;

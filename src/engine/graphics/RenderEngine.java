@@ -93,17 +93,19 @@ public class RenderEngine implements GLEventListener {
 		gl.glShadeModel(GL_SMOOTH);
 		// gl.glMatrixMode(GL_PROJECTION);
 		gl.glEnable(GL_CULL_FACE);
-		gl.glDepthFunc(GL_LEQUAL);
+		gl.glDepthFunc(GL_LESS);
 		// gl.glEnable(GL_NORMALIZE);
 		gl.glCullFace(GL_BACK);
 		gl.glEnable(GL_LIGHTING);
+		gl.glMatrixMode(GL_MODELVIEW);
+		gl.glLoadIdentity();
 		gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_AMBIENT, new float[] { .5f,
 				.5f, .5f, 1f }, 0);
 		gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_DIFFUSE, new float[] { .1f,
 				.1f, .1f, 1 }, 0);
 		gl.glLightfv(GL_LIGHT0, GLLightingFunc.GL_SPECULAR, new float[] { .5f,
 				.5f, .5f, 1f }, 0);
-		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 1, 2, 0 }, 0);
+		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 10, 0, 1 }, 0);
 		gl.glEnable(GL_LIGHT0);
 		// gl.glMatrixMode(GL_PROJECTION);
 		try {
