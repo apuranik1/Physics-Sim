@@ -93,7 +93,7 @@ public class Cart extends Object3D {
 				}
 			});
 		}
-		Animator.getAnimator().registerEvent(new AnimationEvent(0.25) {
+		Animator.getAnimator().registerEvent(new AnimationEvent(0.5) {
 			public void animate() {
 				Cart.this.aligning = false;
 				System.out.println("Releasing align lock");
@@ -103,10 +103,10 @@ public class Cart extends Object3D {
 	}
 
 	public void updateImpl(long nanos) {
-		boolean grounded = framesSinceCollide <= 5;
+		boolean grounded = framesSinceCollide <= 10;
 		System.out.println("frames since collide: " + framesSinceCollide);
 		Vector3D appliedForce = !grounded ? Vector3D.origin :
-								framesSinceBoost > 5 ? force : force.multiply(thrustBoost);
+								framesSinceBoost > 10 ? force : force.multiply(thrustBoost);
 		CAR_FORCES.updateAccel(motion, appliedForce, getSpec().getMass(), grounded, true, true);
 		Vector3D forward = getRotation().toMatrix().multiply(new Vector3D(0,0,1));
 		double dPos = getVelocity().project(forward);

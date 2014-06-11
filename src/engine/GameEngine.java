@@ -81,9 +81,13 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void removeObject(Object3D object) {
-		if (!octree.remove(object.getBoundingBox(), object))
+		if (!octree.remove(object.getBoundingBox(), object)) {
+			System.out.println("Failed to find: " + object + " of type "
+					+ object.getClass().toString() + " at "
+					+ object.getBoundingBox());
 			throw new IllegalArgumentException(
 					"Cannot remove non-existant object from the octree.");
+		}
 	}
 
 	public void addObject(Object3D object) {
@@ -111,7 +115,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		Vector3D cameraPos = cameraMotion.getPosition();
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height, 1, 10000);
+		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height,
+				1, 10000);
 		gl.glPushAttrib(GL_ENABLE_BIT);
 		gl.glDisable(GL_DEPTH_TEST);
 		gl.glDisable(GL_LIGHTING);
@@ -141,16 +146,16 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		long time = System.nanoTime();
 		physicsRefresh(frame, dt);
 		long delta = System.nanoTime() - time;
-		System.out.println("Movement time:  "+delta);
+		System.out.println("Movement time:  " + delta);
 		time = System.nanoTime();
 		updateKeys();
 		delta = System.nanoTime() - time;
-		System.out.println("Input time:     "+delta);
+		System.out.println("Input time:     " + delta);
 		physics.checkCollisions();
 		time = System.nanoTime();
 		animationRefresh();
 		delta = System.nanoTime() - time;
-		System.out.println("Animation time: "+delta);
+		System.out.println("Animation time: " + delta);
 	}
 
 	private void animationRefresh() {
@@ -264,11 +269,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public int getFPS() {
 		return renderer.getFPS();
 	}
-	
+
 	public ArrayList<Object3D> intersects(BoundingBox bb) {
 		return octree.intersects(bb);
 	}
-	
+
 	public void exit() {
 		renderer.stop();
 		System.exit(0);
@@ -277,6 +282,6 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

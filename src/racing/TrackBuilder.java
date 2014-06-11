@@ -32,7 +32,6 @@ public class TrackBuilder {
 //		System.out.println("Scale: "
 //				+ Math.sqrt(Math.pow(from.x - to.x, 2)
 //						+ Math.pow(from.z - to.z, 2)));
-		System.out.println("Rot: " +(to.z - from.z)+ " "+( to.x - from.x)+ " "+ Math.atan2(to.z - from.z, to.x - from.x));
 		double theta = Math.atan2(diff.x, diff.z);
 		double phi = -Math.asin(diff.y / diff.magnitude());
 //		obj.setRotation(new Quaternion(new Vector3D(0, 1, 0), Math.PI / 2 + Math.atan2(from.z
@@ -45,14 +44,19 @@ public class TrackBuilder {
 		obj.setAcceleration(Vector3D.origin);
 		return obj;
 	}
+	
+	public static void setupTrack(Object3D obj, Vector3D pos) {
+		String name = "track" + (int) (Math.random() * Integer.MAX_VALUE);
+		ResourceManager rm = ResourceManager.getResourceManager();
+		rm.loadObject(name, obj);
+		rm.insertInstance(name, pos);
+	}
 
 	public static Vector3D addTrackRun(Vector3D from, Vector3D to, double width)
 			throws IOException {
 		Object3D next = new TrackFloor(from, to, width);
-		String name = "track" + (int) (Math.random() * Integer.MAX_VALUE);
-		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject(name, next);
-		rm.insertInstance(name, from);
+		setupTrack(next, from);
 		return to;
 	}
+	
 }
