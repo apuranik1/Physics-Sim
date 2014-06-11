@@ -19,7 +19,12 @@ import engine.GameEngine;
 public class FrontEnd {
 	private Frame frame;
 	private static final String INSTRUCTIONS="";
-	public FrontEnd(){
+	private static FrontEnd fe;
+	public static FrontEnd getFrontEnd(){
+		if(fe==null)fe=new FrontEnd();
+		return fe;
+	}
+	private FrontEnd(){
 		frame=new Frame("Racing");
 		frame.setLayout(new GridLayout(0,1));
 		((GridLayout) (frame.getLayout())).setHgap(5);
@@ -56,7 +61,7 @@ public class FrontEnd {
 		frame.setVisible(true);
 		showPopup("Test Popup");
 	}
-	private void showPopup(String msg){
+	public void showPopup(String msg){
 		final Window window=new Window(new Frame());
 		Label label=new Label(msg);
 		label.setFont(new Font("sansserif",Font.PLAIN,25));
@@ -104,6 +109,6 @@ public class FrontEnd {
 		iframe.setVisible(true);
 	}
 	public static void main(String[] args){
-		new FrontEnd();
+		FrontEnd.getFrontEnd();
 	}
 }
