@@ -2,6 +2,7 @@ package engine;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 
 import engine.graphics.Object3D;
 import engine.physics.Vector3D;
@@ -22,12 +23,14 @@ public class ResourceManager {
 
 	public void loadObject(String name, Object3D object) {
 		objects.put(name, object);
-		System.out.println("Object "+name+" has been loaded into the resource manager.");
+		System.out.println("Object " + name
+				+ " has been loaded into the resource manager.");
 	}
 
 	public Object3D retrieveObject(String name) {
 		if (!objects.containsKey(name))
-			throw new IllegalArgumentException("No resource of name "+name+" has been loaded.");
+			throw new IllegalArgumentException("No resource of name " + name
+					+ " has been loaded.");
 		return objects.get(name);
 	}
 
@@ -40,13 +43,15 @@ public class ResourceManager {
 		instance.setPosition(location);
 		instance_ids.put(ids, instance);
 		instance_set.add(instance);
+		instance.setID(ids);
 		GameEngine.getGameEngine().addObject(instance);
 		return ids++;
 	}
 
 	public Object3D retrieveInstance(long id) {
 		if (!instance_ids.containsKey(id))
-			throw new IllegalArgumentException("Instance id "+id+" does not exist.");
+			throw new IllegalArgumentException("Instance id " + id
+					+ " does not exist.");
 		return instance_ids.get(id);
 	}
 
@@ -58,5 +63,14 @@ public class ResourceManager {
 		if (manager == null)
 			manager = new ResourceManager();
 		return manager;
+	}
+
+	public void mapData(HashMap<Long, Object3D> data) {
+		for (Entry<Long, Object3D> entry : data.entrySet()) {
+			instance_ids.get(entry.getKey()).setPosition(
+					entry.getValue().getPosition());
+			instance_ids.get(entry.getKey()).setRotation(
+					entry.getValue().getRotation());
+		}
 	}
 }

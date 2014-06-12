@@ -1,9 +1,16 @@
 package racing.networking;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.io.IOException;
 import java.net.*;
+
+import engine.GameEngine;
+import engine.ResourceManager;
+import engine.graphics.Object3D;
 import racing.Cart;
 import racing.game.Item;
+
 public class NetServer {
 	/**
 	 * Server Threads clients are connected to
@@ -17,93 +24,90 @@ public class NetServer {
 	 * Data to send back to clients
 	 */
 	private NetData data;
+
 	/**
-	 * @param port Port to listen on
+	 * @param port
+	 *            Port to listen on
 	 */
-	public NetServer(int port){
+	public NetServer(int port) {
 		try {
-			server=new ServerSocket(port);
-		}
-		catch(IOException e){
+			server = new ServerSocket(port);
+		} catch (IOException e) {
 			System.out.println("Socket error");
 		}
-		this.clients=new ArrayList<NetServerThread>();
+		this.clients = new ArrayList<NetServerThread>();
 	}
+
 	/**
 	 * @return Local IP Address
 	 */
-	public InetAddress getIP(){
+	public InetAddress getIP() {
 		try {
 			return Inet4Address.getLocalHost();
 		} catch (UnknownHostException e) {
-			System.out.println("IP error: "+e.getMessage());
+			System.out.println("IP error: " + e.getMessage());
 		}
 		return null;
 	}
+
 	/**
 	 * Connect client new client
+	 * 
 	 * @return IP of client that connected
 	 */
-	public InetAddress connect(){
+	public InetAddress connect() {
 		try {
-			Socket socket=server.accept();//accept client
-			clients.add(new NetServerThread(socket));//accept client and add to client list
-			System.out.println("Connected: "+socket.getLocalAddress().getHostAddress());
+			Socket socket = server.accept();// accept client
+			clients.add(new NetServerThread(socket));// accept client and add to
+														// client list
+			System.out.println("Connected: "
+					+ socket.getLocalAddress().getHostAddress());
 			return socket.getLocalAddress();
 		} catch (IOException e) {
-			System.out.println("Connection error: "+e.getMessage());
+			System.out.println("Connection error: " + e.getMessage());
 		}
 		return null;
 	}
-	/**
-	 * Receive data from all threads
-	 */
-	private void receiveData(){
-		for(NetServerThread thread:clients){
-			try {
-				data.addCart((Cart)thread.getInputStream().readObject());//receive cart data
-				data.setItems((ArrayList<Item>)thread.getInputStream().readObject());//receive items data
-				System.out.println("Recieve ready");
-			} catch (ClassNotFoundException e) {
-				System.out.println("Class: "+e.getMessage());
-			} catch (IOException e) {
-				System.out.println("Read : "+e.getMessage());
-			}
-			
-		}
-	}
+
 	/**
 	 * Send networked data to all threads
 	 */
-	private void sendData(){
-		for(NetServerThread thread:clients)
+	private void sendData() {
+		for (Object3D o : GameEngine.getGameEngine()) {
+			data.addObject(o.getID(), o);
+		}
+		for (NetServerThread thread : clients)
 			try {
-				thread.getOutputStream().writeObject(data);//print data to client
+				thread.getOutputStream().writeObject(data);// print data to
+															// client
 				System.out.println("Send data");
 			} catch (IOException e) {
-				System.out.println("Send : "+e.getMessage());
+				System.out.println("Send : " + e.getMessage());
 			}
 		data.reset();
 	}
-	private void sendReady(){
-		for(NetServerThread thread:clients)
+
+	private void sendReady() {
+		for (NetServerThread thread : clients)
 			try {
 				thread.getOutputStream().writeUTF("ready");
 				System.out.println("Send ready");
 			} catch (IOException e) {
-				System.out.println("Send : "+e.getMessage());
+				System.out.println("Send : " + e.getMessage());
 			}
 	}
+
 	/**
 	 * Receive network data from all threads, and push back out to all threads
 	 */
-	public void update(){
+	public void update() {
 		sendReady();
 		receiveData();
 		sendData();
 	}
-	public static void main(String[] args){
-		NetServer server=new NetServer(5555);
+
+	public static void main(String[] args) {
+		NetServer server = new NetServer(5555);
 		System.out.println(server.getIP());
 		server.connect();
 		server.connect();

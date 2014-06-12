@@ -1,13 +1,14 @@
 package racing.networking;
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
+
+import engine.ResourceManager;
+import engine.graphics.Object3D;
 import racing.Cart;
-import racing.game.Item;
-import racing.game.Track;
 public class NetClient {
 	private Socket socket;
 	private Cart cart;
-	private Track track;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	/**
@@ -16,7 +17,7 @@ public class NetClient {
 	 * @param cart Client cart to update
 	 * @param Track Client track to update
 	 */
-	public NetClient(InetAddress address, int port, Cart cart, Track track){
+	public NetClient(InetAddress address, int port, Cart cart){
 		try {
 			socket=new Socket(address,port);
 			//create output stream
@@ -25,7 +26,6 @@ public class NetClient {
 			//create input stream
 			input=new ObjectInputStream(socket.getInputStream());
 			this.cart=cart;
-			this.track=track;
 		} catch (IOException e) {
 			System.out.println("Connect error: "+e.getMessage());
 		}
@@ -40,7 +40,7 @@ public class NetClient {
 			if(input.readUTF().equals("ready")){
 				System.out.println("ready");
 				output.writeObject(cart);//send cart data
-				output.writeObject(track.getItems());//send item data
+				//output.writeObject(track.getItems());//send item data
 				System.out.println("Send data");
 				return (NetData)input.readObject();//return server data
 			}
@@ -51,6 +51,13 @@ public class NetClient {
 		}
 		return null;
 	}
+	
+	public void updateAll() {
+		NetData data = update();
+		HashMap<Long, Object3D> recv = (HashMap<Long, Object3D>) data.getMap();
+		ResourceManager.getResourceManager().mapData(recv);
+	}
+	/*
 	public static void main(String[] args){
 		try {
 			BufferedReader reader=new BufferedReader(new InputStreamReader(System.in));
@@ -63,5 +70,5 @@ public class NetClient {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

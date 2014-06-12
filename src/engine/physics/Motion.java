@@ -1,11 +1,13 @@
 package engine.physics;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Alok Puranik
  * 
  */
-public class Motion implements Cloneable {
+public class Motion implements Cloneable, Serializable {
 
 	private Vector3D position;
 	private Vector3D velocity;
