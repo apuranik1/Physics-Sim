@@ -2,6 +2,7 @@ package racing.networking;
 import java.io.*;
 import java.net.*;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import engine.ResourceManager;
 import engine.graphics.Object3D;
@@ -54,7 +55,7 @@ public class NetClient {
 	
 	public void updateAll() {
 		NetData data = update();
-		HashMap<Long, Object3D> recv = (HashMap<Long, Object3D>) data.getMap();
+		ConcurrentHashMap<Long, Cart> recv = (ConcurrentHashMap<Long, Cart>) data.getMap();
 		ResourceManager.getResourceManager().mapData(recv);
 	}
 	/*

@@ -2,6 +2,7 @@ package racing.networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import engine.graphics.Object3D;
 
@@ -9,7 +10,7 @@ import racing.Cart;
 
 //import racing.game.Item;
 public class NetData {
-	private HashMap<Long, Object3D> carts;
+	private ConcurrentHashMap<Long, Cart> carts;
 
 	// private ArrayList<Item> items;
 	/**
@@ -59,14 +60,13 @@ public class NetData {
 	 * Reset Carts and Items
 	 */
 	public void reset() {
-		carts.clear();
 	}
 
-	public void addObject(long id, Object3D object) {
+	public void addObject(long id, Cart object) {
 		carts.put(id, object);
 	}
 
-	public HashMap<Long, Object3D> getMap() {
+	public ConcurrentHashMap<Long, Cart> getMap() {
 		return carts;
 	}
 }

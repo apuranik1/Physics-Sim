@@ -1,37 +1,61 @@
 package racing.networking;
+
 import java.io.*;
 import java.net.*;
-public class NetServerThread{
+
+import racing.Cart;
+
+import engine.graphics.Object3D;
+
+public class NetServerThread implements Runnable {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
+	private NetData data;
+
 	/**
 	 * 
-	 * @param socket Client socket to create streams
+	 * @param socket
+	 *            Client socket to create streams
 	 */
-	public NetServerThread(Socket socket){
-		try{
-			//create output stream
-			output=new ObjectOutputStream(socket.getOutputStream());
+	public NetServerThread(Socket socket, NetData data) {
+		try {
+			this.data = data;
+			// create output stream
+			output = new ObjectOutputStream(socket.getOutputStream());
 			output.flush();
-			//create input stream
-			input=new ObjectInputStream(socket.getInputStream());
-		}
-		catch(IOException e){
-			System.out.println("Server IO: "+e.getMessage());
+			// create input stream
+			input = new ObjectInputStream(socket.getInputStream());
+			new Thread(this).start();
+		} catch (IOException e) {
+			System.out.println("Server IO: " + e.getMessage());
 		}
 	}
+
 	/**
 	 * 
 	 * @return input stream
 	 */
-	public ObjectInputStream getInputStream(){
+	public ObjectInputStream getInputStream() {
 		return input;
 	}
+
 	/**
 	 * 
 	 * @return output stream
 	 */
-	public ObjectOutputStream getOutputStream(){
+	public ObjectOutputStream getOutputStream() {
 		return output;
+	}
+
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				Cart recv = (Cart) input.readObject();
+				data.addObject(recv.getID(), recv);
+			}
+		} catch (Exception e) {
+
+		}
 	}
 }

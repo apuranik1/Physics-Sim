@@ -3,6 +3,9 @@ package engine;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+
+import racing.Cart;
 
 import engine.graphics.Object3D;
 import engine.physics.Vector3D;
@@ -12,13 +15,11 @@ public class ResourceManager {
 	private HashMap<String, Object3D> objects;
 	private HashMap<Long, Object3D> instance_ids;
 	private HashSet<Object3D> instance_set;
-	private long ids;
 
 	private ResourceManager() {
 		objects = new HashMap<String, Object3D>();
 		instance_ids = new HashMap<Long, Object3D>();
 		instance_set = new HashSet<Object3D>();
-		ids = 0;
 	}
 
 	public void loadObject(String name, Object3D object) {
@@ -41,11 +42,12 @@ public class ResourceManager {
 	public long insertInstance(String name, Vector3D location) {
 		Object3D instance = retrieveObject(name).clone();
 		instance.setPosition(location);
+		long ids = (long) (Math.random() * Long.MAX_VALUE);
 		instance_ids.put(ids, instance);
 		instance_set.add(instance);
 		instance.setID(ids);
 		GameEngine.getGameEngine().addObject(instance);
-		return ids++;
+		return ids;
 	}
 
 	public Object3D retrieveInstance(long id) {
@@ -65,12 +67,16 @@ public class ResourceManager {
 		return manager;
 	}
 
-	public void mapData(HashMap<Long, Object3D> data) {
-		for (Entry<Long, Object3D> entry : data.entrySet()) {
-			instance_ids.get(entry.getKey()).setPosition(
-					entry.getValue().getPosition());
-			instance_ids.get(entry.getKey()).setRotation(
-					entry.getValue().getRotation());
+	public void mapData(ConcurrentHashMap<Long, Cart> data) {
+		for (Entry<Long, Cart> entry : data.entrySet()) {
+			Cart local = (Cart) instance_ids.get(entry.getKey());
+			Cart ref = entry.getValue();
+			local.setPosition(ref.getPosition());
+			local.setRotation(ref.getRotation());
+			local.setForce(ref.getForce());
+			local.setThrustBoost(ref.getThrustBoost());
+			local.setHandling(ref.getHandling());
+			local.setTurnVeloc(ref.getTurnVeloc());
 		}
 	}
 }

@@ -9,7 +9,6 @@ import engine.GameEngine;
 import engine.ResourceManager;
 import engine.graphics.Object3D;
 import racing.Cart;
-import racing.game.Item;
 
 public class NetServer {
 	/**
@@ -58,8 +57,9 @@ public class NetServer {
 	public InetAddress connect() {
 		try {
 			Socket socket = server.accept();// accept client
-			clients.add(new NetServerThread(socket));// accept client and add to
-														// client list
+			clients.add(new NetServerThread(socket, data));// accept client and
+															// add to
+															// client list
 			System.out.println("Connected: "
 					+ socket.getLocalAddress().getHostAddress());
 			return socket.getLocalAddress();
@@ -73,9 +73,9 @@ public class NetServer {
 	 * Send networked data to all threads
 	 */
 	private void sendData() {
-		for (Object3D o : GameEngine.getGameEngine()) {
-			data.addObject(o.getID(), o);
-		}
+		for (Object3D o : GameEngine.getGameEngine())
+			if (o instanceof Cart)
+				data.addObject(o.getID(), (Cart) o);
 		for (NetServerThread thread : clients)
 			try {
 				thread.getOutputStream().writeObject(data);// print data to
@@ -102,7 +102,6 @@ public class NetServer {
 	 */
 	public void update() {
 		sendReady();
-		receiveData();
 		sendData();
 	}
 
