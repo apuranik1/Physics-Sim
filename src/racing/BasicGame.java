@@ -60,17 +60,17 @@ public class BasicGame {
 	}
 	
 	public Vector3D buildMarioCircuit() throws IOException{
-		Vector3D next = new Vector3D(-100,0,-200);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 400)), 50);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(200, 0, 0)), 50);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, -400)), 50);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(-200, 0, 0)), 50);
+		Vector3D next = new Vector3D(-200,0,-400);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 800)), 50);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(400, 0, 0)), 50);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, -800)), 50);
+		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(-400, 0, 0)), 50);
 		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
+		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175,5,0), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
-		rm.insertInstance("launchpad", Vector3D.origin);
-		return new Vector3D(75, 0, 0);
+		//rm.insertInstance("launchpad", Vector3D.origin);
+		return new Vector3D(175, 5, 0);
 	}
 	
 	public static void main(String[] args) throws IOException {
