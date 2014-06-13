@@ -23,6 +23,7 @@ public class NetServerThread implements Runnable {
 			// create output stream
 			output = new ObjectOutputStream(socket.getOutputStream());
 			output.flush();
+			System.out.println("Write!");
 			// create input stream
 			input = new ObjectInputStream(socket.getInputStream());
 			new Thread(this).start();
@@ -49,13 +50,16 @@ public class NetServerThread implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			while (true) {
+		while (true) {
+			try {
+				System.out.println("Begin listen");
+				//while (input.available() == 0);
 				Cart recv = (Cart) input.readObject();
 				data.addObject(recv.getID(), recv);
+				System.out.println(recv.getPosition());
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-
 		}
 	}
 }
