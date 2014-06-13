@@ -102,7 +102,7 @@ public class Cart extends Object3D {
 	}
 
 	public void updateImpl(long nanos) {
-		boolean grounded = framesSinceCollide <= 10;
+		boolean grounded = framesSinceCollide <= 8;
 		System.out.println("frames since collide: " + framesSinceCollide);
 		Vector3D appliedForce = !grounded ? Vector3D.origin :
 								framesSinceBoost > 10 ? force : force.multiply(thrustBoost);
@@ -118,6 +118,7 @@ public class Cart extends Object3D {
 	}
 	
 	public void specialCollide(Object3D other) {
-		framesSinceCollide = 0;
+		if (other.getSpec().isCollidable())
+			framesSinceCollide = 0;
 	}
 }

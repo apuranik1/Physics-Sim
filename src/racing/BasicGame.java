@@ -37,40 +37,61 @@ public class BasicGame {
 	
 	public Vector3D buildTrack1() throws IOException {
 		Vector3D next = new Vector3D(-10,0,0);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 50)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, 40)), 30).add(new Vector3D(0, 0, 50));
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 50)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 100)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(30, -5, 30)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(50, -10, 20)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(40, 0, 16)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(10, 0, -2)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(9, 0, -4)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(5, 0, -5)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(6, 0, -16)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 20, -30)), 30);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 30)), 40);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 50)), 40);
+		Vector3D dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, 50)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 20, 40)), 30);
+		next = dummy.add(new Vector3D(0, 0, 50));
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, 50)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(100, 0, 100)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(30, -5, 30)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(50, -10, 20)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(40, 0, 16)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(10, 0, -2)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(9, 0, -4)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(5, 0, -5)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(6, 0, -16)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 20, -30)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(100, 0, 30)), 40);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(100, 0, 50)), 40);
+		next = dummy;
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
-		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
+		rm.loadObject("launchpad", new LaunchPad(new Vector3D(30, 20, 90), null));
 		rm.insertInstance("launchpad", Vector3D.origin);
 		return new Vector3D(0,5, 0);
 	}
 	
 	public Vector3D buildMarioCircuit() throws IOException{
 		Vector3D next = new Vector3D(-200,0,-400);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, 800)), 50);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(400, 0, 0)), 50);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, -800)), 50);
-		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(-400, 0, 0)), 50);
+		Vector3D dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, 800)), 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(400, 0, 0)), 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, -800)), 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(-400, 0, 0)), 50);
+		next = dummy;
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175,5,0), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
 		//rm.insertInstance("launchpad", Vector3D.origin);
 		return new Vector3D(175, 5, 0);
+
 	}
 	
 	public static void main(String[] args) throws IOException {
