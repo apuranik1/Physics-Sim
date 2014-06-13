@@ -42,9 +42,11 @@ public class NetClient {
 				public void run() {
 					while (true) {
 						try {
-							ConcurrentHashMap<Long, Cart> map2 = (ConcurrentHashMap<Long, Cart>) input.readObject();
+							ConcurrentHashMap<Long, Cart> map2 = (ConcurrentHashMap<Long, Cart>) input
+									.readObject();
 							map = map2;
-							System.out.println("Received data of len "+map2.size());
+							System.out.println("Received data of len "
+									+ map2.size());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -62,20 +64,24 @@ public class NetClient {
 	 * @return Updated network data from server
 	 */
 	public void send() {
-		try {
-			Cart tosend = cart.clone();
-			output.writeObject(tosend);// send cart data
-			output.flush();
-			System.out.println("Sent data: "+tosend.getPosition());
-		} catch (IOException e) {
-			System.out.println("IO Error:" + e.getMessage());
-		}
+		new Thread(new Runnable() {
+			public void run() {
+				try {
+					Cart tosend = cart.clone();
+					output.writeObject(tosend);// send cart data
+					output.flush();
+					System.out.println("Sent data: " + tosend.getPosition());
+				} catch (IOException e) {
+					System.out.println("IO Error:" + e.getMessage());
+				}
+			}
+		}).start();
 	}
 
 	public void update() {
 		ResourceManager.getResourceManager().mapData(map);
 	}
-	
+
 	public Cart getCart() {
 		return cart;
 	}
