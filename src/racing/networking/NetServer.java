@@ -2,8 +2,13 @@ package racing.networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.*;
+
+import javax.swing.Timer;
 
 import engine.GameEngine;
 import engine.ResourceManager;
@@ -28,10 +33,25 @@ public class NetServer {
 	 * @param port
 	 *            Port to listen on
 	 */
-	public NetServer(int port) {
+	private NetServer(int port) {
 		try {
+			data = new NetData();
 			server = new ServerSocket(port);
+			new Thread(new Runnable() {
+				public void run() {
+					while (true)
+						connect();
+				}
+			}).start();
+			new Timer(50, new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					update();
+				}
+			}).start();
 		} catch (IOException e) {
+			e.printStackTrace();
 			System.out.println("Socket error");
 		}
 		this.clients = new ArrayList<NetServerThread>();
@@ -40,9 +60,9 @@ public class NetServer {
 	/**
 	 * @return Local IP Address
 	 */
-	public InetAddress getIP() {
+	public String getIP() {
 		try {
-			return Inet4Address.getLocalHost();
+			return InetAddress.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			System.out.println("IP error: " + e.getMessage());
 		}
@@ -57,9 +77,11 @@ public class NetServer {
 	public InetAddress connect() {
 		try {
 			Socket socket = server.accept();// accept client
-			clients.add(new NetServerThread(socket, data));// accept client and
-															// add to
-															// client list
+			System.out.println("Request join");
+			NetServerThread servThread = new NetServerThread(socket, data);
+			clients.add(servThread);// accept client and
+									// add to
+									// client list
 			System.out.println("Connected: "
 					+ socket.getLocalAddress().getHostAddress());
 			return socket.getLocalAddress();
@@ -73,43 +95,28 @@ public class NetServer {
 	 * Send networked data to all threads
 	 */
 	private void sendData() {
-		for (Object3D o : GameEngine.getGameEngine())
-			if (o instanceof Cart)
-				data.addObject(o.getID(), (Cart) o);
-		for (NetServerThread thread : clients)
+		for(int i=clients.size()-1;i>=0;i--)
 			try {
-				thread.getOutputStream().writeObject(data);// print data to
-															// client
-				System.out.println("Send data");
+				clients.get(i).getOutputStream().writeObject(data);
+				clients.get(i).getOutputStream().flush();
 			} catch (IOException e) {
-				System.out.println("Send : " + e.getMessage());
+				System.out.println("Dropped client!");
+				clients.remove(i);
 			}
+		if(clients.size() > 0)
+			System.out.println("Data sent!");
 		data.reset();
-	}
-
-	private void sendReady() {
-		for (NetServerThread thread : clients)
-			try {
-				thread.getOutputStream().writeUTF("ready");
-				System.out.println("Send ready");
-			} catch (IOException e) {
-				System.out.println("Send : " + e.getMessage());
-			}
 	}
 
 	/**
 	 * Receive network data from all threads, and push back out to all threads
 	 */
 	public void update() {
-		sendReady();
 		sendData();
 	}
 
 	public static void main(String[] args) {
-		NetServer server = new NetServer(5555);
+		NetServer server = new NetServer(8888);
 		System.out.println(server.getIP());
-		server.connect();
-		server.connect();
-		server.update();
 	}
 }

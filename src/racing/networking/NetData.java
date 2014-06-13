@@ -1,5 +1,6 @@
 package racing.networking;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,7 +10,7 @@ import engine.graphics.Object3D;
 import racing.Cart;
 
 //import racing.game.Item;
-public class NetData {
+public class NetData implements Serializable {
 	private ConcurrentHashMap<Long, Cart> carts;
 
 	// private ArrayList<Item> items;

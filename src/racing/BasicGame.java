@@ -33,6 +33,7 @@ public class BasicGame {
 			}
 		});
 		
+		ge.connect("127.0.0.1",myCart);
 	}
 	
 	public Vector3D buildTrack1() throws IOException {

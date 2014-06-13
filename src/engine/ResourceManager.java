@@ -68,15 +68,16 @@ public class ResourceManager {
 	}
 
 	public void mapData(ConcurrentHashMap<Long, Cart> data) {
-		for (Entry<Long, Cart> entry : data.entrySet()) {
-			Cart local = (Cart) instance_ids.get(entry.getKey());
-			Cart ref = entry.getValue();
-			local.setPosition(ref.getPosition());
-			local.setRotation(ref.getRotation());
-			local.setForce(ref.getForce());
-			local.setThrustBoost(ref.getThrustBoost());
-			local.setHandling(ref.getHandling());
-			local.setTurnVeloc(ref.getTurnVeloc());
-		}
+		if(data != null)
+			for (Entry<Long, Cart> entry : data.entrySet()) {
+				Cart local = (Cart) instance_ids.get(entry.getKey());
+				Cart ref = entry.getValue();
+				local.setPosition(ref.getPosition());
+				local.setRotation(ref.getRotation());
+				local.setForce(ref.getForce());
+				local.setThrustBoost(ref.getThrustBoost());
+				local.setHandling(ref.getHandling());
+				local.setTurnVeloc(ref.getTurnVeloc());
+			}
 	}
 }
