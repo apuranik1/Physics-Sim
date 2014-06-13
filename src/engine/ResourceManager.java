@@ -20,6 +20,11 @@ public class ResourceManager {
 		objects = new HashMap<String, Object3D>();
 		instance_ids = new HashMap<Long, Object3D>();
 		instance_set = new HashSet<Object3D>();
+		try {
+			loadObject("defaultCart", new Cart("Cart1.obj"));
+		} catch (Exception e) {
+
+		}
 	}
 
 	public void loadObject(String name, Object3D object) {
@@ -40,9 +45,13 @@ public class ResourceManager {
 	}
 
 	public long insertInstance(String name, Vector3D location) {
+		return insertInstance(name, location,
+				(long) (Math.random() * Long.MAX_VALUE));
+	}
+
+	private long insertInstance(String name, Vector3D location, long ids) {
 		Object3D instance = retrieveObject(name).clone();
 		instance.setPosition(location);
-		long ids = (long) (Math.random() * Long.MAX_VALUE);
 		instance_ids.put(ids, instance);
 		instance_set.add(instance);
 		instance.setID(ids);
@@ -69,23 +78,25 @@ public class ResourceManager {
 
 	public void mapData(ConcurrentHashMap<Long, Cart> data) {
 		try {
-		System.out.println("Map requested! "+data.size());
-		if(data != null)
-			for (Entry<Long, Cart> entry : data.entrySet()) {
-				Cart local = (Cart) instance_ids.get(entry.getKey());
-				if(local == GameEngine.getGameEngine().getMyCart())
-					continue;
-				Cart ref = entry.getValue();
-				local.setPosition(ref.getPosition());
-				System.out.println("Position update: "+ref.getPosition());
-				local.setRotation(ref.getRotation());
-				local.setForce(ref.getForce());
-				local.setThrustBoost(ref.getThrustBoost());
-				local.setHandling(ref.getHandling());
-				local.setTurnVeloc(ref.getTurnVeloc());
-			}
-		}
-		catch(Exception e) {
+			System.out.println("Map requested! " + data.size());
+			if (data != null)
+				for (Entry<Long, Cart> entry : data.entrySet()) {
+					Cart local = (Cart) instance_ids.get(entry.getKey());
+					if (local == GameEngine.getGameEngine().getMyCart())
+						continue;
+					Cart ref = entry.getValue();
+					if (local == null)
+						local = (Cart) retrieveInstance(insertInstance(
+								"defaultCart", ref.getPosition(), ref.getID()));
+					local.setPosition(ref.getPosition());
+					System.out.println("Position update: " + ref.getPosition());
+					local.setRotation(ref.getRotation());
+					local.setForce(ref.getForce());
+					local.setThrustBoost(ref.getThrustBoost());
+					local.setHandling(ref.getHandling());
+					local.setTurnVeloc(ref.getTurnVeloc());
+				}
+		} catch (Exception e) {
 			System.out.println("Server sync error.");
 		}
 	}
