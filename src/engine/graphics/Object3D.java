@@ -7,6 +7,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,25 +24,26 @@ import engine.physics.Quaternion;
 import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
-public class Object3D implements Renderable3D, Cloneable {
+public class Object3D implements Renderable3D, Cloneable, Serializable {
 	protected Motion motion;
-	private PhysicsSpec spec;
+	transient private PhysicsSpec spec;
 	private Quaternion rotation;
-	protected Vector3D[] vertices;
-	protected Vector3D[] normals;
-	protected Color[] colors;
-	protected Vector2D[] textureCoords;
-	private long frame = -1;
-	private Vector3D mincoord;
-	private Vector3D maxcoord;
-	private Material[] materials;
-	private static final Material defaultMaterial = new Material();
+	transient protected Vector3D[] vertices;
+	transient protected Vector3D[] normals;
+	transient protected Color[] colors;
+	transient protected Vector2D[] textureCoords;
+	transient private long frame = -1;
+	transient private Vector3D mincoord;
+	transient private Vector3D maxcoord;
+	transient private Material[] materials;
+	transient private static final Material defaultMaterial = new Material();
 	{
 		defaultMaterial.ambient = new Vector3D(0.2f, 0.2f, 0.2f);
 		defaultMaterial.diffuse = new Vector3D(0.8f, 0.8f, 0.8f);
 		defaultMaterial.specular = new Vector3D(0.0f, 0.0f, 0.0f);
-		
+
 	}
+	private long id;
 
 	public Object3D(Vector3D[] vertices, Vector3D[] normals,
 			Vector2D[] textureCoords, Color[] colors, Motion motion) {
@@ -69,8 +71,7 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public Object3D clone() {
 		try {
-			Object3D clone;
-			clone = (Object3D) super.clone();
+			Object3D clone = (Object3D) super.clone();
 			clone.motion = motion.clone();
 			clone.setRotation(this.getRotation());
 			return clone;
@@ -105,34 +106,47 @@ public class Object3D implements Renderable3D, Cloneable {
 
 	public void render(GL2 gl) {
 		gl.glBegin(GL_TRIANGLES);
-		if(materials == null) {
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT, defaultMaterial.ambient.toFloat(), 0);
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE, defaultMaterial.diffuse.toFloat(), 0);
-			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, defaultMaterial.specular.toFloat(), 0);
+		if (materials == null) {
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT,
+					defaultMaterial.ambient.toFloat(), 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE,
+					defaultMaterial.diffuse.toFloat(), 0);
+			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR,
+					defaultMaterial.specular.toFloat(), 0);
 		}
 		for (int i = 0; i < vertices.length; i++) {
-			//if (colors != null)
-			//	gl.glColor3d(colors[i].getRed() / 255d,
-			//			colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
-			//if (textureCoords != null)
-			//	gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
+			// if (colors != null)
+			// gl.glColor3d(colors[i].getRed() / 255d,
+			// colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
+			// if (textureCoords != null)
+			// gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
 			if (normals != null)
 				gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
 			if (materials != null) {
 				Material on = materials[i];
-				if(on.ambient != null)
-					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT, on.ambient.toFloat(), 0);
+				if (on.ambient != null)
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
+							GLLightingFunc.GL_AMBIENT, on.ambient.toFloat(), 0);
 				else
-					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_AMBIENT, defaultMaterial.ambient.toFloat(), 0);
-				if(on.diffuse != null)
-					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE, on.diffuse.toFloat(), 0);
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
+							GLLightingFunc.GL_AMBIENT,
+							defaultMaterial.ambient.toFloat(), 0);
+				if (on.diffuse != null)
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
+							GLLightingFunc.GL_DIFFUSE, on.diffuse.toFloat(), 0);
 				else
-					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_DIFFUSE, defaultMaterial.diffuse.toFloat(), 0);
-				if(on.specular != null)
-					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, on.specular.toFloat(), 0);
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
+							GLLightingFunc.GL_DIFFUSE,
+							defaultMaterial.diffuse.toFloat(), 0);
+				if (on.specular != null)
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
+							GLLightingFunc.GL_SPECULAR, on.specular.toFloat(),
+							0);
 				else
-					gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, defaultMaterial.specular.toFloat(), 0);
-			} 
+					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
+							GLLightingFunc.GL_SPECULAR,
+							defaultMaterial.specular.toFloat(), 0);
+			}
 			gl.glVertex3d(vertices[i].x, vertices[i].y, vertices[i].z);
 		}
 		gl.glEnd();
@@ -212,7 +226,7 @@ public class Object3D implements Renderable3D, Cloneable {
 					noutput.add(normals.get(Integer.parseInt(dats[1].split("/")[2]) - 1));
 					noutput.add(normals.get(Integer.parseInt(dats[2].split("/")[2]) - 1));
 					noutput.add(normals.get(Integer.parseInt(dats[3].split("/")[2]) - 1));
-					for(int i=0;i<3;i++)
+					for (int i = 0; i < 3; i++)
 						material.add(current);
 				} else if (dats.length == 5) {
 					output.add(vertices.get(Integer.parseInt(dats[1].split("/")[0]) - 1));
@@ -227,7 +241,7 @@ public class Object3D implements Renderable3D, Cloneable {
 					noutput.add(normals.get(Integer.parseInt(dats[3].split("/")[2]) - 1));
 					noutput.add(normals.get(Integer.parseInt(dats[4].split("/")[2]) - 1));
 					noutput.add(normals.get(Integer.parseInt(dats[1].split("/")[2]) - 1));
-					for(int i=0;i<6;i++)
+					for (int i = 0; i < 6; i++)
 						material.add(current);
 				}
 			} else {
@@ -359,5 +373,13 @@ public class Object3D implements Renderable3D, Cloneable {
 			vertices[i] = vertices[i].scale(that);
 		computeBoundingBox();
 		System.out.println(mincoord + " " + maxcoord);
+	}
+
+	public long getID() {
+		return id;
+	}
+
+	public void setID(long l) {
+		id = l;
 	}
 }
