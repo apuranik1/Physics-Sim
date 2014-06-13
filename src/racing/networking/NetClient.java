@@ -42,9 +42,9 @@ public class NetClient {
 				public void run() {
 					while (true) {
 						try {
-							while (input.available() == 0);
-							map = (ConcurrentHashMap<Long, Cart>) input.readObject();
-							System.out.println("Received data");
+							ConcurrentHashMap<Long, Cart> map2 = (ConcurrentHashMap<Long, Cart>) input.readObject();
+							map = map2;
+							System.out.println("Received data of len "+map2.size());
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -63,9 +63,10 @@ public class NetClient {
 	 */
 	public void send() {
 		try {
-			output.writeObject(cart);// send cart data
+			Cart tosend = cart.clone();
+			output.writeObject(tosend);// send cart data
 			output.flush();
-			System.out.println("Sent data.");
+			System.out.println("Sent data: "+tosend.getPosition());
 		} catch (IOException e) {
 			System.out.println("IO Error:" + e.getMessage());
 		}
@@ -73,6 +74,10 @@ public class NetClient {
 
 	public void update() {
 		ResourceManager.getResourceManager().mapData(map);
+	}
+	
+	public Cart getCart() {
+		return cart;
 	}
 	/*
 	 * public static void main(String[] args){ try { BufferedReader reader=new

@@ -50,15 +50,16 @@ public class NetServerThread implements Runnable {
 
 	@Override
 	public void run() {
+		System.out.println("Begin listen");
 		while (true) {
 			try {
-				System.out.println("Begin listen");
 				//while (input.available() == 0);
 				Cart recv = (Cart) input.readObject();
-				data.addObject(recv.getID(), recv);
+				data.addObject(recv);
 				System.out.println(recv.getPosition());
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.out.println("Dropped client listen.");
+				return;
 			}
 		}
 	}

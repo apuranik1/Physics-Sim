@@ -14,7 +14,7 @@ import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class Cart extends Object3D implements Serializable {
-	private static final CarForces CAR_FORCES = new CarForces(40, 1.33);
+	private static final transient CarForces CAR_FORCES = new CarForces(40, 1.33);
 
 	private Vector3D force;
 	private double thrustBoost;
@@ -36,7 +36,6 @@ public class Cart extends Object3D implements Serializable {
 
 	public Cart clone() {
 		Cart that = (Cart) super.clone();
-		that.force = force;
 		return that;
 	}
 

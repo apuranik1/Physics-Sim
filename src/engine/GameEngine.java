@@ -297,4 +297,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public void connect(String address, Cart me) {
 		client = new NetClient(address, 8888, me);
 	}
+	
+	public Cart getMyCart() {
+		return client.getCart();
+	}
 }

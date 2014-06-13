@@ -2,6 +2,7 @@ package racing.networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -95,17 +96,17 @@ public class NetServer {
 	 * Send networked data to all threads
 	 */
 	private void sendData() {
+		ConcurrentHashMap<Long, Cart> map = new ConcurrentHashMap<>(data.getMap());
 		for(int i=clients.size()-1;i>=0;i--)
 			try {
-				clients.get(i).getOutputStream().writeObject(data);
+				clients.get(i).getOutputStream().writeObject(map);
 				clients.get(i).getOutputStream().flush();
 			} catch (IOException e) {
 				System.out.println("Dropped client!");
 				clients.remove(i);
 			}
 		if(clients.size() > 0)
-			System.out.println("Data sent!");
-		data.reset();
+			System.out.println("Data sent! "+map.size());
 	}
 
 	/**

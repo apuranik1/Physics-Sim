@@ -68,16 +68,25 @@ public class ResourceManager {
 	}
 
 	public void mapData(ConcurrentHashMap<Long, Cart> data) {
+		try {
+		System.out.println("Map requested! "+data.size());
 		if(data != null)
 			for (Entry<Long, Cart> entry : data.entrySet()) {
 				Cart local = (Cart) instance_ids.get(entry.getKey());
+				if(local == GameEngine.getGameEngine().getMyCart())
+					continue;
 				Cart ref = entry.getValue();
 				local.setPosition(ref.getPosition());
+				System.out.println("Position update: "+ref.getPosition());
 				local.setRotation(ref.getRotation());
 				local.setForce(ref.getForce());
 				local.setThrustBoost(ref.getThrustBoost());
 				local.setHandling(ref.getHandling());
 				local.setTurnVeloc(ref.getTurnVeloc());
 			}
+		}
+		catch(Exception e) {
+			System.out.println("Server sync error.");
+		}
 	}
 }

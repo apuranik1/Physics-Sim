@@ -71,8 +71,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 
 	public Object3D clone() {
 		try {
-			Object3D clone;
-			clone = (Object3D) super.clone();
+			Object3D clone = (Object3D) super.clone();
 			clone.motion = motion.clone();
 			clone.setRotation(this.getRotation());
 			return clone;
