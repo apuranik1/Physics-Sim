@@ -20,11 +20,6 @@ public class ResourceManager {
 		objects = new HashMap<String, Object3D>();
 		instance_ids = new HashMap<Long, Object3D>();
 		instance_set = new HashSet<Object3D>();
-		try {
-			loadObject("defaultCart", new Cart("Cart1.obj"));
-		} catch (Exception e) {
-
-		}
 	}
 
 	public void loadObject(String name, Object3D object) {
@@ -78,6 +73,8 @@ public class ResourceManager {
 
 	public void mapData(ConcurrentHashMap<Long, Cart> data) {
 		try {
+			if(!objects.containsKey("defaultCart"))
+				loadObject("defaultCart", new Cart("Cart1.obj"));
 			System.out.println("Map requested! " + data.size());
 			if (data != null)
 				for (Entry<Long, Cart> entry : data.entrySet()) {
