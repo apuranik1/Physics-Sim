@@ -47,6 +47,7 @@ public class NetClient {
 							map = map2;
 							System.out.println("Received data of len "
 									+ map2.size());
+							needsUpdate = true;
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -78,8 +79,12 @@ public class NetClient {
 		}).start();
 	}
 
+	private boolean needsUpdate = false;
 	public void update() {
-		ResourceManager.getResourceManager().mapData(map);
+		if(needsUpdate) {
+			ResourceManager.getResourceManager().mapData(map);
+			needsUpdate = false;
+		}
 	}
 
 	public Cart getCart() {
