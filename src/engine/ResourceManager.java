@@ -75,7 +75,6 @@ public class ResourceManager {
 		try {
 			if(!objects.containsKey("defaultCart"))
 				loadObject("defaultCart", new Cart("Cart1.obj"));
-			System.out.println("Map requested! " + data.size());
 			if (data != null)
 				for (Entry<Long, Cart> entry : data.entrySet()) {
 					Cart local = (Cart) instance_ids.get(entry.getKey());

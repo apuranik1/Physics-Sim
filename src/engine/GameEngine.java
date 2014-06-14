@@ -153,16 +153,16 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		long time = System.nanoTime();
 		physicsRefresh(frame, dt);
 		long delta = System.nanoTime() - time;
-		System.out.println("Movement time:  " + delta);
+		//System.out.println("Movement time:  " + delta);
 		time = System.nanoTime();
 		updateKeys();
 		delta = System.nanoTime() - time;
-		System.out.println("Input time:     " + delta);
+		//System.out.println("Input time:     " + delta);
 		physics.checkCollisions();
 		time = System.nanoTime();
 		animationRefresh();
 		delta = System.nanoTime() - time;
-		System.out.println("Animation time: " + delta);
+		//System.out.println("Animation time: " + delta);
 		if(client != null)
 			client.send();
 	}

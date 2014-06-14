@@ -104,7 +104,7 @@ public class Cart extends Object3D implements Serializable {
 
 	public void updateImpl(long nanos) {
 		boolean grounded = framesSinceCollide <= 10;
-		System.out.println("frames since collide: " + framesSinceCollide);
+		//System.out.println("frames since collide: " + framesSinceCollide);
 		Vector3D appliedForce = !grounded ? Vector3D.origin
 				: framesSinceBoost > 10 ? force : force.multiply(thrustBoost);
 		CAR_FORCES.updateAccel(motion, appliedForce, getSpec().getMass(),
@@ -112,7 +112,7 @@ public class Cart extends Object3D implements Serializable {
 		Vector3D forward = getRotation().toMatrix().multiply(
 				new Vector3D(0, 0, 1));
 		double dPos = getVelocity().project(forward);
-		System.out.println("dPos = " + dPos);
+		//System.out.println("dPos = " + dPos);
 		if (grounded)
 			uncheckedSetRotation(getRotation().multiply(
 					new Quaternion(new Vector3D(0, 1, 0), turnVeloc * dPos

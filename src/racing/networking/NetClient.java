@@ -45,8 +45,6 @@ public class NetClient {
 							ConcurrentHashMap<Long, Cart> map2 = (ConcurrentHashMap<Long, Cart>) input
 									.readObject();
 							map = map2;
-							System.out.println("Received data of len "
-									+ map2.size());
 							needsUpdate = true;
 						} catch (Exception e) {
 							e.printStackTrace();
@@ -71,7 +69,6 @@ public class NetClient {
 					Cart tosend = cart.clone();
 					output.writeObject(tosend);// send cart data
 					output.flush();
-					System.out.println("Sent data: " + tosend.getPosition());
 				} catch (IOException e) {
 					System.out.println("IO Error:" + e.getMessage());
 				}

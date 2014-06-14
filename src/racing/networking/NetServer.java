@@ -44,11 +44,11 @@ public class NetServer {
 						connect();
 				}
 			}).start();
-			new Timer(50, new ActionListener() {
+			new Timer(10, new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					update();
+					sendData();
 				}
 			}).start();
 		} catch (IOException e) {
@@ -98,24 +98,10 @@ public class NetServer {
 	private void sendData() {
 		ConcurrentHashMap<Long, Cart> map = new ConcurrentHashMap<>(data.getMap());
 		for(int i=clients.size()-1;i>=0;i--)
-			try {
-				clients.get(i).getOutputStream().writeObject(map);
-				clients.get(i).getOutputStream().flush();
-			} catch (IOException e) {
-				System.out.println("Dropped client!");
-				clients.remove(i);
-			}
-		if(clients.size() > 0)
-			System.out.println("Data sent! "+map.size());
+			clients.get(i).enqueue();
+		data.clear();
 	}
-
-	/**
-	 * Receive network data from all threads, and push back out to all threads
-	 */
-	public void update() {
-		sendData();
-	}
-
+	
 	public static void main(String[] args) {
 		NetServer server = new NetServer(8888);
 		System.out.println(server.getIP());

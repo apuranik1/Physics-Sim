@@ -42,7 +42,7 @@ public class PhysicsManager {
 					}
 		}
 		long end = System.nanoTime();
-		System.out.println("Physics time:   " + (end - start));
+		//System.out.println("Physics time:   " + (end - start));
 	}
 
 	/**

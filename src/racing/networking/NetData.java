@@ -25,4 +25,8 @@ public class NetData implements Serializable {
 	public ConcurrentHashMap<Long, Cart> getMap() {
 		return carts;
 	}
+	
+	public void clear() {
+		carts.clear();
+	}
 }
