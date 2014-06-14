@@ -122,7 +122,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 			// gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
 			if (normals != null)
 				gl.glNormal3d(normals[i].x, normals[i].y, normals[i].z);
-			if (materials != null) {
+			if (materials != null && (i == 0 || !materials[i].equals(materials[i-1]))) {
 				Material on = materials[i];
 				if (on.ambient != null)
 					gl.glMaterialfv(GL.GL_FRONT_AND_BACK,
