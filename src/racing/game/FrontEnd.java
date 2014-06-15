@@ -1,4 +1,5 @@
 package racing.game;
+
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -25,184 +26,226 @@ import javax.swing.JLabel;
 import com.sun.awt.AWTUtilities;
 
 import racing.BasicGame;
+import racing.networking.NetServer;
 import engine.GameEngine;
+
 public class FrontEnd {
 	private Frame frame;
-	private static final String INSTRUCTIONS="";
+	private static final String INSTRUCTIONS = "";
 	private static FrontEnd fe;
-	public static FrontEnd getFrontEnd(){
-		if(fe==null)fe=new FrontEnd();
+
+	public static FrontEnd getFrontEnd() {
+		if (fe == null)
+			fe = new FrontEnd();
 		return fe;
 	}
-	private FrontEnd(){
-		frame=new Frame("Racing");
-		frame.setLayout(new GridLayout(0,1));
-		frame.setPreferredSize(new Dimension(190,140));
+
+	private FrontEnd() {
+		frame = new Frame("Racing");
+		frame.setLayout(new GridLayout(0, 1));
+		frame.setPreferredSize(new Dimension(190, 140));
 		((GridLayout) (frame.getLayout())).setHgap(5);
 		((GridLayout) (frame.getLayout())).setVgap(5);
-		Button newGame=new Button("New Game");
-		newGame.addActionListener(new ActionListener(){
+		Button newGame = new Button("New Game");
+		newGame.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				typeSelect();
 			}
 		});
-		Button instructions=new Button("Instructions");
-		instructions.addActionListener(new ActionListener(){
+		Button instructions = new Button("Instructions");
+		instructions.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showInstructions();
 			}
 		});
-		Button quit=new Button("Quit");
-		quit.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		Button quit = new Button("Quit");
+		quit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		//handle quit button
-		frame.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent windowEvent){
-	            System.exit(0);
+		// handle quit button
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent windowEvent) {
+				System.exit(0);
 			}
 		});
 		frame.add(newGame);
 		frame.add(instructions);
 		frame.add(quit);
 		frame.pack();
-		//Center frame
-		frame.setLocation(frame.getToolkit().getScreenSize().width/2-frame.getWidth()/2, frame.getToolkit().getScreenSize().height/2-frame.getHeight()/2);
+		// Center frame
+		frame.setLocation(
+				frame.getToolkit().getScreenSize().width / 2 - frame.getWidth()
+						/ 2, frame.getToolkit().getScreenSize().height / 2
+						- frame.getHeight() / 2);
 		frame.setVisible(true);
 	}
-	public void showPopup(String msg){
-		final Frame pframe=new Frame();
+
+	public void showPopup(String msg) {
+		final Frame pframe = new Frame();
 		pframe.setUndecorated(true);
-		JLabel label=new JLabel(msg);
-		label.setFont(new Font("sansserif",Font.BOLD,30));
+		JLabel label = new JLabel(msg);
+		label.setFont(new Font("sansserif", Font.BOLD, 30));
 		AWTUtilities.setWindowOpaque(pframe, false);
 		pframe.add(label);
-		label.addMouseListener(new MouseListener(){
+		label.addMouseListener(new MouseListener() {
 			public void mouseClicked(MouseEvent arg0) {
 			}
+
 			public void mouseEntered(MouseEvent arg0) {
 			}
+
 			public void mouseExited(MouseEvent arg0) {
 			}
+
 			public void mousePressed(MouseEvent e) {
-				if(e.getButton()==MouseEvent.BUTTON1)pframe.dispose();
+				if (e.getButton() == MouseEvent.BUTTON1)
+					pframe.dispose();
 			}
+
 			public void mouseReleased(MouseEvent arg0) {
 			}
 		});
 		pframe.pack();
-		pframe.setLocation(pframe.getToolkit().getScreenSize().width/2-pframe.getWidth()/2, pframe.getToolkit().getScreenSize().height/2-pframe.getHeight()/2);
+		pframe.setLocation(
+				pframe.getToolkit().getScreenSize().width / 2
+						- pframe.getWidth() / 2,
+				pframe.getToolkit().getScreenSize().height / 2
+						- pframe.getHeight() / 2);
 		pframe.setVisible(true);
 	}
-	private void typeSelect(){
-		final Frame iframe=new Frame("Game Type Select");
-		iframe.setLayout(new GridLayout(0,1));
-		iframe.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
+
+	private void typeSelect() {
+		final Frame iframe = new Frame("Game Type Select");
+		iframe.setLayout(new GridLayout(0, 1));
+		iframe.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
 				iframe.dispose();
 			}
 		});
 		((GridLayout) (iframe.getLayout())).setHgap(5);
 		((GridLayout) (iframe.getLayout())).setVgap(5);
-		Button single=new Button("Singleplayer");
-		single.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		Button single = new Button("Singleplayer");
+		single.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				try {
-					new BasicGame();
+					iframe.dispose();
+					new BasicGame(null);
+					GameEngine ge = GameEngine.getGameEngine();
+					ge.beginGame();
 				} catch (IOException e1) {
-					showPopup("Error: "+e1.getMessage());
+					showPopup("Error: " + e1.getMessage());
 				}
-				GameEngine.getGameEngine().beginGame();
-				iframe.dispose();
 			}
 		});
-		Button multiServer=new Button("Multiplayer Server");
+		Button multiServer = new Button("Multiplayer Server");
 		multiServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				iframe.dispose();
+				NetServer.main(null);
 			}
 		});
-		Button multiClient=new Button("Multiplayer Client");
+		Button multiClient = new Button("Multiplayer Client");
 		multiClient.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				getIP();
 				iframe.dispose();
+				getIP();
 			}
 		});
 		iframe.add(single);
 		iframe.add(multiServer);
 		iframe.add(multiClient);
 		iframe.pack();
-		iframe.setLocation(iframe.getToolkit().getScreenSize().width/2-iframe.getWidth()/2, iframe.getToolkit().getScreenSize().height/2-iframe.getHeight()/2);
+		iframe.setLocation(
+				iframe.getToolkit().getScreenSize().width / 2
+						- iframe.getWidth() / 2,
+				iframe.getToolkit().getScreenSize().height / 2
+						- iframe.getHeight() / 2);
 		iframe.setVisible(true);
 	}
-	private void getIP(){
-		final Frame iframe=new Frame("IP Address");
-		iframe.setLayout(new GridLayout(1,0));
-		iframe.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
+
+	private void getIP() {
+		final Frame iframe = new Frame("IP Address");
+		iframe.setLayout(new GridLayout(1, 0));
+		iframe.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
 				iframe.dispose();
 			}
 		});
 		((GridLayout) (iframe.getLayout())).setHgap(5);
 		((GridLayout) (iframe.getLayout())).setVgap(5);
 		iframe.add(new Label("IP Address: "));
-		final TextField field=new TextField("");
+		final TextField field = new TextField("");
 		field.setColumns(15);
 		iframe.add(field);
-		final Button enter=new Button("Enter");
-		enter.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent e){
+		final Button enter = new Button("Enter");
+		enter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
 				try {
-					InetAddress.getByName(field.getText());
 					iframe.dispose();
-				} catch (UnknownHostException e1) {
-					showPopup("Error: "+e1.getMessage());
+					new BasicGame(field.getText());
+					GameEngine ge = GameEngine.getGameEngine();
+					ge.beginGame();
+				} catch (Exception e1) {
+					showPopup("Error: " + e1.getMessage());
 				}
 			}
 		});
-		field.addKeyListener(new KeyListener(){
+		field.addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {
 			}
+
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode()==KeyEvent.VK_ENTER)enter.dispatchEvent(new ActionEvent((Object)enter,ActionEvent.ACTION_PERFORMED,""));
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					enter.dispatchEvent(new ActionEvent((Object) enter,
+							ActionEvent.ACTION_PERFORMED, ""));
 			}
+
 			public void keyReleased(KeyEvent e) {
 			}
 		});
 		iframe.add(enter);
 		iframe.pack();
-		iframe.setLocation(iframe.getToolkit().getScreenSize().width/2-iframe.getWidth()/2, iframe.getToolkit().getScreenSize().height/2-iframe.getHeight()/2);
+		iframe.setLocation(
+				iframe.getToolkit().getScreenSize().width / 2
+						- iframe.getWidth() / 2,
+				iframe.getToolkit().getScreenSize().height / 2
+						- iframe.getHeight() / 2);
 		iframe.setVisible(true);
 	}
-	private void showInstructions(){
-		final Frame iframe=new Frame("Instructions");
+
+	private void showInstructions() {
+		final Frame iframe = new Frame("Instructions");
 		iframe.setLayout(new FlowLayout());
-		Button cancel=new Button("Cancel");
-		cancel.addActionListener(new ActionListener(){
+		Button cancel = new Button("Cancel");
+		cancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				iframe.dispose();
 			}
 		});
-		TextArea ta=new TextArea(INSTRUCTIONS);
+		TextArea ta = new TextArea(INSTRUCTIONS);
 		ta.setEditable(false);
-		ta.setPreferredSize(new Dimension(300,200));
-		//handle quit button
-		iframe.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent windowEvent){
+		ta.setPreferredSize(new Dimension(300, 200));
+		// handle quit button
+		iframe.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent windowEvent) {
 				iframe.dispose();
 			}
 		});
 		iframe.add(ta);
 		iframe.add(cancel);
 		iframe.pack();
-		//center frame
-		iframe.setLocation(iframe.getToolkit().getScreenSize().width/2-iframe.getWidth()/2, iframe.getToolkit().getScreenSize().height/2-iframe.getHeight()/2);
+		// center frame
+		iframe.setLocation(
+				iframe.getToolkit().getScreenSize().width / 2
+						- iframe.getWidth() / 2,
+				iframe.getToolkit().getScreenSize().height / 2
+						- iframe.getHeight() / 2);
 		iframe.setVisible(true);
 	}
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		FrontEnd.getFrontEnd();
 	}
 }
