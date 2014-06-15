@@ -1,6 +1,7 @@
 package racing.game;
 
 import java.awt.Button;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -87,6 +88,7 @@ public class FrontEnd {
 		pframe.setUndecorated(true);
 		JLabel label = new JLabel(msg);
 		label.setFont(new Font("sansserif", Font.BOLD, 30));
+		label.setForeground(Color.RED);
 		AWTUtilities.setWindowOpaque(pframe, false);
 		pframe.add(label);
 		label.addMouseListener(new MouseListener() {

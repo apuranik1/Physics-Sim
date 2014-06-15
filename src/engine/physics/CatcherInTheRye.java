@@ -25,6 +25,7 @@ public class CatcherInTheRye extends Object3D {
 				other.setPosition(target);
 			other.setVelocity(Vector3D.origin);
 			other.setAcceleration(Vector3D.origin);
+			other.setRotation(new Quaternion(new Vector3D(0,1,0), 0));
 		}
 	}
 	

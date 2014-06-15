@@ -9,6 +9,7 @@ import engine.animation.Animator;
 import engine.animation.CameraFollow;
 import engine.graphics.Object3D;
 import engine.physics.CatcherInTheRye;
+import engine.physics.PhysicsSpec;
 import engine.physics.Vector3D;
 
 public class BasicGame {
@@ -61,7 +62,7 @@ public class BasicGame {
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 30)), 40);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(100, 0, 50)), 40);
 		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
+		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
 		rm.insertInstance("launchpad", Vector3D.origin);
@@ -75,11 +76,21 @@ public class BasicGame {
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(0, 0, -800)), 50);
 		next = TrackBuilder.addTrackRun(next, next.add(new Vector3D(-400, 0, 0)), 50);
 		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175,5,0), false));
+		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
+		rm.loadObject("finishLine", buildFinishLine());
+		rm.insertInstance("finishLine", new Vector3D(175,1, 0));
 		//rm.insertInstance("launchpad", Vector3D.origin);
-		return new Vector3D(175, 5, 0);
+		return new Vector3D(175, 5, -30);
+	}
+	
+	public Object3D buildFinishLine() throws IOException {
+		Object3D finishLine = new Object3D("finish.obj");
+		finishLine.setSpec(new PhysicsSpec(false, false, false, false, Double.POSITIVE_INFINITY));
+		finishLine.scale(new Vector3D(50,20,10));
+		finishLine.setAcceleration(Vector3D.origin);
+		return finishLine;
 	}
 	
 	public static void main(String[] args) throws IOException {

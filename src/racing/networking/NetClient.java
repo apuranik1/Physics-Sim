@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import engine.ResourceManager;
 import engine.graphics.Object3D;
 import racing.Cart;
+import racing.game.FrontEnd;
 
 public class NetClient {
 	private Socket socket;
@@ -49,7 +50,13 @@ public class NetClient {
 							map = map2;
 							needsUpdate = true;
 						} catch (Exception e) {
-							JOptionPane.showConfirmDialog(null, "Server connection lost!", "Disconnected", -1);
+							FrontEnd.getFrontEnd().showPopup("Server connection lost! Exiting...");
+							try {
+								Thread.sleep(2000);
+							}
+							catch(Exception ex) {
+								
+							}
 							System.exit(0);
 						}
 					}
