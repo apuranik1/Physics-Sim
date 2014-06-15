@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.*;
 
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import engine.GameEngine;
@@ -38,6 +39,7 @@ public class NetServer {
 		try {
 			data = new NetData();
 			server = new ServerSocket(port);
+			JOptionPane.showConfirmDialog(null, "Server running! Server address is "+getIP()+"!", "Server Ready", -1);
 			new Thread(new Runnable() {
 				public void run() {
 					while (true)

@@ -5,6 +5,8 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JOptionPane;
+
 import engine.ResourceManager;
 import engine.graphics.Object3D;
 import racing.Cart;
@@ -47,7 +49,8 @@ public class NetClient {
 							map = map2;
 							needsUpdate = true;
 						} catch (Exception e) {
-							e.printStackTrace();
+							JOptionPane.showConfirmDialog(null, "Server connection lost!", "Disconnected", -1);
+							System.exit(0);
 						}
 					}
 				}
