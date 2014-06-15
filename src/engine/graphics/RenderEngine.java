@@ -111,22 +111,22 @@ public class RenderEngine implements GLEventListener {
 		try {
 			skybox = new Texture[6];
 			TextureData data = TextureIO.newTextureData(GLProfile.getDefault(),
-					new FileInputStream("sky_neg_x.bmp"), false, "bmp");
+					RenderEngine.class.getClassLoader().getResourceAsStream("sky_neg_x.bmp"), false, "bmp");
 			skybox[0] = TextureIO.newTexture(data);
 			data = TextureIO.newTextureData(GLProfile.getDefault(),
-					new FileInputStream("sky_pos_x.bmp"), false, "bmp");
+					RenderEngine.class.getClassLoader().getResourceAsStream("sky_pos_x.bmp"), false, "bmp");
 			skybox[1] = TextureIO.newTexture(data);
 			data = TextureIO.newTextureData(GLProfile.getDefault(),
-					new FileInputStream("sky_neg_y.bmp"), false, "bmp");
+					RenderEngine.class.getClassLoader().getResourceAsStream("sky_neg_y.bmp"), false, "bmp");
 			skybox[2] = TextureIO.newTexture(data);
 			data = TextureIO.newTextureData(GLProfile.getDefault(),
-					new FileInputStream("sky_pos_y.bmp"), false, "bmp");
+					RenderEngine.class.getClassLoader().getResourceAsStream("sky_pos_y.bmp"), false, "bmp");
 			skybox[3] = TextureIO.newTexture(data);
 			data = TextureIO.newTextureData(GLProfile.getDefault(),
-					new FileInputStream("sky_neg_z.bmp"), false, "bmp");
+					RenderEngine.class.getClassLoader().getResourceAsStream("sky_neg_z.bmp"), false, "bmp");
 			skybox[4] = TextureIO.newTexture(data);
 			data = TextureIO.newTextureData(GLProfile.getDefault(),
-					new FileInputStream("sky_pos_z.bmp"), false, "bmp");
+					RenderEngine.class.getClassLoader().getResourceAsStream("sky_pos_z.bmp"), false, "bmp");
 			skybox[5] = TextureIO.newTexture(data);
 		} catch (Exception e) {
 			e.printStackTrace();

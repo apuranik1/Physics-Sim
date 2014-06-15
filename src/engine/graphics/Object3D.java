@@ -171,7 +171,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 	}
 
 	public Object3D(String file) throws IOException {
-		this(new FileInputStream(file));
+		this(Object3D.class.getClassLoader().getResourceAsStream(file));
 	}
 
 	public Object3D(InputStream is) throws IOException {
@@ -267,7 +267,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 
 	private static void readMaterials(HashMap<String, Material> materials,
 			String file) throws IOException {
-		FileInputStream is = new FileInputStream(file);
+		InputStream is = Object3D.class.getClassLoader().getResourceAsStream(file);
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		byte[] buffer = new byte[4096];
 		int len = 0;
