@@ -74,7 +74,7 @@ public class ResourceManager {
 	public void mapData(ConcurrentHashMap<Long, Cart> data) {
 		try {
 			if(!objects.containsKey("defaultCart"))
-				loadObject("defaultCart", new Cart("Cart1.obj"));
+				loadObject("defaultCart", new Cart("Cart2.obj"));
 			if (data != null)
 				for (Entry<Long, Cart> entry : data.entrySet()) {
 					Cart local = (Cart) instance_ids.get(entry.getKey());
