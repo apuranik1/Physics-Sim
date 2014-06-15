@@ -1,7 +1,15 @@
 package engine.test;
 
 import java.awt.event.KeyEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import racing.Cart;
 
 import engine.ContinuousAnimationEvent;
 import engine.EventProcessor;
@@ -16,6 +24,15 @@ import engine.physics.Vector3D;
 
 public class MonkeySpawner {
 	public static void main(String[] args) throws Exception {
+		ConcurrentHashMap<Long, Cart> data = new ConcurrentHashMap<Long, Cart>();
+		data.put(10l, new Cart("cart1.obj"));
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("out.txt"));
+		oos.writeObject(data);
+		oos.flush();
+		oos.close();
+		ObjectInputStream ois = new ObjectInputStream(new FileInputStream("out.txt"));
+		ConcurrentHashMap<Long,Cart> that = (ConcurrentHashMap<Long, Cart>) ois.readObject();
+		System.out.println(that.size()+" received ");
 		// monkey cascade!
 		
 		GameEngine engine = GameEngine.getGameEngine();

@@ -1,6 +1,8 @@
 package engine.physics;
 
-public class Quaternion {
+import java.io.Serializable;
+
+public class Quaternion implements Serializable {
 
 	public final double w, x, y, z;
 

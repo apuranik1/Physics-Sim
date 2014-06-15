@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Stack;
@@ -20,6 +21,9 @@ import javax.media.opengl.GL2;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
+
+import racing.Cart;
+import racing.networking.NetClient;
 
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
@@ -50,6 +54,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	private double fovy;
 	private HashSet<Integer> keysPressed;
 	private PhysicsManager physics;
+	private NetClient client;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -143,19 +148,23 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	}
 
 	public void fireFrameUpdate(long frame, long dt) {
+		if (client != null)
+			client.update();
 		long time = System.nanoTime();
 		physicsRefresh(frame, dt);
 		long delta = System.nanoTime() - time;
-		System.out.println("Movement time:  " + delta);
+		//System.out.println("Movement time:  " + delta);
 		time = System.nanoTime();
 		updateKeys();
 		delta = System.nanoTime() - time;
-		System.out.println("Input time:     " + delta);
+		//System.out.println("Input time:     " + delta);
 		physics.checkCollisions();
 		time = System.nanoTime();
 		animationRefresh();
 		delta = System.nanoTime() - time;
-		System.out.println("Animation time: " + delta);
+		//System.out.println("Animation time: " + delta);
+		if(client != null)
+			client.send();
 	}
 
 	private void animationRefresh() {
@@ -283,5 +292,13 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void connect(String address, Cart me) {
+		client = new NetClient(address, 8888, me);
+	}
+	
+	public Cart getMyCart() {
+		return client.getCart();
 	}
 }

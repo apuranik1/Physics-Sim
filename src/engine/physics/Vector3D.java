@@ -1,6 +1,8 @@
 package engine.physics;
 
-public class Vector3D {
+import java.io.Serializable;
+
+public class Vector3D implements Serializable {
 
 	public final double x;
 	public final double y;

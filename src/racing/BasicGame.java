@@ -12,7 +12,7 @@ import engine.physics.CatcherInTheRye;
 import engine.physics.Vector3D;
 
 public class BasicGame {
-	public BasicGame() throws IOException {
+	public BasicGame(String connectTo) throws IOException {
 		Vector3D startPos = buildMarioCircuit();
 		final ResourceManager rm = ResourceManager.getResourceManager();
 		
@@ -32,7 +32,16 @@ public class BasicGame {
 //				rm.insertInstance("monkey", Vector3D.rand().multiply(100));
 //			}
 //		});
-		
+		if(connectTo != null)
+			while(true) {
+				try {
+					ge.connect(connectTo,myCart);
+					break;
+				}
+				catch(Exception e) {
+					System.out.println("Connect failed! Retry...");
+				}
+			}
 	}
 	
 	public Vector3D buildTrack1() throws IOException {
@@ -95,7 +104,7 @@ public class BasicGame {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		new BasicGame();
+		new BasicGame("192.168.1.14");
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.beginGame();
 	}
