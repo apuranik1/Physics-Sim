@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.util.Set;
 
 import engine.EventProcessor;
+import engine.GameEngine;
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
@@ -18,6 +19,8 @@ public class CarController extends EventProcessor {
 	}
 
 	public void keysPressed(Set<Integer> keys) {
+		if(!GameEngine.getGameEngine().gameReady())
+			return;
 		boolean w_pressed = keys.contains(KeyEvent.VK_W);
 		boolean s_pressed = keys.contains(KeyEvent.VK_S);
 		if (w_pressed && !s_pressed)

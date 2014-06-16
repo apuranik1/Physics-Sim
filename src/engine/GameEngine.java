@@ -23,6 +23,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
 import racing.Cart;
+import racing.game.FrontEnd;
 import racing.networking.NetClient;
 
 import com.jogamp.opengl.util.texture.Texture;
@@ -153,18 +154,24 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		long time = System.nanoTime();
 		physicsRefresh(frame, dt);
 		long delta = System.nanoTime() - time;
-		//System.out.println("Movement time:  " + delta);
+		// System.out.println("Movement time:  " + delta);
 		time = System.nanoTime();
 		updateKeys();
 		delta = System.nanoTime() - time;
-		//System.out.println("Input time:     " + delta);
+		// System.out.println("Input time:     " + delta);
 		physics.checkCollisions();
 		time = System.nanoTime();
 		animationRefresh();
 		delta = System.nanoTime() - time;
-		//System.out.println("Animation time: " + delta);
-		if(client != null)
+		// System.out.println("Animation time: " + delta);
+		if (client != null)
 			client.send();
+		if (!gameReady())
+			FrontEnd.getFrontEnd().showPopup(
+					"Game starts in " + client.getData().getStartTime()
+							+ " seconds.");
+		else
+			FrontEnd.getFrontEnd().hidePopup();
 	}
 
 	private void animationRefresh() {
@@ -293,12 +300,18 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		// TODO Auto-generated method stub
 
 	}
-	
+
 	public void connect(String address, Cart me) {
 		client = new NetClient(address, 8888, me);
 	}
-	
+
 	public Cart getMyCart() {
 		return client.getCart();
+	}
+
+	public boolean gameReady() {
+		if (client == null)
+			return true;
+		return client.getData().getStartTime() == 0;
 	}
 }
