@@ -60,7 +60,7 @@ public class NetServer {
 					while (true) {
 						try {
 							Thread.sleep(1000);
-							if (data.getStartTime() != 0)
+							if (data.getStartTime() != -1)
 								data.decrementStartTime();
 						} catch (Exception e) {
 

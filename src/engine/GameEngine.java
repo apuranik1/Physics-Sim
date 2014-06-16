@@ -169,9 +169,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 			client.send();
 	}
 	
-	public void renderString(String text) {
+	public void renderString(String text, Color color) {
 		tr.beginRendering((int) width, (int) height);
-		tr.setColor(Color.RED);
+		tr.setColor(color);
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
 		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) / 2, (int) (height - (int) fm.getHeight()) / 2);
 		tr.endRendering();
@@ -260,9 +260,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		setupCamera(gl, dt);
 		renderer.render(gl);
-		long delta = System.nanoTime() - time;
 		if (!gameReady())
-			renderString("Game starts in " + client.getData().getStartTime() + " seconds.");
+			renderString("Game starts in " + client.getData().getStartTime() + " seconds.", Color.RED);
+		else if(gameStarting())
+			renderString("GO!", Color.GREEN);
 	}
 
 	@Override
@@ -323,6 +324,12 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	public boolean gameReady() {
 		if (client == null)
 			return true;
+		return client.getData().getStartTime() == 0;
+	}
+
+	public boolean gameStarting() {
+		if (client == null)
+			return false;
 		return client.getData().getStartTime() == 0;
 	}
 }

@@ -91,6 +91,7 @@ public class RenderEngine implements GLEventListener {
 		gl.glDepthFunc(GL_LESS);
 		// gl.glEnable(GL_NORMALIZE);
 		gl.glCullFace(GL_BACK);
+		gl.glEnable(GL_BLEND);
 		gl.glEnable(GL_LIGHTING);
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -211,7 +212,6 @@ public class RenderEngine implements GLEventListener {
 	}
 
 	public void render(GL2 gl) {
-		System.out.println("Render");
 		GameEngine engine = GameEngine.getGameEngine();
 		ArrayList<Object3D> frustalCull = engine.selectFrustum();
 		int distinct = 0;
