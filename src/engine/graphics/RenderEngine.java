@@ -80,16 +80,11 @@ public class RenderEngine implements GLEventListener {
 	double s, c;
 	int frame = 0;
 
-	private void updateSpace() {
-		frame++;
-		GameEngine.getGameEngine().fireFrameUpdate(frame, dt);
-	}
-
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		GL2 gl = drawable.getGL().getGL2();
 		gl.glEnable(GL_DEPTH_TEST);
-		// gl.glEnable(GL_COLOR_MATERIAL);
+		//gl.glEnable(GL_COLOR_MATERIAL);
 		gl.glShadeModel(GL_SMOOTH);
 		// gl.glMatrixMode(GL_PROJECTION);
 		gl.glEnable(GL_CULL_FACE);
@@ -146,18 +141,7 @@ public class RenderEngine implements GLEventListener {
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		if (last == 0) {
-			last = System.nanoTime();
-		}
-		long nlast = System.nanoTime();
-		dt = nlast - last;
-		last = nlast;
-		updateSpace();
-		long time = System.nanoTime();
-		render(drawable);
-		long delta = System.nanoTime() - time;
-		//System.out.println("Render time:    " + delta);
-		//System.out.println();
+		GameEngine.getGameEngine().display(drawable);
 	}
 
 	@Override
@@ -168,6 +152,7 @@ public class RenderEngine implements GLEventListener {
 	}
 
 	public void skybox(GL2 gl) {
+		gl.glColor3f(1f,1f,1f);
 		int size = 1000;
 		skybox[0].enable(gl);
 		skybox[0].bind(gl);
@@ -225,17 +210,12 @@ public class RenderEngine implements GLEventListener {
 
 	}
 
-	private void render(GLAutoDrawable drawable) {
-		GL2 gl = GLContext.getCurrent().getGL().getGL2();
-		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	public void render(GL2 gl) {
+		System.out.println("Render");
 		GameEngine engine = GameEngine.getGameEngine();
-		engine.setupCamera(gl, dt, this);
 		ArrayList<Object3D> frustalCull = engine.selectFrustum();
-		// System.out.println(frustalCull.size());
 		int distinct = 0;
 		for (Object3D object : frustalCull) {
-			if (object.getFrameUpdate() == frame)
-				continue;
 			distinct++;
 			gl.glPushMatrix();
 			Vector3D pos = object.getPosition();
@@ -248,7 +228,6 @@ public class RenderEngine implements GLEventListener {
 			}
 			object.render(gl);
 			gl.glPopMatrix();
-			object.setFrame(frame);
 		}
 		lastRendered = distinct;
 	}

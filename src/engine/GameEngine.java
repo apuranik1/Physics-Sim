@@ -6,7 +6,11 @@ import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static javax.media.opengl.GL.*;
 import static javax.media.opengl.GL2.*;
+
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -26,6 +30,7 @@ import racing.Cart;
 import racing.game.FrontEnd;
 import racing.networking.NetClient;
 
+import com.jogamp.opengl.util.awt.TextRenderer;
 import com.jogamp.opengl.util.texture.Texture;
 import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
@@ -39,23 +44,24 @@ import engine.physics.PhysicsManager;
 import engine.physics.Vector3D;
 import engine.processors.DefaultExitProcessor;
 
-public class GameEngine implements Iterable<Object3D>, KeyListener,
-		GLEventListener {
-	private static GameEngine gameEngine;
-	private Octree<Object3D> octree;
-	private Motion cameraMotion;
-	private Vector3D cameraRotation;
-	private Vector3D cameraTarget;
-	private Vector3D cameraUp;
-	private boolean targetedCamera;
-	private double width;
-	private double height;
-	private Stack<EventProcessor> processors;
-	private RenderEngine renderer;
-	private double fovy;
-	private HashSet<Integer> keysPressed;
-	private PhysicsManager physics;
-	private NetClient client;
+public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListener {
+	private static GameEngine		gameEngine;
+	private Octree<Object3D>		octree;
+	private Motion					cameraMotion;
+	private Vector3D				cameraRotation;
+	private Vector3D				cameraTarget;
+	private Vector3D				cameraUp;
+	private boolean					targetedCamera;
+	private double					width;
+	private double					height;
+	private Stack<EventProcessor>	processors;
+	private RenderEngine			renderer;
+	private double					fovy;
+	private HashSet<Integer>		keysPressed;
+	private PhysicsManager			physics;
+	private NetClient				client;
+	private TextRenderer			tr;
+	private long last;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -72,6 +78,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		fovy = Math.toRadians(60);
 		keysPressed = new HashSet<Integer>();
 		physics = new PhysicsManager();
+		tr = new TextRenderer(new Font("SansSerif", Font.BOLD, 36));;
 	}
 
 	public int getSize() {
@@ -88,11 +95,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 
 	public void removeObject(Object3D object) {
 		if (!octree.remove(object.getBoundingBox(), object)) {
-			System.out.println("Failed to find: " + object + " of type "
-					+ object.getClass().toString() + " at "
-					+ object.getBoundingBox());
-			throw new IllegalArgumentException(
-					"Cannot remove non-existant object from the octree.");
+			System.out.println("Failed to find: " + object + " of type " + object.getClass().toString() + " at " + object.getBoundingBox());
+			throw new IllegalArgumentException("Cannot remove non-existant object from the octree.");
 		}
 	}
 
@@ -116,13 +120,12 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		return cameraMotion;
 	}
 
-	public void setupCamera(GL2 gl, long dt, RenderEngine callback) {
+	public void setupCamera(GL2 gl, long dt) {
 		cameraMotion.update(dt);
 		Vector3D cameraPos = cameraMotion.getPosition();
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height,
-				1, 10000);
+		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height, 1, 10000);
 		gl.glPushAttrib(GL_ENABLE_BIT);
 		gl.glDisable(GL_DEPTH_TEST);
 		gl.glDisable(GL_LIGHTING);
@@ -131,15 +134,13 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		gl.glEnable(GL_TEXTURE_2D);
 		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		callback.skybox(gl);
+		renderer.skybox(gl);
 		gl.glPopAttrib();
 		gl.glMatrixMode(GL_MODELVIEW);
 		gl.glLoadIdentity();
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 10, 0, 1 }, 0);
 		if (targetedCamera)
-			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
-					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
-					cameraUp.y, cameraUp.z);
+			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x, cameraUp.y, cameraUp.z);
 		else {
 			gl.glRotated(-cameraRotation.x, 1, 0, 0);
 			gl.glRotated(-cameraRotation.y, 0, 1, 0);
@@ -148,11 +149,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		}
 	}
 
-	public void fireFrameUpdate(long frame, long dt) {
+	public void fireFrameUpdate(long dt) {
 		if (client != null)
 			client.update();
 		long time = System.nanoTime();
-		physicsRefresh(frame, dt);
+		physicsRefresh(dt);
 		long delta = System.nanoTime() - time;
 		// System.out.println("Movement time:  " + delta);
 		time = System.nanoTime();
@@ -166,25 +167,27 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		// System.out.println("Animation time: " + delta);
 		if (client != null)
 			client.send();
-		if (!gameReady())
-			FrontEnd.getFrontEnd().showPopup(
-					"Game starts in " + client.getData().getStartTime()
-							+ " seconds.");
-		else
-			FrontEnd.getFrontEnd().hidePopup();
+	}
+	
+	public void renderString(String text) {
+		tr.beginRendering((int) width, (int) height);
+		tr.setColor(Color.RED);
+		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
+		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) / 2, (int) (height - (int) fm.getHeight()) / 2);
+		tr.endRendering();
 	}
 
 	private void animationRefresh() {
-		for (AnimationEvent event : Animator.getAnimator().retrieve(
-				System.nanoTime() / 1000000000d))
+		for (AnimationEvent event : Animator.getAnimator().retrieve(System.nanoTime() / 1000000000d))
 			try {
 				event.animate();
-			} catch (Exception e) {
+			}
+			catch (Exception e) {
 				System.err.println(e.getMessage());
 			}
 	}
 
-	private void physicsRefresh(long frame, long dt) {
+	private void physicsRefresh(long dt) {
 		for (Object3D object : this)
 			object.update(dt);
 	}
@@ -244,27 +247,35 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		// TODO Auto-generated method stub
 
 	}
-
 	@Override
 	public void display(GLAutoDrawable drawable) {
-		// TODO Auto-generated method stub
-
+		if (last == 0)
+			last = System.nanoTime();
+		long nlast = System.nanoTime();
+		long dt = nlast - last;
+		last = nlast;
+		fireFrameUpdate(dt);
+		long time = System.nanoTime();
+		GL2 gl = drawable.getGL().getGL2();
+		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		setupCamera(gl, dt);
+		renderer.render(gl);
+		long delta = System.nanoTime() - time;
+		if (!gameReady())
+			renderString("Game starts in " + client.getData().getStartTime() + " seconds.");
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-			int height) {
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
 	public ArrayList<Object3D> selectFrustum() {
 		double fovx = 2 * Math.atan(Math.tan(fovy / 2) * width / height);
-		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget)
-				.normalize();
+		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget).normalize();
 		Vector3D cameraUp2 = f.cross(cameraUp.normalize()).normalize().cross(f);
-		return octree.getFrustumContents(cameraMotion.getPosition(),
-				cameraTarget, cameraUp2, fovy, fovx);
+		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp2, fovy, fovx);
 	}
 
 	public int treeSize() {
