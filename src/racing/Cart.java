@@ -125,6 +125,10 @@ public class Cart extends Object3D implements Serializable {
 	public void specialCollide(Object3D other) {
 		if (other.getSpec().isCollidable())
 			framesSinceCollide = 0;
+		if (!(getPosition().magnitude() < 1000000)) {
+			System.out.println("Where am I, exactly?");
+			System.out.println("About here: " + getPosition());
+		}
 	}
 
 	public Vector3D getForce() {

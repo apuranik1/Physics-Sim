@@ -70,12 +70,27 @@ public class TrackBuilder {
 		return next;
 	}
 	
-	public static TrackWall addTrackWalls(Vector3D from, Vector3D to, double trackWidth) {
-		Vector3D diff = from.subtract(to);
-		Vector3D altFrom = diff.cross(new Vector3D(0,1,0)).normalize().multiply(trackWidth - 1).add(from);
+	/**
+	 * Pass in the right wall, please
+	 * @param from
+	 * @param to
+	 * @param trackWidth
+	 * @return
+	 * @throws IOException
+	 */
+	public static TrackWall[] addTrackWalls(Vector3D from, Vector3D to, double trackWidth)
+			throws IOException {
+		Vector3D diff = to.subtract(from);
+		Vector3D altFrom = from.subtract(diff.cross(new Vector3D(0,1,0)).normalize().multiply(trackWidth - 1));
+		TrackWall a = addSingleWall(from, to);
+		TrackWall b = addSingleWall(altFrom, altFrom.add(diff));
+		return new TrackWall[] { a, b };
 	}
 	
-	public static TrackWall addSingleWall(Vector3D from, Vector3D to) {
-		
+	public static TrackWall addSingleWall(Vector3D from, Vector3D to)
+			throws IOException {
+		TrackWall wall = TrackWall.createWall(from, to);
+		setupTrack(wall, from);
+		return wall;
 	}
 }

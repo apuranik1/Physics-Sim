@@ -13,7 +13,7 @@ import engine.physics.Vector3D;
 
 public class BasicGame {
 	public BasicGame(String connectTo) throws IOException {
-		Vector3D startPos = buildMarioCircuit();
+		Vector3D startPos = buildTrack1();
 		final ResourceManager rm = ResourceManager.getResourceManager();
 		
 		Cart cart = new Cart("cart1.obj");
@@ -48,8 +48,11 @@ public class BasicGame {
 		Vector3D next = new Vector3D(-10,0,0);
 		Vector3D dummy;
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, 50)), 30);
+		TrackBuilder.addTrackWalls(next, dummy, 30);
 		next = dummy;
-		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 20, 40)), 30);
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 2, 15)), 30);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 12, 25)), 30);
 		next = dummy.add(new Vector3D(0, 0, 50));
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, 50)), 30);
 		next = dummy;
@@ -79,7 +82,7 @@ public class BasicGame {
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(30, 20, 90), null));
-		rm.insertInstance("launchpad", Vector3D.origin);
+		rm.insertInstance("launchpad", new Vector3D(-10, 0, 0));
 		return new Vector3D(0,5, 0);
 	}
 	
@@ -104,7 +107,7 @@ public class BasicGame {
 	}
 	
 	public static void main(String[] args) throws IOException {
-		new BasicGame("192.168.1.14");
+		new BasicGame(null);
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.beginGame();
 	}
