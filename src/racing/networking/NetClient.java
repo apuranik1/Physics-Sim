@@ -5,16 +5,19 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JOptionPane;
+
 import engine.ResourceManager;
 import engine.graphics.Object3D;
 import racing.Cart;
+import racing.game.FrontEnd;
 
 public class NetClient {
 	private Socket socket;
 	private Cart cart;
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
-	private ConcurrentHashMap<Long, Cart> map;
+	private NetData map;
 
 	/**
 	 * @param address
@@ -42,12 +45,20 @@ public class NetClient {
 				public void run() {
 					while (true) {
 						try {
-							ConcurrentHashMap<Long, Cart> map2 = (ConcurrentHashMap<Long, Cart>) input
-									.readObject();
-							map = map2;
-							needsUpdate = true;
+							synchronized(NetClient.this) {
+								NetData map2 = (NetData) input.readObject();
+								map = map2.clone();
+								needsUpdate = true;
+							}
 						} catch (Exception e) {
-							e.printStackTrace();
+							FrontEnd.getFrontEnd().showPopup("Server connection lost! Exiting...");
+							try {
+								Thread.sleep(2000);
+							}
+							catch(Exception ex) {
+								
+							}
+							System.exit(0);
 						}
 					}
 				}
@@ -79,13 +90,17 @@ public class NetClient {
 	private boolean needsUpdate = false;
 	public void update() {
 		if(needsUpdate) {
-			ResourceManager.getResourceManager().mapData(map);
+			ResourceManager.getResourceManager().mapData(map.getMap());
 			needsUpdate = false;
 		}
 	}
 
 	public Cart getCart() {
 		return cart;
+	}
+	
+	public NetData getData() {
+		return map;
 	}
 	/*
 	 * public static void main(String[] args){ try { BufferedReader reader=new

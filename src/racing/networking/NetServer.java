@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.*;
 
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 import engine.GameEngine;
@@ -38,6 +39,9 @@ public class NetServer {
 		try {
 			data = new NetData();
 			server = new ServerSocket(port);
+			JOptionPane.showConfirmDialog(null,
+					"Server running! Server address is " + getIP() + "!",
+					"Server Ready", -1);
 			new Thread(new Runnable() {
 				public void run() {
 					while (true)
@@ -49,6 +53,19 @@ public class NetServer {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					sendData();
+				}
+			}).start();
+			new Thread(new Runnable() {
+				public void run() {
+					while (true) {
+						try {
+							Thread.sleep(1000);
+							if (data.getStartTime() != -1)
+								data.decrementStartTime();
+						} catch (Exception e) {
+
+						}
+					}
 				}
 			}).start();
 		} catch (IOException e) {
@@ -96,12 +113,11 @@ public class NetServer {
 	 * Send networked data to all threads
 	 */
 	private void sendData() {
-		ConcurrentHashMap<Long, Cart> map = new ConcurrentHashMap<>(data.getMap());
-		for(int i=clients.size()-1;i>=0;i--)
+		for (int i = clients.size() - 1; i >= 0; i--)
 			clients.get(i).enqueue();
 		data.clear();
 	}
-	
+
 	public static void main(String[] args) {
 		NetServer server = new NetServer(8888);
 		System.out.println(server.getIP());

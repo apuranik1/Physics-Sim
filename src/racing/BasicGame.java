@@ -9,11 +9,12 @@ import engine.animation.Animator;
 import engine.animation.CameraFollow;
 import engine.graphics.Object3D;
 import engine.physics.CatcherInTheRye;
+import engine.physics.PhysicsSpec;
 import engine.physics.Vector3D;
 
 public class BasicGame {
 	public BasicGame(String connectTo) throws IOException {
-		Vector3D startPos = buildTrack1();
+		Vector3D startPos = buildMarioCircuit();
 		final ResourceManager rm = ResourceManager.getResourceManager();
 		
 		Cart cart = new Cart("cart1.obj");
@@ -79,7 +80,7 @@ public class BasicGame {
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(100, 0, 50)), 40);
 		next = dummy;
 		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(0,5,0), false));
+		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(30, 20, 90), null));
 		rm.insertInstance("launchpad", new Vector3D(-10, 0, 0));
@@ -98,16 +99,26 @@ public class BasicGame {
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(-400, 0, 0)), 50);
 		next = dummy;
 		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175,5,0), false));
+		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30), false));
 		rm.insertInstance("catcher", new Vector3D(0,-10,0));
 		rm.loadObject("launchpad", new LaunchPad(new Vector3D(20, 20, 90), null));
+		rm.loadObject("finishLine", buildFinishLine());
+		rm.insertInstance("finishLine", new Vector3D(175,1, 0));
 		//rm.insertInstance("launchpad", Vector3D.origin);
-		return new Vector3D(175, 5, 0);
-
+		return new Vector3D(175, 5, -30);
+	}
+	
+	public Object3D buildFinishLine() throws IOException {
+		Object3D finishLine = new Object3D("finish.obj");
+		finishLine.setSpec(new PhysicsSpec(false, false, false, false, Double.POSITIVE_INFINITY));
+		finishLine.scale(new Vector3D(50,20,10));
+		finishLine.setAcceleration(Vector3D.origin);
+		return finishLine;
+>>>>>>> master
 	}
 	
 	public static void main(String[] args) throws IOException {
-		new BasicGame(null);
+		new BasicGame("192.168.1.14");
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.beginGame();
 	}

@@ -76,9 +76,7 @@ public class NetServerThread {
 				try {
 					Thread.sleep(10);
 					if (queued) {
-						ConcurrentHashMap<Long, Cart> map = new ConcurrentHashMap<>(
-								data.getMap());
-						output.writeObject(map);
+						output.writeObject(data.clone());
 						output.flush();
 						queued = false;
 					}

@@ -1,6 +1,8 @@
 package racing.game;
 
 import java.awt.Button;
+import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -33,6 +35,7 @@ public class FrontEnd {
 	private Frame frame;
 	private static final String INSTRUCTIONS = "";
 	private static FrontEnd fe;
+	private final Dialog pframe = new Dialog((Frame) null);
 
 	public static FrontEnd getFrontEnd() {
 		if (fe == null)
@@ -83,10 +86,13 @@ public class FrontEnd {
 	}
 
 	public void showPopup(String msg) {
-		final Frame pframe = new Frame();
-		pframe.setUndecorated(true);
+		pframe.removeAll();
+		pframe.setAlwaysOnTop(true);
+		if (!pframe.isVisible())
+			pframe.setUndecorated(true);
 		JLabel label = new JLabel(msg);
 		label.setFont(new Font("sansserif", Font.BOLD, 30));
+		label.setForeground(Color.RED);
 		AWTUtilities.setWindowOpaque(pframe, false);
 		pframe.add(label);
 		label.addMouseListener(new MouseListener() {
@@ -113,7 +119,12 @@ public class FrontEnd {
 						- pframe.getWidth() / 2,
 				pframe.getToolkit().getScreenSize().height / 2
 						- pframe.getHeight() / 2);
+		pframe.toFront();
 		pframe.setVisible(true);
+	}
+	
+	public void hidePopup() {
+		pframe.setVisible(false);
 	}
 
 	private void typeSelect() {
