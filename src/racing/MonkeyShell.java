@@ -35,6 +35,7 @@ public class MonkeyShell extends SyncableObject3D {
 		MonkeyShell m = new MonkeyShell();
 		m.setSpec(new PhysicsSpec(true, false, true, true, 80));
 		m.collisionCount = 0;
+		m.setOwned(true);
 		ResourceManager.getResourceManager().loadObject("monkey_shell", m);
 	}
 

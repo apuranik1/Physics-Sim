@@ -109,9 +109,12 @@ public class ResourceManager {
 					SyncableObject3D local = (SyncableObject3D) instance_ids
 							.get(entry.getKey());
 					if (local == null) {
-						if (!objects.containsKey(ref.getName() + "_NET"))
-							loadObject(ref.getName() + "_NET",
-									new Cart(ref.getName()));
+						if (!objects.containsKey(ref.getName() + "_NET")) {
+							SyncableObject3D so3d = ref.getClass()
+									.newInstance();
+							so3d.setOwned(false);
+							loadObject(ref.getName() + "_NET", so3d);
+						}
 						local = (SyncableObject3D) retrieveInstance(insertInstance(
 								ref.getName() + "_NET", ref.getPosition(),
 								ref.getID()));
