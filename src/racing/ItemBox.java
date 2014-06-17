@@ -67,7 +67,8 @@ public class ItemBox extends Object3D {
 					ResourceManager.getResourceManager().insertInstance("ibox", pos);
 				}
 			});
-			((Cart) that).setItem(Cart.Item.random());
+			if(((Cart) that).getItem() == Cart.Item.NONE)
+				((Cart) that).setItem(Cart.Item.random());
 		}
 	}
 }

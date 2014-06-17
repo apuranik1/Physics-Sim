@@ -27,6 +27,7 @@ import javax.media.opengl.GLEventListener;
 import javax.media.opengl.glu.GLU;
 
 import racing.Cart;
+import racing.Cart.Item;
 import racing.game.FrontEnd;
 import racing.networking.NetClient;
 
@@ -189,10 +190,14 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		tr.endRendering();
 	}
 
-	public void renderItem(String text) {
+	public void renderItem(Cart c) {
 		tr.beginRendering((int) width, (int) height);
-		tr.setColor(Color.GREEN);
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
+		String text = "Item: " + (c.getItem().getName());
+		if(c.getItem() == Item.NONE)
+			tr.setColor(Color.RED);
+		else
+			tr.setColor(Color.GREEN);
 		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) - 10, 10);
 		tr.endRendering();
 	}
@@ -286,7 +291,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		else if (gameStarting())
 			renderString("GO!", Color.GREEN);
 		renderLap("Lap " + (myCart.getLap() + 1) + "/3");
-		renderItem("Item: "+(myCart.getItem().getName()));
+		renderItem(myCart);
 	}
 
 	@Override

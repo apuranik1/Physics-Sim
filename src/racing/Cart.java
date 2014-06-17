@@ -173,6 +173,9 @@ public class Cart extends Object3D implements Serializable {
 			case MUSHROOM:
 				boost(5);
 				break;
+			case SUPER_MUSHROOM:
+				boost(10);
+				break;
 		}
 		item = Item.NONE;
 	}
@@ -186,7 +189,7 @@ public class Cart extends Object3D implements Serializable {
 	}
 
 	public enum Item {
-		NONE("None"), MUSHROOM("Mushroom");
+		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom");
 
 		private String	name;
 
