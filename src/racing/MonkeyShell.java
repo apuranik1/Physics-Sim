@@ -11,7 +11,7 @@ import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
 
-public class MonkeyShell extends Object3D {
+public class MonkeyShell extends SyncableObject3D {
 
 	private int collisionCount;
 
