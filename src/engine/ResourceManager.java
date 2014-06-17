@@ -91,6 +91,7 @@ public class ResourceManager {
 					local.setThrustBoost(ref.getThrustBoost());
 					local.setHandling(ref.getHandling());
 					local.setTurnVeloc(ref.getTurnVeloc());
+					local.setSpec(ref.getSpec());
 				}
 		} catch (Exception e) {
 			System.out.println("Server sync error.");

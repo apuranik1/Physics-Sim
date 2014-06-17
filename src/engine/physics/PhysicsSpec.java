@@ -1,6 +1,8 @@
 package engine.physics;
 
-public class PhysicsSpec {
+import java.io.Serializable;
+
+public class PhysicsSpec implements Serializable {
 	
 	private boolean hasGravity;
 	private boolean hasFriction;

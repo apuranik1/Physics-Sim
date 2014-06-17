@@ -26,7 +26,7 @@ import engine.physics.Vector3D;
 
 public class Object3D implements Renderable3D, Cloneable, Serializable {
 	protected Motion						motion;
-	transient private PhysicsSpec			spec;
+	private PhysicsSpec						spec;
 	private Quaternion						rotation;
 	transient protected Vector3D[]			vertices;
 	transient protected Vector3D[]			normals;
@@ -269,7 +269,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 		Material[] materialAr = new Material[material.size()];
 		material.toArray(materialAr);
 		this.materials = materialAr;
-		if(!textureCoordsOut.isEmpty()) {
+		if (!textureCoordsOut.isEmpty()) {
 			Vector2D[] textureAr = new Vector2D[textureCoordsOut.size()];
 			textureCoordsOut.toArray(textureAr);
 			this.textureCoords = textureAr;
@@ -381,7 +381,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 	public void scale(Vector3D that) {
 		for (int i = 0; i < vertices.length; i++)
 			vertices[i] = vertices[i].scale(that);
-		if(textureCoords != null)
+		if (textureCoords != null)
 			for (int i = 0; i < textureCoords.length; i++)
 				textureCoords[i] = textureCoords[i].scale(that);
 		computeBoundingBox();
