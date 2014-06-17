@@ -14,26 +14,27 @@ import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class Cart extends Object3D implements Serializable {
-	private static final transient CarForces CAR_FORCES = new CarForces(40, 1.33);
+	private static final transient CarForces	CAR_FORCES	= new CarForces(40, 1.33);
 
-	private int lap;
-	private Vector3D force;
-	private double thrustBoost;
-	transient private int framesSinceCollide;
-	transient private int framesSinceBoost;
-	transient private boolean aligning;
+	private int									lap;
+	private Vector3D							force;
+	private double								thrustBoost;
+	transient private int						framesSinceCollide;
+	transient private int						framesSinceBoost;
+	transient private boolean					aligning;
 
-	private double handling = 0.035;
-	private double turnVeloc;
+	private double								handling	= 0.035;
+	private double								turnVeloc;
 
-	public Cart(Vector3D[] vertices, Vector3D[] normals,
-			Vector2D[] textureCoords, Color[] colors, Motion motion) {
-		super(vertices, normals, textureCoords, colors, motion,
-				new PhysicsSpec(false, false, true, true, 50));
+	private Item								item;
+
+	public Cart(Vector3D[] vertices, Vector3D[] normals, Vector2D[] textureCoords, Color[] colors, Motion motion) {
+		super(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(false, false, true, true, 50));
 		force = new Vector3D(0, 0, 0);
 		thrustBoost = 1;
 		aligning = false;
 		lap = 0;
+		item = Item.NONE;
 	}
 
 	public Cart clone() {
@@ -50,16 +51,17 @@ public class Cart extends Object3D implements Serializable {
 		setAcceleration(Vector3D.gravity);
 		aligning = false;
 		lap = 0;
+		item = Item.NONE;
 	}
-	
+
 	public void incrementLap() {
 		lap++;
 	}
-	
+
 	public int getLap() {
 		return lap;
 	}
-	
+
 	public void resetLap() {
 		lap = 0;
 	}
@@ -103,8 +105,7 @@ public class Cart extends Object3D implements Serializable {
 			Animator.getAnimator().registerEvent(new AnimationEvent(0.02 * i) {
 				@Override
 				public void animate() {
-					Cart.this.setRotation(change.multiply(Cart.this
-							.getRotation()));
+					Cart.this.setRotation(change.multiply(Cart.this.getRotation()));
 
 				}
 			});
@@ -119,19 +120,14 @@ public class Cart extends Object3D implements Serializable {
 
 	public void updateImpl(long nanos) {
 		boolean grounded = framesSinceCollide <= 10;
-		//System.out.println("frames since collide: " + framesSinceCollide);
-		Vector3D appliedForce = !grounded ? Vector3D.origin
-				: framesSinceBoost > 10 ? force : force.multiply(thrustBoost);
-		CAR_FORCES.updateAccel(motion, appliedForce, getSpec().getMass(),
-				grounded, true, true);
-		Vector3D forward = getRotation().toMatrix().multiply(
-				new Vector3D(0, 0, 1));
+		// System.out.println("frames since collide: " + framesSinceCollide);
+		Vector3D appliedForce = !grounded ? Vector3D.origin : framesSinceBoost > 60 ? force : force.multiply(thrustBoost);
+		CAR_FORCES.updateAccel(motion, appliedForce, getSpec().getMass(), grounded, true, true);
+		Vector3D forward = getRotation().toMatrix().multiply(new Vector3D(0, 0, 1));
 		double dPos = getVelocity().project(forward);
-		//System.out.println("dPos = " + dPos);
+		// System.out.println("dPos = " + dPos);
 		if (grounded)
-			uncheckedSetRotation(getRotation().multiply(
-					new Quaternion(new Vector3D(0, 1, 0), turnVeloc * dPos
-							* nanos / 1e9)));
+			uncheckedSetRotation(getRotation().multiply(new Quaternion(new Vector3D(0, 1, 0), turnVeloc * dPos * nanos / 1e9)));
 		super.updateImpl(nanos);
 		framesSinceCollide++;
 		framesSinceBoost++;
@@ -168,5 +164,43 @@ public class Cart extends Object3D implements Serializable {
 
 	public double getTurnVeloc() {
 		return turnVeloc;
+	}
+
+	public void useItem() {
+		switch (item) {
+			case NONE:
+				break;
+			case MUSHROOM:
+				boost(5);
+				break;
+		}
+		item = Item.NONE;
+	}
+	
+	public void setItem(Item item) {
+		this.item = item;
+	}
+	
+	public Item getItem() {
+		return item;
+	}
+
+	public enum Item {
+		NONE("None"), MUSHROOM("Mushroom");
+
+		private String	name;
+
+		private Item(String st) {
+			this.name = st;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+		public static Item random() {
+			Item[] items =  Item.values();
+			return items[(int) (1 + Math.random() * (items.length-1))];
+		}
 	}
 }

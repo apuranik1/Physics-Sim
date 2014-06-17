@@ -4,6 +4,9 @@ import java.io.IOException;
 
 import engine.BoundingBox;
 import engine.GameEngine;
+import engine.ResourceManager;
+import engine.animation.AnimationEvent;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
@@ -20,6 +23,7 @@ public class ItemBox extends Object3D {
 		x = y = z = 0;
 		motion = Motion.still();
 		setSpec(new PhysicsSpec(false, false, false, true, 50));
+		ResourceManager.getResourceManager().loadObject("ibox", this);
 	}
 	
 	public ItemBox clone() {
@@ -54,7 +58,16 @@ public class ItemBox extends Object3D {
 	
 	public void specialCollide(Object3D that) {
 		if(that instanceof Cart) {
+			final Vector3D pos = getPosition();
 			GameEngine.getGameEngine().prepareUpdate(this);
+			Animator.getAnimator().registerEvent(new AnimationEvent(10) {
+				
+				@Override
+				public void animate() {
+					ResourceManager.getResourceManager().insertInstance("ibox", pos);
+				}
+			});
+			((Cart) that).setItem(Cart.Item.random());
 		}
 	}
 }

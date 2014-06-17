@@ -39,6 +39,8 @@ public class CarController extends EventProcessor {
 		else
 			cart.setTurnVeloc(0);
 		
+		if(keys.contains(KeyEvent.VK_SPACE))
+			cart.useItem();
 		applyForce();
 	}
 	

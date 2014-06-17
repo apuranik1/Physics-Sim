@@ -189,6 +189,14 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		tr.endRendering();
 	}
 
+	public void renderItem(String text) {
+		tr.beginRendering((int) width, (int) height);
+		tr.setColor(Color.GREEN);
+		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
+		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) - 10, 10);
+		tr.endRendering();
+	}
+
 	private void animationRefresh() {
 		for (AnimationEvent event : Animator.getAnimator().retrieve(System.nanoTime() / 1000000000d))
 			try {
@@ -278,6 +286,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		else if (gameStarting())
 			renderString("GO!", Color.GREEN);
 		renderLap("Lap " + (myCart.getLap() + 1) + "/3");
+		renderItem("Item: "+(myCart.getItem().getName()));
 	}
 
 	@Override
