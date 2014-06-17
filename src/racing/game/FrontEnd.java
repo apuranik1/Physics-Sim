@@ -255,6 +255,14 @@ public class FrontEnd {
 						- iframe.getHeight() / 2);
 		iframe.setVisible(true);
 	}
+	
+	public void gameWon() {
+		showPopup("You win!");
+	}
+	
+	public void gameLost() {
+		showPopup("You lose :(");
+	}
 
 	public static void main(String[] args) {
 		FrontEnd.getFrontEnd();

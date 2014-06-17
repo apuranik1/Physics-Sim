@@ -1,16 +1,15 @@
 package racing.networking;
 
-import java.io.*;
-import java.net.*;
-import java.util.HashMap;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.swing.JOptionPane;
-
-import engine.ResourceManager;
-import engine.graphics.Object3D;
 import racing.Cart;
 import racing.game.FrontEnd;
+import engine.ResourceManager;
 
 public class NetClient {
 	private Socket socket;
@@ -90,7 +89,9 @@ public class NetClient {
 	private boolean needsUpdate = false;
 	public void update() {
 		if(needsUpdate) {
-			ResourceManager.getResourceManager().mapData(map.getMap());
+			ConcurrentHashMap<Long, Cart> data = map.getMap();
+			ResourceManager.getResourceManager().mapData(data);
+			checkWin(data);
 			needsUpdate = false;
 		}
 	}
@@ -101,6 +102,18 @@ public class NetClient {
 	
 	public NetData getData() {
 		return map;
+	}
+	
+	private void checkWin(ConcurrentHashMap<Long, Cart> data) {
+		for (Entry<Long, Cart> e : data.entrySet()) {
+			Cart c = e.getValue();
+			if (c.getLap() == 3) {
+				if (c.getID() == cart.getID())
+					FrontEnd.getFrontEnd().gameWon();
+				else
+					FrontEnd.getFrontEnd().gameLost();
+			}
+		}
 	}
 	/*
 	 * public static void main(String[] args){ try { BufferedReader reader=new

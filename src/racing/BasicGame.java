@@ -114,7 +114,6 @@ public class BasicGame {
 		finishLine.scale(new Vector3D(50,20,10));
 		finishLine.setAcceleration(Vector3D.origin);
 		return finishLine;
->>>>>>> master
 	}
 	
 	public static void main(String[] args) throws IOException {

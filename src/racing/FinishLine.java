@@ -26,6 +26,6 @@ public class FinishLine extends TrackFloor {
 	
 	private void handlePassedCart(Cart c) {
 		cp.unset(c);
-		//TODO: I don't really know, but something
+		c.incrementLap();
 	}
 }

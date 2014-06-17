@@ -17,6 +17,7 @@ import racing.Cart;
 //import racing.game.Item;
 public class NetData implements Serializable, Cloneable {
 	private ConcurrentHashMap<Long, Cart> carts;
+	
 	private int countdown;
 
 	public NetData() {
