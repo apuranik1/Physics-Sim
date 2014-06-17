@@ -32,13 +32,7 @@ public class BasicGame {
 		Animator anim = Animator.getAnimator();
 		anim.registerEvent(new CameraFollow(myCart));
 		
-		rm.loadObject("ibox", new ItemBox());
-		rm.insertInstance("ibox", new Vector3D(175, 1 + Math.sqrt(3d), 20));
-		rm.insertInstance("ibox", new Vector3D(170, 1 + Math.sqrt(3d), 20));
-		rm.insertInstance("ibox", new Vector3D(180, 1 + Math.sqrt(3d), 20));
-		rm.insertInstance("ibox", new Vector3D(-175, 1 + Math.sqrt(3d), -20));
-		rm.insertInstance("ibox", new Vector3D(-170, 1 + Math.sqrt(3d), -20));
-		rm.insertInstance("ibox", new Vector3D(-180, 1 + Math.sqrt(3d), -20));
+		MonkeyShell.initMonkeyShell();
 		
 		if (connectTo != null)
 			while (true) {
@@ -126,6 +120,15 @@ public class BasicGame {
 		rm.loadObject("finishLine", buildFinishLine());
 		rm.insertInstance("finishLine", new Vector3D(175, 1, 0));
 		// rm.insertInstance("launchpad", Vector3D.origin);
+		
+		rm.loadObject("ibox", new ItemBox());
+		rm.insertInstance("ibox", new Vector3D(175, 1 + Math.sqrt(3d), 20));
+		rm.insertInstance("ibox", new Vector3D(170, 1 + Math.sqrt(3d), 20));
+		rm.insertInstance("ibox", new Vector3D(180, 1 + Math.sqrt(3d), 20));
+		rm.insertInstance("ibox", new Vector3D(-175, 1 + Math.sqrt(3d), -20));
+		rm.insertInstance("ibox", new Vector3D(-170, 1 + Math.sqrt(3d), -20));
+		rm.insertInstance("ibox", new Vector3D(-180, 1 + Math.sqrt(3d), -20));
+		
 		return new Vector3D(175, 5, -30);
 	}
 

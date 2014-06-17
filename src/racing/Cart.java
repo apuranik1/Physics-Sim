@@ -186,6 +186,10 @@ public class Cart extends Object3D implements Serializable {
 					}
 				});
 				break;
+			case MONKEY_SHELL:
+				Quaternion rot = getRotation();
+				Vector3D inFront = rot.toMatrix().multiply(new Vector3D(0,0,5)).add(getPosition());
+				MonkeyShell.launch(inFront, rot);
 		}
 		item = Item.NONE;
 	}
@@ -203,7 +207,7 @@ public class Cart extends Object3D implements Serializable {
 	}
 
 	public enum Item {
-		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering");
+		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering"), MONKEY_SHELL("Monkey Shell");
 
 		private String	name;
 
