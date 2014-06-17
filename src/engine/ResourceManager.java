@@ -114,10 +114,12 @@ public class ResourceManager {
 									.newInstance();
 							so3d.setOwned(false);
 							loadObject(ref.getName() + "_NET", so3d);
+							System.out.println("Loaded");
 						}
 						local = (SyncableObject3D) retrieveInstance(insertInstance(
 								ref.getName() + "_NET", ref.getPosition(),
 								ref.getID()));
+						System.out.println("Inserted at " + ref.getPosition());
 					}
 					if (local.isOwned())
 						continue;
@@ -127,6 +129,7 @@ public class ResourceManager {
 					local.setMotion(ref.getMotion());
 				}
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println("Server sync error.");
 		}
 	}

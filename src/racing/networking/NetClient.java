@@ -51,7 +51,7 @@ public class NetClient {
 							synchronized (NetClient.this) {
 								NetData map2 = (NetData) input.readObject();
 								map = map2.clone();
-								System.out.println("Receive");
+								//System.out.println("Receive");
 								needsUpdate = true;
 							}
 						} catch (Exception e) {
@@ -79,7 +79,7 @@ public class NetClient {
 									if (((SyncableObject3D) obj).isOwned())
 										output.writeObject(obj);
 							output.flush();
-							System.out.println("Sent!");
+							//System.out.println("Sent!");
 							Thread.sleep(40);
 						} catch (Exception e) {
 							System.out.println("IO Error:" + e.getMessage());

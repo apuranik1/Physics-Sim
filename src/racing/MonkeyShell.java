@@ -15,7 +15,7 @@ public class MonkeyShell extends SyncableObject3D {
 
 	private int collisionCount;
 
-	private MonkeyShell() throws IOException {
+	public MonkeyShell() throws IOException {
 		super("monkey.obj");
 	}
 
@@ -24,7 +24,7 @@ public class MonkeyShell extends SyncableObject3D {
 			return;
 		collisionCount++;
 		if (collisionCount > 5)
-			Animator.getAnimator().registerEvent(new AnimationEvent(0){
+			Animator.getAnimator().registerEvent(new AnimationEvent(0) {
 				public void animate() {
 					GameEngine.getGameEngine().prepareUpdate(MonkeyShell.this);
 				}
@@ -45,5 +45,13 @@ public class MonkeyShell extends SyncableObject3D {
 				position));
 		shell.setRotation(direction);
 		shell.setVelocity(direction.toMatrix().multiply(new Vector3D(0, 0, 20)));
+	}
+
+	public MonkeyShell clone() {
+		try {
+			return (MonkeyShell) super.clone();
+		} catch (Exception e) {
+		}
+		return null;
 	}
 }
