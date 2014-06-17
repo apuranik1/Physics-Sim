@@ -28,12 +28,12 @@ public class BasicGame {
 		rm.loadObject("monkey", new Object3D("monkey.obj"));
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.registerProcessor(new CarController(myCart));
-		
+		ge.setMyCart(myCart);
 		Animator anim = Animator.getAnimator();
 		anim.registerEvent(new CameraFollow(myCart));
 		
-		rm.loadObject("box", new ItemBox());
-		rm.insertInstance("box", new Vector3D(175, -50, 30));
+		rm.loadObject("ibox", new ItemBox());
+		rm.insertInstance("ibox", new Vector3D(175, 1 + Math.sqrt(3d), 20));
 		
 		if (connectTo != null)
 			while (true) {
@@ -101,11 +101,13 @@ public class BasicGame {
 	public Vector3D buildMarioCircuit() throws IOException{
 		Vector3D next = new Vector3D(-200,0,-400);
 		Vector3D dummy;
-		FinishLine fl = TrackBuilder.addFinishLine(next, dummy = next.add(new Vector3D(0, 0, 800)), 50);
+		Checkpoint cp = TrackBuilder.addCheckpoint(next, dummy = next.add(new Vector3D(0, 0, 800)), 50);
 		next = dummy;
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(400, 0, 0)), 50);
 		next = dummy;
-		Checkpoint cp = TrackBuilder.addCheckpoint(next, dummy = next.add(new Vector3D(0, 0, -800)), 50);
+		FinishLine fl = TrackBuilder.addFinishLine(next, dummy = next.add(new Vector3D(0, 0, -400)), 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, -400)), 50);
 		next = dummy;
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(-400, 0, 0)), 50);
 		next = dummy;
@@ -129,11 +131,5 @@ public class BasicGame {
 		finishLine.scale(new Vector3D(50, 20, 10));
 		finishLine.setAcceleration(Vector3D.origin);
 		return finishLine;
-	}
-
-	public static void main(String[] args) throws IOException {
-		new BasicGame("192.168.1.14");
-		GameEngine ge = GameEngine.getGameEngine();
-		ge.beginGame();
 	}
 }

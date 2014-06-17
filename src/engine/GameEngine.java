@@ -61,7 +61,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	private PhysicsManager			physics;
 	private NetClient				client;
 	private TextRenderer			tr;
-	private long last;
+	private long					last;
+	private Cart					myCart;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -79,6 +80,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		keysPressed = new HashSet<Integer>();
 		physics = new PhysicsManager();
 		tr = new TextRenderer(new Font("SansSerif", Font.BOLD, 36));;
+	}
+
+	public void setMyCart(Cart cart) {
+		myCart = cart;
 	}
 
 	public int getSize() {
@@ -168,12 +173,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		if (client != null)
 			client.send();
 	}
-	
+
 	public void renderString(String text, Color color) {
 		tr.beginRendering((int) width, (int) height);
 		tr.setColor(color);
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
 		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) / 2, (int) (height - (int) fm.getHeight()) / 2);
+		tr.endRendering();
+	}
+
+	public void renderLap(String text) {
+		tr.beginRendering((int) width, (int) height);
+		tr.setColor(Color.YELLOW);
+		tr.draw(text, 10, 10);
 		tr.endRendering();
 	}
 
@@ -247,6 +259,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		// TODO Auto-generated method stub
 
 	}
+
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		if (last == 0)
@@ -262,8 +275,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		renderer.render(gl);
 		if (!gameReady())
 			renderString("Game starts in " + client.getData().getStartTime() + " seconds.", Color.RED);
-		else if(gameStarting())
+		else if (gameStarting())
 			renderString("GO!", Color.GREEN);
+		renderLap("Lap " + (myCart.getLap() + 1) + "/3");
 	}
 
 	@Override
@@ -324,7 +338,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	public boolean gameReady() {
 		if (client == null)
 			return true;
-		if(client.getData() == null)
+		if (client.getData() == null)
 			return false;
 		return client.getData().getStartTime() <= 0;
 	}
@@ -332,7 +346,6 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	public boolean gameStarting() {
 		if (client == null)
 			return false;
-		System.out.println(client.getData().getStartTime());
 		return client.getData().getStartTime() == 0;
 	}
 }

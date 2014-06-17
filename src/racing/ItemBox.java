@@ -3,6 +3,7 @@ package racing;
 import java.io.IOException;
 
 import engine.BoundingBox;
+import engine.GameEngine;
 import engine.graphics.Object3D;
 import engine.physics.Motion;
 import engine.physics.PhysicsSpec;
@@ -15,9 +16,10 @@ public class ItemBox extends Object3D {
 	private double z;
 	public ItemBox() throws IOException {
 		super("itembox.obj");
+		scale(new Vector3D(2,2,2));
 		x = y = z = 0;
-		motion = Motion.gravity();
-		setSpec(new PhysicsSpec(false, false, true, false, 50));
+		motion = Motion.still();
+		setSpec(new PhysicsSpec(false, false, false, true, 50));
 	}
 	
 	public ItemBox clone() {
@@ -39,7 +41,6 @@ public class ItemBox extends Object3D {
 		x += .01;
 		y += .02;
 		z += .03;
-		System.out.println(motion);
 		super.updateImpl(nanos);
 	}
 	
@@ -49,5 +50,11 @@ public class ItemBox extends Object3D {
 		BoundingBox bb = super.getBoundingBox();
 		uncheckedSetRotation(oldRot);
 		return bb;
+	}
+	
+	public void specialCollide(Object3D that) {
+		if(that instanceof Cart) {
+			GameEngine.getGameEngine().prepareUpdate(this);
+		}
 	}
 }
