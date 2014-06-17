@@ -41,7 +41,6 @@ public class NetData implements Serializable, Cloneable {
 	}
 
 	public void decrementStartTime() {
-		if (countdown != 0)
 			countdown--;
 	}
 

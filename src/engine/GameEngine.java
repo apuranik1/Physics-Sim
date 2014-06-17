@@ -324,12 +324,15 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	public boolean gameReady() {
 		if (client == null)
 			return true;
+		if(client.getData() == null)
+			return false;
 		return client.getData().getStartTime() == 0;
 	}
 
 	public boolean gameStarting() {
 		if (client == null)
 			return false;
+		System.out.println(client.getData().getStartTime());
 		return client.getData().getStartTime() == 0;
 	}
 }

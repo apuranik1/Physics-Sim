@@ -18,6 +18,7 @@ public class NetClient {
 	private ObjectInputStream input;
 	private ObjectOutputStream output;
 	private NetData map;
+	private boolean sending;
 
 	/**
 	 * @param address
@@ -29,7 +30,7 @@ public class NetClient {
 	 * @param Track
 	 *            Client track to update
 	 */
-	public NetClient(String address, int port, Cart cart) {
+	public NetClient(String address, int port, Cart cart2) {
 		try {
 			socket = new Socket(address, port);
 			System.out.println("Socket open!");
@@ -40,25 +41,43 @@ public class NetClient {
 			// create input stream
 			input = new ObjectInputStream(socket.getInputStream());
 			System.out.println("Input open!");
-			this.cart = cart;
+			this.cart = cart2;
 			new Thread(new Runnable() {
 				public void run() {
 					while (true) {
 						try {
-							synchronized(NetClient.this) {
+							synchronized (NetClient.this) {
 								NetData map2 = (NetData) input.readObject();
 								map = map2.clone();
 								needsUpdate = true;
 							}
 						} catch (Exception e) {
-							FrontEnd.getFrontEnd().showPopup("Server connection lost! Exiting...");
+							FrontEnd.getFrontEnd().showPopup(
+									"Server connection lost! Exiting...");
 							try {
 								Thread.sleep(2000);
-							}
-							catch(Exception ex) {
-								
+							} catch (Exception ex) {
+
 							}
 							System.exit(0);
+						}
+					}
+				}
+			}).start();
+			sending = false;
+			new Thread(new Runnable() {
+				public void run() {
+					while (true) {
+						try {
+							if (sending) {
+								Cart tosend = cart.clone();
+								output.writeObject(tosend);// send cart data
+								output.flush();
+								sending = false;
+							}
+							Thread.sleep(10);
+						} catch (Exception e) {
+							System.out.println("IO Error:" + e.getMessage());
 						}
 					}
 				}
@@ -74,22 +93,13 @@ public class NetClient {
 	 * @return Updated network data from server
 	 */
 	public void send() {
-		new Thread(new Runnable() {
-			public void run() {
-				try {
-					Cart tosend = cart.clone();
-					output.writeObject(tosend);// send cart data
-					output.flush();
-				} catch (IOException e) {
-					System.out.println("IO Error:" + e.getMessage());
-				}
-			}
-		}).start();
+		sending = true;
 	}
 
 	private boolean needsUpdate = false;
+
 	public void update() {
-		if(needsUpdate) {
+		if (needsUpdate) {
 			ResourceManager.getResourceManager().mapData(map.getMap());
 			needsUpdate = false;
 		}
@@ -98,7 +108,7 @@ public class NetClient {
 	public Cart getCart() {
 		return cart;
 	}
-	
+
 	public NetData getData() {
 		return map;
 	}

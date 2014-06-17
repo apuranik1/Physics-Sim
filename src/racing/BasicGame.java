@@ -28,16 +28,13 @@ public class BasicGame {
 		rm.loadObject("monkey", new Object3D("monkey.obj"));
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.registerProcessor(new CarController(myCart));
-
+		
 		Animator anim = Animator.getAnimator();
 		anim.registerEvent(new CameraFollow(myCart));
-		// anim.registerEvent(new ContinuousAnimationEvent(0d, 1d) {
-		//
-		// @Override
-		// public void animate() {
-		// rm.insertInstance("monkey", Vector3D.rand().multiply(100));
-		// }
-		// });
+		
+		rm.loadObject("box", new ItemBox());
+		rm.insertInstance("box", new Vector3D(175, -50, 30));
+		
 		if (connectTo != null)
 			while (true) {
 				try {
