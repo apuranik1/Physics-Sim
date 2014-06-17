@@ -46,6 +46,7 @@ public class NetData implements Serializable, Cloneable {
 
 	public void clear() {
 		carts.clear();
+		syncedObjects.clear();
 	}
 
 	public int getStartTime() {
