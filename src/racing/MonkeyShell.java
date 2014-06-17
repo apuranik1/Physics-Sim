@@ -20,7 +20,7 @@ public class MonkeyShell extends SyncableObject3D {
 	}
 
 	public void specialCollide(Object3D other) {
-		if (other instanceof TrackFloor)
+		if (other instanceof TrackFloor || !other.getSpec().isCollidable())
 			return;
 		collisionCount++;
 		if (collisionCount > 5)
@@ -44,7 +44,7 @@ public class MonkeyShell extends SyncableObject3D {
 		Object3D shell = rm.retrieveInstance(rm.insertInstance("monkey_shell",
 				position));
 		shell.setRotation(direction);
-		shell.setVelocity(direction.toMatrix().multiply(new Vector3D(0, 0, 20)));
+		shell.setVelocity(direction.toMatrix().multiply(new Vector3D(0, 0, 120)));
 	}
 
 	public MonkeyShell clone() {
