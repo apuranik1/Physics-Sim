@@ -176,6 +176,26 @@ public class Cart extends Object3D implements Serializable {
 			case SUPER_MUSHROOM:
 				boost(10);
 				break;
+			case ULTRA_STEER:
+				handling = .1;
+				Animator.getAnimator().registerEvent(new AnimationEvent(10d) {
+					
+					@Override
+					public void animate() {
+						handling = .035;
+					}
+				});
+				break;
+			case BUMPER:
+				getSpec().setMass(500);
+				Animator.getAnimator().registerEvent(new AnimationEvent(10d) {
+					
+					@Override
+					public void animate() {
+						getSpec().setMass(50);
+					}
+				});
+				break;
 		}
 		item = Item.NONE;
 	}
@@ -189,7 +209,7 @@ public class Cart extends Object3D implements Serializable {
 	}
 
 	public enum Item {
-		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom");
+		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering"), BUMPER("Bumper");
 
 		private String	name;
 
