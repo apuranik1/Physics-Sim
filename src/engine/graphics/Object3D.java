@@ -394,4 +394,12 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 	public void setID(long l) {
 		id = l;
 	}
+	
+	public Motion getMotion() {
+		return motion;
+	}
+	
+	public void setMotion(Motion that) {
+		motion = that;
+	}
 }

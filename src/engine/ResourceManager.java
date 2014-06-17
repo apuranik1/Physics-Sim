@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import racing.Cart;
+import racing.SyncableObject3D;
 
 import engine.graphics.Object3D;
 import engine.physics.Vector3D;
@@ -73,7 +74,7 @@ public class ResourceManager {
 
 	public void mapData(ConcurrentHashMap<Long, Cart> data) {
 		try {
-			if(!objects.containsKey("defaultCart"))
+			if (!objects.containsKey("defaultCart"))
 				loadObject("defaultCart", new Cart("cart2.obj"));
 			if (data != null)
 				for (Entry<Long, Cart> entry : data.entrySet()) {
@@ -93,6 +94,34 @@ public class ResourceManager {
 					local.setTurnVeloc(ref.getTurnVeloc());
 					local.setSpec(ref.getSpec());
 					local.setLap(ref.getLap());
+					local.setMotion(ref.getMotion());
+				}
+		} catch (Exception e) {
+			System.out.println("Server sync error.");
+		}
+	}
+
+	public void mapSData(ConcurrentHashMap<Long, SyncableObject3D> data) {
+		try {
+			if (data != null)
+				for (Entry<Long, SyncableObject3D> entry : data.entrySet()) {
+					SyncableObject3D ref = entry.getValue();
+					SyncableObject3D local = (SyncableObject3D) instance_ids
+							.get(entry.getKey());
+					if (local == null) {
+						if (!objects.containsKey(ref.getName() + "_NET"))
+							loadObject(ref.getName() + "_NET",
+									new Cart(ref.getName()));
+						local = (SyncableObject3D) retrieveInstance(insertInstance(
+								ref.getName() + "_NET", ref.getPosition(),
+								ref.getID()));
+					}
+					if (local.isOwned())
+						continue;
+					local.setPosition(ref.getPosition());
+					local.setRotation(ref.getRotation());
+					local.setSpec(ref.getSpec());
+					local.setMotion(ref.getMotion());
 				}
 		} catch (Exception e) {
 			System.out.println("Server sync error.");

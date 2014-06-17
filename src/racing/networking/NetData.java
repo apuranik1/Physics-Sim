@@ -13,17 +13,18 @@ import engine.graphics.Object3D;
 import engine.physics.Vector3D;
 
 import racing.Cart;
+import racing.SyncableObject3D;
 
 //import racing.game.Item;
 public class NetData implements Serializable, Cloneable {
 	private ConcurrentHashMap<Long, Cart> carts;
-	private ConcurrentHashMap<Long, Object3D> syncedObjects;
+	private ConcurrentHashMap<Long, SyncableObject3D> syncedObjects;
 	
 	private int countdown;
 
 	public NetData(int delay) {
 		carts = new ConcurrentHashMap<Long, Cart>();
-		syncedObjects = new ConcurrentHashMap<Long, Object3D>();
+		syncedObjects = new ConcurrentHashMap<Long, SyncableObject3D>();
 		countdown = delay;
 	}
 
@@ -31,8 +32,16 @@ public class NetData implements Serializable, Cloneable {
 		carts.put(object.getID(), object);
 	}
 
+	public void addObject(SyncableObject3D object) {
+		syncedObjects.put(object.getID(), object);
+	}
+
 	public ConcurrentHashMap<Long, Cart> getMap() {
 		return carts;
+	}
+
+	public ConcurrentHashMap<Long, SyncableObject3D> getSyncedMap() {
+		return syncedObjects;
 	}
 
 	public void clear() {
@@ -44,13 +53,14 @@ public class NetData implements Serializable, Cloneable {
 	}
 
 	public void decrementStartTime() {
-			countdown--;
+		countdown--;
 	}
 
 	public NetData clone() {
 		try {
 			NetData newN = (NetData) super.clone();
 			newN.carts = new ConcurrentHashMap<Long, Cart>(carts);
+			newN.syncedObjects = new ConcurrentHashMap<Long, SyncableObject3D>(syncedObjects);
 			return newN;
 		} catch (Exception e) {
 			e.printStackTrace();

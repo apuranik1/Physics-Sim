@@ -5,6 +5,7 @@ import java.net.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import racing.Cart;
+import racing.SyncableObject3D;
 
 import engine.graphics.Object3D;
 
@@ -59,8 +60,15 @@ public class NetServerThread {
 			while (true) {
 				try {
 					// while (input.available() == 0);
-					Cart recv = (Cart) input.readObject();
-					data.addObject(recv);
+					Object obj = input.readObject();
+					if(obj instanceof Cart) {
+						Cart recv = (Cart) obj;
+						data.addObject(recv);
+					}
+					else if(obj instanceof SyncableObject3D) {
+						SyncableObject3D so3d = (SyncableObject3D) obj;
+						data.addObject(so3d);
+					}
 				} catch (Exception e) {
 					System.out.println("Dropped client listen.");
 					return;

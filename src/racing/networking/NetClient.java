@@ -8,8 +8,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import racing.Cart;
+import racing.SyncableObject3D;
 import racing.game.FrontEnd;
+import engine.GameEngine;
 import engine.ResourceManager;
+import engine.graphics.Object3D;
 
 public class NetClient {
 	private Socket socket;
@@ -71,6 +74,10 @@ public class NetClient {
 						try {
 							Cart tosend = cart.clone();
 							output.writeObject(tosend);// send cart data
+							for (Object3D obj : GameEngine.getGameEngine())
+								if (obj instanceof SyncableObject3D)
+									if (((SyncableObject3D) obj).isOwned())
+										output.writeObject(obj);
 							output.flush();
 							System.out.println("Sent!");
 							Thread.sleep(40);
@@ -88,9 +95,11 @@ public class NetClient {
 	private boolean needsUpdate = false;
 
 	public void update() {
-		if(needsUpdate) {
+		if (needsUpdate) {
 			ConcurrentHashMap<Long, Cart> data = map.getMap();
+			ConcurrentHashMap<Long, SyncableObject3D> sdata = map.getSyncedMap();
 			ResourceManager.getResourceManager().mapData(data);
+			ResourceManager.getResourceManager().mapSData(sdata);
 			checkWin(data);
 			needsUpdate = false;
 		}
@@ -103,7 +112,7 @@ public class NetClient {
 	public NetData getData() {
 		return map;
 	}
-	
+
 	private void checkWin(ConcurrentHashMap<Long, Cart> data) {
 		for (Entry<Long, Cart> e : data.entrySet()) {
 			Cart c = e.getValue();
