@@ -35,9 +35,9 @@ public class NetServer {
 	 * @param port
 	 *            Port to listen on
 	 */
-	private NetServer(int port) {
+	public NetServer(int port, int delay) {
 		try {
-			data = new NetData();
+			data = new NetData(delay);
 			server = new ServerSocket(port);
 			JOptionPane.showConfirmDialog(null,
 					"Server running! Server address is " + getIP() + "!",
@@ -116,10 +116,5 @@ public class NetServer {
 		for (int i = clients.size() - 1; i >= 0; i--)
 			clients.get(i).enqueue();
 		data.clear();
-	}
-
-	public static void main(String[] args) {
-		NetServer server = new NetServer(8888);
-		System.out.println(server.getIP());
 	}
 }

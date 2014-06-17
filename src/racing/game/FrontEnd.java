@@ -142,7 +142,8 @@ public class FrontEnd {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					iframe.dispose();
-					new BasicGame(null);
+					new NetServer(8888, 5);
+					new BasicGame("localhost");
 					GameEngine ge = GameEngine.getGameEngine();
 					ge.beginGame();
 				} catch (IOException e1) {
@@ -154,7 +155,7 @@ public class FrontEnd {
 		multiServer.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				iframe.dispose();
-				NetServer.main(null);
+				new NetServer(8888, 60);
 			}
 		});
 		Button multiClient = new Button("Multiplayer Client");
@@ -254,6 +255,14 @@ public class FrontEnd {
 				iframe.getToolkit().getScreenSize().height / 2
 						- iframe.getHeight() / 2);
 		iframe.setVisible(true);
+	}
+	
+	public void gameWon() {
+		showPopup("You win!");
+	}
+	
+	public void gameLost() {
+		showPopup("You lose :(");
 	}
 
 	public static void main(String[] args) {

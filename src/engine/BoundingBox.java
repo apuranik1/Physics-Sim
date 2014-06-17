@@ -234,6 +234,8 @@ public class BoundingBox {
 			if (dist < minDist)
 				minDist = dist;
 		}
+		if (minDist > 1e5)
+			System.out.println(axis +" being sketchy at distance " + minDist);
 		return minDist;
 	}
 

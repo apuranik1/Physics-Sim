@@ -9,10 +9,9 @@ public class FinishLine extends TrackFloor {
 	
 	private Checkpoint cp;
 
-	public FinishLine(Vector3D from, Vector3D to, double width, Checkpoint check)
+	public FinishLine(Vector3D from, Vector3D to, double width)
 			throws IOException {
 		super(from, to, width);
-		cp = check;
 	}
 
 	public void specialCollide(Object3D other) {
@@ -26,6 +25,10 @@ public class FinishLine extends TrackFloor {
 	
 	private void handlePassedCart(Cart c) {
 		cp.unset(c);
-		//TODO: I don't really know, but something
+		c.incrementLap();
+	}
+	
+	public void setCheckpoint(Checkpoint cp) {
+		this.cp = cp;
 	}
 }

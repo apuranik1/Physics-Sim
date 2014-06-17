@@ -16,6 +16,7 @@ import engine.physics.Vector3D;
 public class Cart extends Object3D implements Serializable {
 	private static final transient CarForces CAR_FORCES = new CarForces(40, 1.33);
 
+	private int lap;
 	private Vector3D force;
 	private double thrustBoost;
 	transient private int framesSinceCollide;
@@ -32,6 +33,7 @@ public class Cart extends Object3D implements Serializable {
 		force = new Vector3D(0, 0, 0);
 		thrustBoost = 1;
 		aligning = false;
+		lap = 0;
 	}
 
 	public Cart clone() {
@@ -47,6 +49,19 @@ public class Cart extends Object3D implements Serializable {
 		setSpec(new PhysicsSpec(false, false, true, true, 50));
 		setAcceleration(Vector3D.gravity);
 		aligning = false;
+		lap = 0;
+	}
+	
+	public void incrementLap() {
+		lap++;
+	}
+	
+	public int getLap() {
+		return lap;
+	}
+	
+	public void resetLap() {
+		lap = 0;
 	}
 
 	public void setForce(Vector3D force) {
@@ -123,7 +138,12 @@ public class Cart extends Object3D implements Serializable {
 	}
 
 	public void specialCollide(Object3D other) {
-		framesSinceCollide = 0;
+		if (other.getSpec().isCollidable())
+			framesSinceCollide = 0;
+		if (!(getPosition().magnitude() < 1000000)) {
+			System.out.println("Where am I, exactly?");
+			System.out.println("About here: " + getPosition());
+		}
 	}
 
 	public Vector3D getForce() {
