@@ -48,6 +48,7 @@ public class NetClient {
 							synchronized (NetClient.this) {
 								NetData map2 = (NetData) input.readObject();
 								map = map2.clone();
+								System.out.println("Receive");
 								needsUpdate = true;
 							}
 						} catch (Exception e) {
@@ -71,6 +72,7 @@ public class NetClient {
 							Cart tosend = cart.clone();
 							output.writeObject(tosend);// send cart data
 							output.flush();
+							System.out.println("Sent!");
 							Thread.sleep(40);
 						} catch (Exception e) {
 							System.out.println("IO Error:" + e.getMessage());
