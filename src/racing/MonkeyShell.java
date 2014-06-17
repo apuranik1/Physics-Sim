@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import engine.GameEngine;
 import engine.ResourceManager;
+import engine.animation.AnimationEvent;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
@@ -22,7 +24,11 @@ public class MonkeyShell extends Object3D {
 			return;
 		collisionCount++;
 		if (collisionCount > 5)
-			GameEngine.getGameEngine().prepareUpdate(this);
+			Animator.getAnimator().registerEvent(new AnimationEvent(0){
+				public void animate() {
+					GameEngine.getGameEngine().prepareUpdate(MonkeyShell.this);
+				}
+			});
 	}
 
 	public static void initMonkeyShell() throws IOException {

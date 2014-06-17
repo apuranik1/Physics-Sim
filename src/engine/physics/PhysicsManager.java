@@ -88,9 +88,9 @@ public class PhysicsManager {
 		Vector3D problemVeloc = velocDiff.vecProject(handle);
 		translateAway(obj0, obj1, dist0, handle, refMass / m0);
 		obj0.setVelocity(obj0.getVelocity().add(
-				problemVeloc.multiply(-1.2 * refMass / m0)));
+				problemVeloc.multiply(-1.5 * refMass / m0)));
 		obj1.setVelocity(obj1.getVelocity().add(
-				problemVeloc.multiply(1.2 * refMass / m1)));
+				problemVeloc.multiply(1.5 * refMass / m1)));
 	}
 
 	/**
