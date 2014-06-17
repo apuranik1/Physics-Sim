@@ -258,11 +258,11 @@ public class FrontEnd {
 	}
 	
 	public void gameWon() {
-		showPopup("You win!");
+		GameEngine.getGameEngine().conclude("You win! :)");
 	}
 	
 	public void gameLost() {
-		showPopup("You lose :(");
+		GameEngine.getGameEngine().conclude("You lose. :(");
 	}
 
 	public static void main(String[] args) {

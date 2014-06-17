@@ -92,6 +92,7 @@ public class ResourceManager {
 					local.setHandling(ref.getHandling());
 					local.setTurnVeloc(ref.getTurnVeloc());
 					local.setSpec(ref.getSpec());
+					local.setLap(ref.getLap());
 				}
 		} catch (Exception e) {
 			System.out.println("Server sync error.");

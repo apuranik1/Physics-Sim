@@ -64,6 +64,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	private TextRenderer			tr;
 	private long					last;
 	private Cart					myCart;
+	private String					overlayText;
+	private boolean					suspendPhysics;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -80,7 +82,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		fovy = Math.toRadians(60);
 		keysPressed = new HashSet<Integer>();
 		physics = new PhysicsManager();
-		tr = new TextRenderer(new Font("SansSerif", Font.BOLD, 36));;
+		tr = new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
+		overlayText = "";
 	}
 
 	public void setMyCart(Cart cart) {
@@ -159,7 +162,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		if (client != null)
 			client.update();
 		long time = System.nanoTime();
-		physicsRefresh(dt);
+		if(!suspendPhysics)
+			physicsRefresh(dt);
 		long delta = System.nanoTime() - time;
 		// System.out.println("Movement time:  " + delta);
 		time = System.nanoTime();
@@ -192,7 +196,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		tr.beginRendering((int) width, (int) height);
 		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
 		String text = "Item: " + (c.getItem().getName());
-		if(c.getItem() == Item.NONE)
+		if (c.getItem() == Item.NONE)
 			tr.setColor(Color.RED);
 		else
 			tr.setColor(Color.GREEN);
@@ -290,6 +294,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 			renderString("GO!", Color.GREEN);
 		renderLap("Lap " + (myCart.getLap() + 1) + "/3");
 		renderItem(myCart);
+		renderString(overlayText, Color.YELLOW);
 	}
 
 	@Override
@@ -359,5 +364,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		if (client == null)
 			return false;
 		return client.getData().getStartTime() == 0;
+	}
+
+	public void conclude(String text) {
+		overlayText = text;
+		processors.clear();
+		Animator.getAnimator().registerEvent(new AnimationEvent(5) {
+
+			@Override
+			public void animate() {
+				System.exit(0);
+			}
+
+		});
+		suspendPhysics = true;
 	}
 }

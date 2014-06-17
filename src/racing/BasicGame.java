@@ -36,6 +36,9 @@ public class BasicGame {
 		rm.insertInstance("ibox", new Vector3D(175, 1 + Math.sqrt(3d), 20));
 		rm.insertInstance("ibox", new Vector3D(170, 1 + Math.sqrt(3d), 20));
 		rm.insertInstance("ibox", new Vector3D(180, 1 + Math.sqrt(3d), 20));
+		rm.insertInstance("ibox", new Vector3D(-175, 1 + Math.sqrt(3d), -20));
+		rm.insertInstance("ibox", new Vector3D(-170, 1 + Math.sqrt(3d), -20));
+		rm.insertInstance("ibox", new Vector3D(-180, 1 + Math.sqrt(3d), -20));
 		
 		if (connectTo != null)
 			while (true) {

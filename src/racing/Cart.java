@@ -197,6 +197,10 @@ public class Cart extends Object3D implements Serializable {
 	public Item getItem() {
 		return item;
 	}
+	
+	public void setLap(int lap) {
+		this.lap = lap;
+	}
 
 	public enum Item {
 		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering");
