@@ -17,11 +17,13 @@ import racing.Cart;
 //import racing.game.Item;
 public class NetData implements Serializable, Cloneable {
 	private ConcurrentHashMap<Long, Cart> carts;
+	private ConcurrentHashMap<Long, Object3D> syncedObjects;
 	
 	private int countdown;
 
 	public NetData(int delay) {
 		carts = new ConcurrentHashMap<Long, Cart>();
+		syncedObjects = new ConcurrentHashMap<Long, Object3D>();
 		countdown = delay;
 	}
 

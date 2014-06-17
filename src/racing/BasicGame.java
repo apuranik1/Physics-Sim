@@ -50,12 +50,12 @@ public class BasicGame {
 				}
 			}
 		try {
-			AudioInputStream ais = AudioSystem.getAudioInputStream(getClass()
-					.getClassLoader().getResourceAsStream("flandre.wav"));
-			Clip clip = AudioSystem.getClip();
-			clip.open(ais);
-			clip.loop(Clip.LOOP_CONTINUOUSLY);
-			clip.start();
+			//AudioInputStream ais = AudioSystem.getAudioInputStream(getClass()
+			//		.getClassLoader().getResourceAsStream("flandre.wav"));
+			//Clip clip = AudioSystem.getClip();
+			//clip.open(ais);
+			//clip.loop(Clip.LOOP_CONTINUOUSLY);
+			//clip.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
