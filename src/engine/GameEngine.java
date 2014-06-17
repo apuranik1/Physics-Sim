@@ -28,6 +28,7 @@ import javax.media.opengl.glu.GLU;
 
 import racing.Cart;
 import racing.Cart.Item;
+import racing.Checkpoint;
 import racing.game.FrontEnd;
 import racing.networking.NetClient;
 
@@ -45,27 +46,29 @@ import engine.physics.PhysicsManager;
 import engine.physics.Vector3D;
 import engine.processors.DefaultExitProcessor;
 
-public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListener {
-	private static GameEngine		gameEngine;
-	private Octree<Object3D>		octree;
-	private Motion					cameraMotion;
-	private Vector3D				cameraRotation;
-	private Vector3D				cameraTarget;
-	private Vector3D				cameraUp;
-	private boolean					targetedCamera;
-	private double					width;
-	private double					height;
-	private Stack<EventProcessor>	processors;
-	private RenderEngine			renderer;
-	private double					fovy;
-	private HashSet<Integer>		keysPressed;
-	private PhysicsManager			physics;
-	private NetClient				client;
-	private TextRenderer			tr;
-	private long					last;
-	private Cart					myCart;
-	private String					overlayText;
-	private boolean					suspendPhysics;
+public class GameEngine implements Iterable<Object3D>, KeyListener,
+		GLEventListener {
+	private static GameEngine gameEngine;
+	private Octree<Object3D> octree;
+	private Motion cameraMotion;
+	private Vector3D cameraRotation;
+	private Vector3D cameraTarget;
+	private Vector3D cameraUp;
+	private boolean targetedCamera;
+	private double width;
+	private double height;
+	private Stack<EventProcessor> processors;
+	private RenderEngine renderer;
+	private double fovy;
+	private HashSet<Integer> keysPressed;
+	private PhysicsManager physics;
+	private NetClient client;
+	private TextRenderer tr;
+	private long last;
+	private Cart myCart;
+	private String overlayText;
+	private boolean suspendPhysics;
+	private ArrayList<Checkpoint> checkpoints;
 
 	private GameEngine() {
 		octree = new Octree<Object3D>();
@@ -84,8 +87,18 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		physics = new PhysicsManager();
 		tr = new TextRenderer(new Font("SansSerif", Font.BOLD, 36));
 		overlayText = "";
+		checkpoints = new ArrayList<Checkpoint>();
 	}
 
+	public void registerCheckpoint(Checkpoint cp) {
+		checkpoints.add(cp);
+	}
+	
+	public void clearAllChecks(Cart ca) {
+		for(Checkpoint c : checkpoints)
+			c.unset(ca);
+	}
+	
 	public void setMyCart(Cart cart) {
 		myCart = cart;
 	}
@@ -104,8 +117,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 
 	public void removeObject(Object3D object) {
 		if (!octree.remove(object.getBoundingBox(), object)) {
-			System.out.println("Failed to find: " + object + " of type " + object.getClass().toString() + " at " + object.getBoundingBox());
-			throw new IllegalArgumentException("Cannot remove non-existant object from the octree.");
+			System.out.println("Failed to find: " + object + " of type "
+					+ object.getClass().toString() + " at "
+					+ object.getBoundingBox());
+			throw new IllegalArgumentException(
+					"Cannot remove non-existant object from the octree.");
 		}
 	}
 
@@ -134,7 +150,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		Vector3D cameraPos = cameraMotion.getPosition();
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
-		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height, 1, 10000);
+		GLU.createGLU(gl).gluPerspective(Math.toDegrees(fovy), width / height,
+				1, 10000);
 		gl.glPushAttrib(GL_ENABLE_BIT);
 		gl.glDisable(GL_DEPTH_TEST);
 		gl.glDisable(GL_LIGHTING);
@@ -149,7 +166,9 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		gl.glLoadIdentity();
 		gl.glLightfv(GL_LIGHT0, GL_POSITION, new float[] { 0, 10, 0, 1 }, 0);
 		if (targetedCamera)
-			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z, cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x, cameraUp.y, cameraUp.z);
+			GLU.createGLU(gl).gluLookAt(cameraPos.x, cameraPos.y, cameraPos.z,
+					cameraTarget.x, cameraTarget.y, cameraTarget.z, cameraUp.x,
+					cameraUp.y, cameraUp.z);
 		else {
 			gl.glRotated(-cameraRotation.x, 1, 0, 0);
 			gl.glRotated(-cameraRotation.y, 0, 1, 0);
@@ -162,7 +181,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		if (client != null)
 			client.update();
 		long time = System.nanoTime();
-		if(!suspendPhysics)
+		if (!suspendPhysics)
 			physicsRefresh(dt);
 		long delta = System.nanoTime() - time;
 		// System.out.println("Movement time:  " + delta);
@@ -180,8 +199,10 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	public void renderString(String text, Color color) {
 		tr.beginRendering((int) width, (int) height);
 		tr.setColor(color);
-		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
-		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) / 2, (int) (height - (int) fm.getHeight()) / 2);
+		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(
+				tr.getFont());
+		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) / 2,
+				(int) (height - (int) fm.getHeight()) / 2);
 		tr.endRendering();
 	}
 
@@ -194,7 +215,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 
 	public void renderItem(Cart c) {
 		tr.beginRendering((int) width, (int) height);
-		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(tr.getFont());
+		FontMetrics fm = Toolkit.getDefaultToolkit().getFontMetrics(
+				tr.getFont());
 		String text = "Item: " + (c.getItem().getName());
 		if (c.getItem() == Item.NONE)
 			tr.setColor(Color.RED);
@@ -205,11 +227,11 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	}
 
 	private void animationRefresh() {
-		for (AnimationEvent event : Animator.getAnimator().retrieve(System.nanoTime() / 1000000000d))
+		for (AnimationEvent event : Animator.getAnimator().retrieve(
+				System.nanoTime() / 1000000000d))
 			try {
 				event.animate();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}
 	}
@@ -289,7 +311,8 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		setupCamera(gl, dt);
 		renderer.render(gl);
 		if (!gameReady())
-			renderString("Game starts in " + client.getData().getStartTime() + " seconds.", Color.RED);
+			renderString("Game starts in " + client.getData().getStartTime()
+					+ " seconds.", Color.RED);
 		else if (gameStarting())
 			renderString("GO!", Color.GREEN);
 		renderLap("Lap " + (myCart.getLap() + 1) + "/3");
@@ -298,16 +321,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 	}
 
 	@Override
-	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+	public void reshape(GLAutoDrawable drawable, int x, int y, int width,
+			int height) {
 		this.width = width;
 		this.height = height;
 	}
 
 	public ArrayList<Object3D> selectFrustum() {
 		double fovx = 2 * Math.atan(Math.tan(fovy / 2) * width / height);
-		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget).normalize();
+		Vector3D f = cameraMotion.getPosition().subtract(cameraTarget)
+				.normalize();
 		Vector3D cameraUp2 = f.cross(cameraUp.normalize()).normalize().cross(f);
-		return octree.getFrustumContents(cameraMotion.getPosition(), cameraTarget, cameraUp2, fovy, fovx);
+		return octree.getFrustumContents(cameraMotion.getPosition(),
+				cameraTarget, cameraUp2, fovy, fovx);
 	}
 
 	public int treeSize() {

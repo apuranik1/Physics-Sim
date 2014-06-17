@@ -2,7 +2,10 @@ package engine.physics;
 
 import java.awt.Color;
 
+import racing.Cart;
+
 import engine.BoundingBox;
+import engine.GameEngine;
 import engine.graphics.Object3D;
 
 public class CatcherInTheRye extends Object3D {
@@ -27,6 +30,8 @@ public class CatcherInTheRye extends Object3D {
 			other.setAcceleration(Vector3D.origin);
 			other.setRotation(new Quaternion(new Vector3D(0,1,0), 0));
 		}
+		if(other instanceof Cart)
+			GameEngine.getGameEngine().clearAllChecks((Cart) other);
 	}
 	
 	public BoundingBox getBoundingBox() {

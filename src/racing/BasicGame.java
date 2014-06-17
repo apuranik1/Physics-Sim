@@ -110,6 +110,7 @@ public class BasicGame {
 		next = dummy;
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(-400, 0, 0)), 50);
 		next = dummy;
+		GameEngine.getGameEngine().registerCheckpoint(cp);
 		fl.setCheckpoint(cp);
 		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30),

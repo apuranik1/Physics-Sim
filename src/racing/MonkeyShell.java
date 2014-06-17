@@ -7,6 +7,7 @@ import engine.ResourceManager;
 import engine.animation.AnimationEvent;
 import engine.animation.Animator;
 import engine.graphics.Object3D;
+import engine.physics.CatcherInTheRye;
 import engine.physics.PhysicsSpec;
 import engine.physics.Quaternion;
 import engine.physics.Vector3D;
@@ -20,6 +21,12 @@ public class MonkeyShell extends SyncableObject3D {
 	}
 
 	public void specialCollide(Object3D other) {
+		if (other instanceof CatcherInTheRye)
+			Animator.getAnimator().registerEvent(new AnimationEvent(0) {
+				public void animate() {
+					GameEngine.getGameEngine().prepareUpdate(MonkeyShell.this);
+				}
+			});
 		if (other instanceof TrackFloor || !other.getSpec().isCollidable())
 			return;
 		collisionCount++;
