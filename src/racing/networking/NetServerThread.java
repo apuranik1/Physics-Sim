@@ -13,6 +13,7 @@ public class NetServerThread {
 	private ObjectOutputStream output;
 	private NetData data;
 	private boolean queued;
+	private NetData cache;
 
 	/**
 	 * 
@@ -76,7 +77,7 @@ public class NetServerThread {
 				try {
 					Thread.sleep(10);
 					if (queued) {
-						output.writeObject(data.clone());
+						output.writeObject(cache.clone());
 						output.flush();
 						queued = false;
 					}
@@ -91,5 +92,6 @@ public class NetServerThread {
 	
 	public void enqueue() {
 		queued = true;
+		cache = data.clone();
 	}
 }

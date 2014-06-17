@@ -186,16 +186,6 @@ public class Cart extends Object3D implements Serializable {
 					}
 				});
 				break;
-			case QUICKSTOPS:
-				getSpec().setMass(1);
-				Animator.getAnimator().registerEvent(new AnimationEvent(10d) {
-					
-					@Override
-					public void animate() {
-						getSpec().setMass(50);
-					}
-				});
-				break;
 		}
 		item = Item.NONE;
 	}
@@ -209,7 +199,7 @@ public class Cart extends Object3D implements Serializable {
 	}
 
 	public enum Item {
-		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering"), QUICKSTOPS("Weightless Stops");
+		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering");
 
 		private String	name;
 
