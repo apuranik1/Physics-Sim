@@ -68,13 +68,10 @@ public class NetClient {
 				public void run() {
 					while (true) {
 						try {
-							if (sending) {
-								Cart tosend = cart.clone();
-								output.writeObject(tosend);// send cart data
-								output.flush();
-								sending = false;
-							}
-							Thread.sleep(10);
+							Cart tosend = cart.clone();
+							output.writeObject(tosend);// send cart data
+							output.flush();
+							Thread.sleep(40);
 						} catch (Exception e) {
 							System.out.println("IO Error:" + e.getMessage());
 						}
@@ -84,15 +81,6 @@ public class NetClient {
 		} catch (IOException e) {
 			System.out.println("Connect error: " + e.getMessage());
 		}
-	}
-
-	/**
-	 * Send client data, and receive server data
-	 * 
-	 * @return Updated network data from server
-	 */
-	public void send() {
-		sending = true;
 	}
 
 	private boolean needsUpdate = false;

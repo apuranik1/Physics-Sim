@@ -171,8 +171,6 @@ public class GameEngine implements Iterable<Object3D>, KeyListener, GLEventListe
 		animationRefresh();
 		delta = System.nanoTime() - time;
 		// System.out.println("Animation time: " + delta);
-		if (client != null)
-			client.send();
 	}
 
 	public void renderString(String text, Color color) {
