@@ -27,6 +27,7 @@ public class Cart extends Object3D implements Serializable {
 
 	private double handling;
 	private double turnVeloc;
+	private boolean bumper;
 
 	private Item item;
 
@@ -176,6 +177,9 @@ public class Cart extends Object3D implements Serializable {
 			System.out.println("Where am I, exactly?");
 			System.out.println("About here: " + getPosition());
 		}
+		if(bumper && (other instanceof Cart)) {
+			((Cart) other).spinOut();
+		}
 	}
 
 	public Vector3D getForce() {
@@ -227,6 +231,17 @@ public class Cart extends Object3D implements Serializable {
 			Vector3D inFront = rot.toMatrix().multiply(new Vector3D(0, 0, 5))
 					.add(getPosition());
 			MonkeyShell.launch(inFront, rot);
+			break;
+		case BUMPER:
+			bumper = true;
+			Animator.getAnimator().registerEvent(new AnimationEvent(10d) {
+
+				@Override
+				public void animate() {
+					bumper = false;
+				}
+			});
+			break;
 		}
 		item = Item.NONE;
 	}
@@ -242,10 +257,18 @@ public class Cart extends Object3D implements Serializable {
 	public void setLap(int lap) {
 		this.lap = lap;
 	}
+	
+	public boolean getBumper() {
+		return bumper;
+	}
+	
+	public void setBumper(boolean bumper) {
+		this.bumper = bumper;
+	}
 
 	public enum Item {
 		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER(
-				"Ultra Steering"), MONKEY_SHELL("Monkey Shell");
+				"Ultra Steering"), MONKEY_SHELL("Monkey Shell"), BUMPER("Bumper");
 
 		private String name;
 

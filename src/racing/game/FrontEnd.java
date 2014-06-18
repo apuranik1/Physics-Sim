@@ -46,7 +46,7 @@ public class FrontEnd {
 	}
 
 	private FrontEnd() {
-		frame = new Frame("Racing");
+		frame = new Frame("Monkey Kart");
 		frame.setLayout(new GridLayout(0, 1));
 		frame.setPreferredSize(new Dimension(190, 140));
 		((GridLayout) (frame.getLayout())).setHgap(5);

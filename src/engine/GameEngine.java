@@ -177,23 +177,28 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		}
 	}
 
+	private boolean first = true;
+	private static final long updateInterval = 30000000;
+
 	public void fireFrameUpdate(long dt) {
 		if (client != null)
 			client.update();
 		long time = System.nanoTime();
-		if (!suspendPhysics)
-			physicsRefresh(dt);
-		long delta = System.nanoTime() - time;
-		// System.out.println("Movement time:  " + delta);
-		time = System.nanoTime();
 		updateKeys();
-		delta = System.nanoTime() - time;
-		// System.out.println("Input time:     " + delta);
-		physics.checkCollisions();
-		time = System.nanoTime();
+		long dtp = dt;
+		if (first) {
+			physicsRefresh(dt);
+			physics.checkCollisions();
+			first = false;
+		} else
+			while (dtp > 0) {
+				System.out.println(dtp);
+				if (!suspendPhysics)
+					physicsRefresh(Math.min(updateInterval, dtp));
+				physics.checkCollisions();
+				dtp -= Math.min(updateInterval, dtp);
+			}
 		animationRefresh();
-		delta = System.nanoTime() - time;
-		// System.out.println("Animation time: " + delta);
 	}
 
 	public void renderString(String text, Color color) {
@@ -209,7 +214,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public void renderLap(String text) {
 		tr.beginRendering((int) width, (int) height);
 		tr.setColor(Color.YELLOW);
-		tr.draw(text, 10, 10);
+		tr.draw(text, 10, 30);
 		tr.endRendering();
 	}
 
@@ -222,7 +227,7 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 			tr.setColor(Color.RED);
 		else
 			tr.setColor(Color.GREEN);
-		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) - 10, 10);
+		tr.draw(text, (int) (width - (int) fm.stringWidth(text)) - 10, 30);
 		tr.endRendering();
 	}
 

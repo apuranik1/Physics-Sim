@@ -76,7 +76,7 @@ public class MonkeyShell extends SyncableObject3D {
 		final MonkeyShell shell = (MonkeyShell) rm.retrieveInstance(rm
 				.insertInstance("monkey_shell", position));
 		shell.setRotation(direction);
-		shell.setVelocity(direction.toMatrix().multiply(new Vector3D(0, 0, 80)));
+		shell.setVelocity(direction.toMatrix().multiply(new Vector3D(0, 0, 120)));
 		Animator.getAnimator().registerEvent(
 				new ContinuousAnimationEvent(0d, .2d) {
 					private boolean black = true;

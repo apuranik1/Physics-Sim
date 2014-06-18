@@ -95,6 +95,7 @@ public class ResourceManager {
 					local.setSpec(ref.getSpec());
 					local.setLap(ref.getLap());
 					local.setMotion(ref.getMotion());
+					local.setBumper(ref.getBumper());
 				}
 		} catch (Exception e) {
 			System.out.println("Server sync error.");
@@ -123,10 +124,14 @@ public class ResourceManager {
 					}
 					if (local.isOwned())
 						continue;
-					local.setPosition(ref.getPosition());
-					local.setRotation(ref.getRotation());
-					local.setSpec(ref.getSpec());
-					local.setMotion(ref.getMotion());
+					try {
+						local.setPosition(ref.getPosition());
+						local.setRotation(ref.getRotation());
+						local.setSpec(ref.getSpec());
+						local.setMotion(ref.getMotion());
+					} catch (Exception e) {
+
+					}
 				}
 		} catch (Exception e) {
 			e.printStackTrace();
