@@ -14,27 +14,31 @@ import engine.physics.Vector2D;
 import engine.physics.Vector3D;
 
 public class Cart extends Object3D implements Serializable {
-	private static final transient CarForces	CAR_FORCES	= new CarForces(40, 1.33);
+	private static final transient CarForces CAR_FORCES = new CarForces(40,
+			1.33);
 
-	private int									lap;
-	private Vector3D							force;
-	private double								thrustBoost;
-	transient private int						framesSinceCollide;
-	transient private int						framesSinceBoost;
-	transient private boolean					aligning;
-	transient private boolean					spinning;
+	private int lap;
+	private Vector3D force;
+	private double thrustBoost;
+	transient private int framesSinceCollide;
+	transient private int framesSinceBoost;
+	transient private boolean aligning;
+	transient private boolean spinning;
 
-	private double								handling	= 0.035;
-	private double								turnVeloc;
+	private double handling;
+	private double turnVeloc;
 
-	private Item								item;
+	private Item item;
 
-	public Cart(Vector3D[] vertices, Vector3D[] normals, Vector2D[] textureCoords, Color[] colors, Motion motion) {
-		super(vertices, normals, textureCoords, colors, motion, new PhysicsSpec(false, false, true, true, 50));
+	public Cart(Vector3D[] vertices, Vector3D[] normals,
+			Vector2D[] textureCoords, Color[] colors, Motion motion) {
+		super(vertices, normals, textureCoords, colors, motion,
+				new PhysicsSpec(false, false, true, true, 50));
 		force = new Vector3D(0, 0, 0);
 		thrustBoost = 1;
 		aligning = false;
 		lap = 0;
+		handling = 0.035;
 		item = Item.NONE;
 	}
 
@@ -53,6 +57,7 @@ public class Cart extends Object3D implements Serializable {
 		aligning = false;
 		lap = 0;
 		item = Item.NONE;
+		handling = 0.035;
 	}
 
 	public void incrementLap() {
@@ -107,7 +112,8 @@ public class Cart extends Object3D implements Serializable {
 			a.registerEvent(new AnimationEvent(0.02 * i) {
 				@Override
 				public void animate() {
-					Cart.this.setRotation(change.multiply(Cart.this.getRotation()));
+					Cart.this.setRotation(change.multiply(Cart.this
+							.getRotation()));
 
 				}
 			});
@@ -119,19 +125,20 @@ public class Cart extends Object3D implements Serializable {
 			}
 		});
 	}
-	
+
 	public void spinOut() {
 		if (spinning)
 			return;
 		spinning = true;
 		Animator a = Animator.getAnimator();
-		Vector3D up = getRotation().toMatrix().multiply(new Vector3D(0,1,0));
+		Vector3D up = getRotation().toMatrix().multiply(new Vector3D(0, 1, 0));
 		final Quaternion change = new Quaternion(up, Math.PI / 20);
 		for (int i = 0; i < 80; i++) {
 			a.registerEvent(new AnimationEvent(0.025 * i) {
 				@Override
 				public void animate() {
-					Cart.this.setRotation(change.multiply(Cart.this.getRotation()));
+					Cart.this.setRotation(change.multiply(Cart.this
+							.getRotation()));
 				}
 			});
 		}
@@ -145,13 +152,18 @@ public class Cart extends Object3D implements Serializable {
 	public void updateImpl(long nanos) {
 		boolean grounded = framesSinceCollide <= 10;
 		// System.out.println("frames since collide: " + framesSinceCollide);
-		Vector3D appliedForce = !grounded ? Vector3D.origin : framesSinceBoost > 60 ? force : force.multiply(thrustBoost);
-		CAR_FORCES.updateAccel(motion, appliedForce, getSpec().getMass(), grounded, true, true);
-		Vector3D forward = getRotation().toMatrix().multiply(new Vector3D(0, 0, 1));
+		Vector3D appliedForce = !grounded ? Vector3D.origin
+				: framesSinceBoost > 60 ? force : force.multiply(thrustBoost);
+		CAR_FORCES.updateAccel(motion, appliedForce, getSpec().getMass(),
+				grounded, true, true);
+		Vector3D forward = getRotation().toMatrix().multiply(
+				new Vector3D(0, 0, 1));
 		double dPos = getVelocity().project(forward);
 		// System.out.println("dPos = " + dPos);
 		if (grounded)
-			uncheckedSetRotation(getRotation().multiply(new Quaternion(new Vector3D(0, 1, 0), turnVeloc * dPos * nanos / 1e9)));
+			uncheckedSetRotation(getRotation().multiply(
+					new Quaternion(new Vector3D(0, 1, 0), turnVeloc * dPos
+							* nanos / 1e9)));
 		super.updateImpl(nanos);
 		framesSinceCollide++;
 		framesSinceBoost++;
@@ -192,60 +204,62 @@ public class Cart extends Object3D implements Serializable {
 
 	public void useItem() {
 		switch (item) {
-			case NONE:
-				break;
-			case MUSHROOM:
-				boost(5);
-				break;
-			case SUPER_MUSHROOM:
-				boost(10);
-				break;
-			case ULTRA_STEER:
-				handling = .1;
-				Animator.getAnimator().registerEvent(new AnimationEvent(10d) {
-					
-					@Override
-					public void animate() {
-						handling = .035;
-					}
-				});
-				break;
-			case MONKEY_SHELL:
-				Quaternion rot = getRotation();
-				Vector3D inFront = rot.toMatrix().multiply(new Vector3D(0,0,5)).add(getPosition());
-				MonkeyShell.launch(inFront, rot);
+		case NONE:
+			break;
+		case MUSHROOM:
+			boost(5);
+			break;
+		case SUPER_MUSHROOM:
+			boost(10);
+			break;
+		case ULTRA_STEER:
+			handling = .1;
+			Animator.getAnimator().registerEvent(new AnimationEvent(10d) {
+
+				@Override
+				public void animate() {
+					handling = .035;
+				}
+			});
+			break;
+		case MONKEY_SHELL:
+			Quaternion rot = getRotation();
+			Vector3D inFront = rot.toMatrix().multiply(new Vector3D(0, 0, 5))
+					.add(getPosition());
+			MonkeyShell.launch(inFront, rot);
 		}
 		item = Item.NONE;
 	}
-	
+
 	public void setItem(Item item) {
 		this.item = item;
 	}
-	
+
 	public Item getItem() {
 		return item;
 	}
-	
+
 	public void setLap(int lap) {
 		this.lap = lap;
 	}
 
 	public enum Item {
-		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER("Ultra Steering"), MONKEY_SHELL("Monkey Shell");
+		NONE("None"), MUSHROOM("Mushroom"), SUPER_MUSHROOM("Super Mushroom"), ULTRA_STEER(
+				"Ultra Steering"), MONKEY_SHELL("Monkey Shell");
 
-		private String	name;
+		private String name;
 
 		private Item(String st) {
 			this.name = st;
 		}
-		
+
 		public String getName() {
 			return name;
 		}
-		
+
 		public static Item random() {
-			Item[] items =  Item.values();
-			return items[(int) (1 + Math.random() * (items.length-1))];
+			Item[] items = Item.values();
+			return items[(int) (1 + Math.random() * (items.length - 1))];
 		}
 	}
 }
