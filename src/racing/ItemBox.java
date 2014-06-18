@@ -20,7 +20,9 @@ public class ItemBox extends Object3D {
 	public ItemBox() throws IOException {
 		super("itembox.obj");
 		scale(new Vector3D(2,2,2));
-		x = y = z = 0;
+		x = Math.random();
+		y = Math.random();
+		z = Math.random();
 		motion = Motion.still();
 		setSpec(new PhysicsSpec(false, false, false, true, 50));
 		ResourceManager.getResourceManager().loadObject("ibox", this);

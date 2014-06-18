@@ -108,9 +108,6 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 			gl.glMaterialfv(GL.GL_FRONT_AND_BACK, GLLightingFunc.GL_SPECULAR, defaultMaterial.specular.toFloat(), 0);
 		}
 		for (int i = 0; i < vertices.length; i++) {
-			// if (colors != null)
-			// gl.glColor3d(colors[i].getRed() / 255d,
-			// colors[i].getGreen() / 255d, colors[i].getBlue() / 255d);
 			if (textureCoords != null)
 				gl.glTexCoord2d(textureCoords[i].x, textureCoords[i].y);
 			if (normals != null)
