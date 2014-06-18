@@ -31,6 +31,9 @@ public class ItemBox extends Object3D {
 	public ItemBox clone() {
 		try {
 			ItemBox that = (ItemBox) super.clone();
+			that.x = Math.random();
+			that.y = Math.random();
+			that.z = Math.random();
 			return that;
 		}
 		catch(Exception e) {

@@ -53,7 +53,7 @@ public class MonkeyShell extends SyncableObject3D {
 		if (other instanceof TrackFloor || !other.getSpec().isCollidable())
 			return;
 		if (other instanceof Cart)
-			((Cart)other).spinOut();;
+			((Cart)other).spinOut();
 		collisionCount++;
 		if (collisionCount > 5)
 			Animator.getAnimator().registerEvent(new AnimationEvent(0) {
