@@ -22,6 +22,7 @@ public class Cart extends Object3D implements Serializable {
 	transient private int						framesSinceCollide;
 	transient private int						framesSinceBoost;
 	transient private boolean					aligning;
+	transient private boolean					spinning;
 
 	private double								handling	= 0.035;
 	private double								turnVeloc;
@@ -101,8 +102,9 @@ public class Cart extends Object3D implements Serializable {
 		double angle = 0.1 * Math.atan2(axis.magnitude(), currUp.dot(upVec));
 		System.out.println("align angle: " + angle);
 		final Quaternion change = new Quaternion(axis, angle);
+		Animator a = Animator.getAnimator();
 		for (int i = 0; i < 10; i++) {
-			Animator.getAnimator().registerEvent(new AnimationEvent(0.02 * i) {
+			a.registerEvent(new AnimationEvent(0.02 * i) {
 				@Override
 				public void animate() {
 					Cart.this.setRotation(change.multiply(Cart.this.getRotation()));
@@ -114,6 +116,28 @@ public class Cart extends Object3D implements Serializable {
 			public void animate() {
 				Cart.this.aligning = false;
 				System.out.println("Releasing align lock");
+			}
+		});
+	}
+	
+	public void spinOut() {
+		if (spinning)
+			return;
+		spinning = true;
+		Animator a = Animator.getAnimator();
+		Vector3D up = getRotation().toMatrix().multiply(new Vector3D(0,1,0));
+		final Quaternion change = new Quaternion(up, Math.PI / 20);
+		for (int i = 0; i < 40; i++) {
+			a.registerEvent(new AnimationEvent(0.05 * i) {
+				@Override
+				public void animate() {
+					Cart.this.setRotation(change.multiply(Cart.this.getRotation()));
+				}
+			});
+		}
+		a.registerEvent(new AnimationEvent(2.5) {
+			public void animate() {
+				Cart.this.spinning = false;
 			}
 		});
 	}
