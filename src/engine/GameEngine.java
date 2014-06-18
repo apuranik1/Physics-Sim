@@ -93,12 +93,12 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 	public void registerCheckpoint(Checkpoint cp) {
 		checkpoints.add(cp);
 	}
-	
+
 	public void clearAllChecks(Cart ca) {
-		for(Checkpoint c : checkpoints)
+		for (Checkpoint c : checkpoints)
 			c.unset(ca);
 	}
-	
+
 	public void setMyCart(Cart cart) {
 		myCart = cart;
 	}
@@ -310,14 +310,19 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 		gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		setupCamera(gl, dt);
 		renderer.render(gl);
-		if (!gameReady())
-			renderString("Game starts in " + client.getData().getStartTime()
-					+ " seconds.", Color.RED);
-		else if (gameStarting())
-			renderString("GO!", Color.GREEN);
-		renderLap("Lap " + (myCart.getLap() + 1) + "/3");
-		renderItem(myCart);
-		renderString(overlayText, Color.YELLOW);
+		try {
+			if (!gameReady())
+				renderString("Game starts in "
+						+ client.getData().getStartTime() + " seconds.",
+						Color.RED);
+			else if (gameStarting())
+				renderString("GO!", Color.GREEN);
+			renderLap("Lap " + (myCart.getLap() + 1) + "/3");
+			renderItem(myCart);
+			renderString(overlayText, Color.YELLOW);
+		} catch (Exception e) {
+
+		}
 	}
 
 	@Override
