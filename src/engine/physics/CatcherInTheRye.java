@@ -3,9 +3,12 @@ package engine.physics;
 import java.awt.Color;
 
 import racing.Cart;
+import racing.MonkeyShell;
 
 import engine.BoundingBox;
 import engine.GameEngine;
+import engine.animation.AnimationEvent;
+import engine.animation.Animator;
 import engine.graphics.Object3D;
 
 public class CatcherInTheRye extends Object3D {
@@ -19,7 +22,7 @@ public class CatcherInTheRye extends Object3D {
 		this.target = target;
 	}
 	
-	public void specialCollide(Object3D other) {
+	public void specialCollide(final Object3D other) {
 		if(!(other instanceof CatcherInTheRye)) {
 			System.out.println("Request move");
 			if(delta)
@@ -32,6 +35,12 @@ public class CatcherInTheRye extends Object3D {
 		}
 		if(other instanceof Cart)
 			GameEngine.getGameEngine().clearAllChecks((Cart) other);
+		if(other instanceof MonkeyShell)
+			Animator.getAnimator().registerEvent(new AnimationEvent(0) {
+				public void animate() {
+					GameEngine.getGameEngine().prepareUpdate(other);
+				}
+			});
 	}
 	
 	public BoundingBox getBoundingBox() {

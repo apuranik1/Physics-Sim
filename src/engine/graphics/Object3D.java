@@ -35,7 +35,7 @@ public class Object3D implements Renderable3D, Cloneable, Serializable {
 	transient private long					frame			= -1;
 	transient private Vector3D				mincoord;
 	transient private Vector3D				maxcoord;
-	transient private Material[]			materials;
+	transient protected Material[]			materials;
 	transient private static final Material	defaultMaterial	= new Material();
 	{
 		defaultMaterial.ambient = new Vector3D(0.2f, 0.2f, 0.2f);

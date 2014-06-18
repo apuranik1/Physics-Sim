@@ -3,10 +3,10 @@ package engine.graphics;
 import engine.physics.Vector3D;
 
 public class Material {
-	Vector3D ambient;
-	Vector3D diffuse;
-	Vector3D specular;
-	double alpha;
+	public Vector3D ambient;
+	public Vector3D diffuse;
+	public Vector3D specular;
+	public double alpha;
 	
 	public boolean equals(Object other) {
 		if(other == null || !(other instanceof Material))
