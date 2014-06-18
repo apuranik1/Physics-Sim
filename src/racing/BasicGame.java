@@ -6,6 +6,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+
 import engine.ContinuousAnimationEvent;
 import engine.GameEngine;
 import engine.ResourceManager;
@@ -44,6 +47,8 @@ public class BasicGame {
 				}
 			}
 		try {
+			AudioStream as = new AudioStream(getClass().getClassLoader().getResourceAsStream("ddash.wav"));
+			AudioPlayer.player.start(as);
 			//AudioInputStream ais = AudioSystem.getAudioInputStream(getClass()
 			//		.getClassLoader().getResourceAsStream("flandre.wav"));
 			//Clip clip = AudioSystem.getClip();
