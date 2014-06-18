@@ -24,6 +24,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import com.sun.awt.AWTUtilities;
 
@@ -33,7 +35,7 @@ import engine.GameEngine;
 
 public class FrontEnd {
 	private Frame frame;
-	private static final String INSTRUCTIONS = "";
+	private static final String INSTRUCTIONS = "Upon selecting play, you will be faced with three options: \n\nSingleplayer allows you to play by yourself without any competitors.\n\nMultiplayer Server allows you to dedicate your computer as a server to host a multiplayer game.\n\nMultiplayer Client allows you to join another server. After clicking this button, enter the IP address of the server to begin playing.\n\nWhen in the game, W is used to accelerate, A is used to turn left, D is used to turn right, and S is used to brake or reverse. When you hit an item box, you will be given a randomly selected item displayed in the lower right-hand corner of the screen. Press space to use this item. Mushrooms provide a temporary speed bonus. Super mushrooms provide a stronger speed bonus. Ultra turning improves your handling for 10 seconds, allowing you to take turns more rapidly. Monkey shells can be fired at competitors. When they hit someone, they will cause them to loose momentum and spin out. The first person to complete three laps around the track wins.";
 	private static FrontEnd fe;
 	private final Dialog pframe = new Dialog((Frame) null);
 
@@ -122,7 +124,7 @@ public class FrontEnd {
 		pframe.toFront();
 		pframe.setVisible(true);
 	}
-	
+
 	public void hidePopup() {
 		pframe.setVisible(false);
 	}
@@ -236,16 +238,21 @@ public class FrontEnd {
 				iframe.dispose();
 			}
 		});
-		TextArea ta = new TextArea(INSTRUCTIONS);
+		JTextArea ta = new JTextArea(INSTRUCTIONS);
 		ta.setEditable(false);
-		ta.setPreferredSize(new Dimension(300, 200));
+		ta.setWrapStyleWord(true);
+		ta.setLineWrap(true);
+		//ta.setPreferredSize(new Dimension(300, 200));
 		// handle quit button
 		iframe.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent windowEvent) {
 				iframe.dispose();
 			}
 		});
-		iframe.add(ta);
+		JScrollPane jsp = new JScrollPane(ta);
+		jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		jsp.setPreferredSize(new Dimension(300, 200));
+		iframe.add(jsp);
 		iframe.add(cancel);
 		iframe.pack();
 		// center frame
@@ -256,11 +263,11 @@ public class FrontEnd {
 						- iframe.getHeight() / 2);
 		iframe.setVisible(true);
 	}
-	
+
 	public void gameWon() {
 		GameEngine.getGameEngine().conclude("You win! :)");
 	}
-	
+
 	public void gameLost() {
 		GameEngine.getGameEngine().conclude("You lose. :(");
 	}
