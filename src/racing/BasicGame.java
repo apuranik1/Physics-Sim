@@ -110,13 +110,15 @@ public class BasicGame {
 		next = dummy;
 		FinishLine fl = TrackBuilder.addFinishLine(next, dummy = next.add(new Vector3D(0, 0, -400)), 50);
 		TrackBuilder.addSingleWall(next, dummy);
-		TrackBuilder.addSingleWall(next.add(new Vector3D(-50,0,-50)), dummy.add(new Vector3D(50,0,-50)));
+		TrackBuilder.addSingleWall(next.add(new Vector3D(-50,0,-50)), dummy.add(new Vector3D(-50,0,0)));
 		next = dummy;
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, -400)), 50);
+		TrackBuilder.addSingleWall(next, dummy);
+		TrackBuilder.addSingleWall(next.add(new Vector3D(-50,0,0)), dummy.add(new Vector3D(-50,0,50)));
 		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(-400, 0, 0)), 50);
 		TrackBuilder.addSingleWall(next, dummy);
 		TrackBuilder.addSingleWall(next.add(new Vector3D(-50,0,50)), dummy.add(new Vector3D(50,0,50)));
-		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(-400, 0, 0)), 50);
 		next = dummy;
 		GameEngine.getGameEngine().registerCheckpoint(cp);
 		fl.setCheckpoint(cp);
