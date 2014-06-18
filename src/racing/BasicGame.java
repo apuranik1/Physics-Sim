@@ -24,16 +24,20 @@ public class BasicGame {
 		Vector3D startPos = buildMarioCircuit();
 		final ResourceManager rm = ResourceManager.getResourceManager();
 
+		Vector3D randomized = new Vector3D(Math.random() * 20, 0, Math.random() * 20);
 		Cart cart = new Cart("cart1.obj");
 		rm.loadObject("kart_1", cart);
 		Cart myCart = (Cart) rm.retrieveInstance(rm.insertInstance("kart_1",
-				startPos));
+				startPos.add(randomized)));
 		rm.loadObject("monkey", new Object3D("monkey.obj"));
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.registerProcessor(new CarController(myCart));
 		ge.setMyCart(myCart);
 		Animator anim = Animator.getAnimator();
 		anim.registerEvent(new CameraFollow(myCart));
+		rm.loadObject("catcher", new CatcherInTheRye(startPos.add(randomized),
+				false));
+		rm.insertInstance("catcher", new Vector3D(0, -10, 0));
 		
 		MonkeyShell.initMonkeyShell();
 		
@@ -128,9 +132,6 @@ public class BasicGame {
 		GameEngine.getGameEngine().registerCheckpoint(cp);
 		fl.setCheckpoint(cp);
 		ResourceManager rm = ResourceManager.getResourceManager();
-		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30),
-				false));
-		rm.insertInstance("catcher", new Vector3D(0, -10, 0));
 		rm.loadObject("launchpad",
 				new LaunchPad(new Vector3D(20, 20, 90), null));
 		rm.loadObject("finishLine", buildFinishLine());
