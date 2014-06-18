@@ -134,7 +134,17 @@ public class BasicGame {
 		TrackBuilder.addSingleWall(next, dummy);
 		TrackBuilder.addSingleWall(next.add(new Vector3D(-50,0,-50)), dummy.add(new Vector3D(-50,0,0)));
 		next = dummy;
-		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, -400)), 50);
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0,0,-100)), 50);
+		TrackBuilder.addTrackWalls(next, dummy, 50);
+		next = dummy.add(new Vector3D(0,7,-50));
+		rm.insertInstance("launchpad", next.subtract(new Vector3D(50,7,30)));
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, -4, -10)), 50);
+		TrackBuilder.addTrackWalls(next, dummy, 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, -3, -10)), 50);
+		TrackBuilder.addTrackWalls(next, dummy, 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, -230)), 50);
 		TrackBuilder.addSingleWall(next, dummy);
 		TrackBuilder.addSingleWall(next.add(new Vector3D(-50,0,0)), dummy.add(new Vector3D(-50,0,50)));
 		next = dummy;
