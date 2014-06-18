@@ -127,8 +127,8 @@ public class Cart extends Object3D implements Serializable {
 		Animator a = Animator.getAnimator();
 		Vector3D up = getRotation().toMatrix().multiply(new Vector3D(0,1,0));
 		final Quaternion change = new Quaternion(up, Math.PI / 20);
-		for (int i = 0; i < 40; i++) {
-			a.registerEvent(new AnimationEvent(0.05 * i) {
+		for (int i = 0; i < 80; i++) {
+			a.registerEvent(new AnimationEvent(0.025 * i) {
 				@Override
 				public void animate() {
 					Cart.this.setRotation(change.multiply(Cart.this.getRotation()));

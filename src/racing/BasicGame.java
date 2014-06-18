@@ -98,11 +98,24 @@ public class BasicGame {
 	}
 	
 	public Vector3D buildMarioCircuit() throws IOException{
+		ResourceManager rm = ResourceManager.getResourceManager();
+		rm.loadObject("launchpad", new LaunchPad(new Vector3D(50, 20, 30), null));
 		Vector3D next = new Vector3D(-200,0,-400);
 		Vector3D dummy;
-		Checkpoint cp = TrackBuilder.addCheckpoint(next, dummy = next.add(new Vector3D(0, 0, 800)), 50);
+		Checkpoint cp = TrackBuilder.addCheckpoint(next, dummy = next.add(new Vector3D(0, 0, 300)), 50);
 		TrackBuilder.addSingleWall(next, dummy);
-		TrackBuilder.addSingleWall(next.add(new Vector3D(50,0,50)), dummy.add(new Vector3D(50,0,-50)));
+		TrackBuilder.addSingleWall(next.add(new Vector3D(50,0,50)), dummy.add(new Vector3D(50,0,0)));//-50
+		next = dummy.add(new Vector3D(0,7,50));
+		rm.insertInstance("launchpad", next.subtract(new Vector3D(0,7,0)));
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, -4, 10)), 50);
+		TrackBuilder.addTrackWalls(next, dummy, 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, -3, 10)), 50);
+		TrackBuilder.addTrackWalls(next, dummy, 50);
+		next = dummy;
+		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(0, 0, 430)), 50);
+		TrackBuilder.addSingleWall(next, dummy);
+		TrackBuilder.addSingleWall(next.add(new Vector3D(50,0,0)), dummy.add(new Vector3D(50,0,-50)));//-50
 		next = dummy;
 		TrackBuilder.addTrackRun(next, dummy = next.add(new Vector3D(400, 0, 0)), 50);
 		TrackBuilder.addSingleWall(next, dummy);
@@ -122,12 +135,9 @@ public class BasicGame {
 		next = dummy;
 		GameEngine.getGameEngine().registerCheckpoint(cp);
 		fl.setCheckpoint(cp);
-		ResourceManager rm = ResourceManager.getResourceManager();
 		rm.loadObject("catcher", new CatcherInTheRye(new Vector3D(175, 5, -30),
 				false));
 		rm.insertInstance("catcher", new Vector3D(0, -10, 0));
-		rm.loadObject("launchpad",
-				new LaunchPad(new Vector3D(20, 20, 90), null));
 		rm.loadObject("finishLine", buildFinishLine());
 		rm.insertInstance("finishLine", new Vector3D(175, 1, 0));
 		// rm.insertInstance("launchpad", Vector3D.origin);
