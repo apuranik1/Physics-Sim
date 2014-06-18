@@ -192,7 +192,6 @@ public class GameEngine implements Iterable<Object3D>, KeyListener,
 			first = false;
 		} else
 			while (dtp > 0) {
-				System.out.println(dtp);
 				if (!suspendPhysics)
 					physicsRefresh(Math.min(updateInterval, dtp));
 				physics.checkCollisions();
