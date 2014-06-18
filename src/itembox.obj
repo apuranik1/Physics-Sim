@@ -1,6 +1,6 @@
 # Blender v2.62 (sub 0) OBJ File: ''
 # www.blender.org
-mtllib cube.mtl
+mtllib itembox.mtl
 o Mesh_Cube.001
 v 0.500000 -0.500000 -0.500000
 v 0.500000 -0.500000 0.500000
@@ -37,7 +37,7 @@ vn 1.000000 0.000000 0.000000
 vn 0.000000 -0.000000 1.000000
 vn -1.000000 0.000000 0.000000
 vn 0.000000 0.000000 -1.000000
-usemtl Material.001
+usemtl initialShadingGroup
 s off
 f 1/1/1 2/2/1 3/3/1 4/4/1
 f 5/5/2 6/6/2 7/7/2 8/4/2

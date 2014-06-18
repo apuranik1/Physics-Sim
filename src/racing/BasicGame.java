@@ -6,6 +6,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 
+import sun.audio.AudioPlayer;
+import sun.audio.AudioStream;
+
 import engine.ContinuousAnimationEvent;
 import engine.GameEngine;
 import engine.ResourceManager;
@@ -21,16 +24,20 @@ public class BasicGame {
 		Vector3D startPos = buildMarioCircuit();
 		final ResourceManager rm = ResourceManager.getResourceManager();
 
+		Vector3D randomized = new Vector3D(Math.random() * 20, 0, Math.random() * 20);
 		Cart cart = new Cart("cart1.obj");
 		rm.loadObject("kart_1", cart);
 		Cart myCart = (Cart) rm.retrieveInstance(rm.insertInstance("kart_1",
-				startPos));
+				startPos.add(randomized)));
 		rm.loadObject("monkey", new Object3D("monkey.obj"));
 		GameEngine ge = GameEngine.getGameEngine();
 		ge.registerProcessor(new CarController(myCart));
 		ge.setMyCart(myCart);
 		Animator anim = Animator.getAnimator();
 		anim.registerEvent(new CameraFollow(myCart));
+		rm.loadObject("catcher", new CatcherInTheRye(startPos.add(randomized),
+				false));
+		rm.insertInstance("catcher", new Vector3D(0, -10, 0));
 		
 		MonkeyShell.initMonkeyShell();
 		
@@ -44,6 +51,8 @@ public class BasicGame {
 				}
 			}
 		try {
+			AudioStream as = new AudioStream(getClass().getClassLoader().getResourceAsStream("ddash.wav"));
+			AudioPlayer.player.start(as);
 			//AudioInputStream ais = AudioSystem.getAudioInputStream(getClass()
 			//		.getClassLoader().getResourceAsStream("flandre.wav"));
 			//Clip clip = AudioSystem.getClip();
